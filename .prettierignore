@@ -1,0 +1,12 @@
+.astro/
+.tmp/
+archive/
+build/
+coverage/
+dist/
+experiments/
+index_masterskaya.html
+node_modules/
+scrns/
+temp/
+tmp/

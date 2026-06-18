@@ -97,12 +97,16 @@ npm.cmd install
 npm.cmd run dev
 npm.cmd run check
 npm.cmd run lint
+npm.cmd run format
+npm.cmd run format:check
 npm.cmd run build
 npm.cmd run preview
 npm.cmd run verify
 ```
 
-`lint` временно выполняет строгую Astro/TypeScript-проверку. Полноценные ESLint-правила добавляются в FRT-004.
+`lint` проверяет новый Astro/TypeScript-код через ESLint. `format` исправляет форматирование нового production-контура и активной документации, а `format:check` только проверяет его.
+
+Legacy HTML, `archive/`, `experiments/`, generated output и временные директории исключены из ESLint и Prettier.
 
 Для legacy-прототипа:
 
