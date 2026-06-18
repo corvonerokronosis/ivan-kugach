@@ -27,6 +27,7 @@ public/build/
 .next/
 .nuxt/
 .svelte-kit/
+.astro/
 coverage/
 htmlcov/
 
