@@ -1,0 +1,2914 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кугач: тихое погружение</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,650&family=Manrope:wght@400;500;600;700&display=swap");
+
+    :root {
+      --bg-top: #fbf8ef;
+      --bg-bottom: #eef5ef;
+      --paper: rgba(255, 253, 247, 0.78);
+      --paper-strong: rgba(255, 253, 247, 0.94);
+      --surface: rgba(255, 255, 252, 0.72);
+      --surface-muted: rgba(239, 245, 236, 0.72);
+      --ink: #24312b;
+      --ink-soft: rgba(36, 49, 43, 0.68);
+      --accent: #6d8f78;
+      --accent-deep: #496d5d;
+      --accent-warm: #d59b6c;
+      --accent-blue: #89aeb4;
+      --accent-soft: rgba(109, 143, 120, 0.14);
+      --line: rgba(62, 83, 72, 0.12);
+      --line-strong: rgba(62, 83, 72, 0.2);
+      --shadow: 0 30px 80px rgba(74, 94, 82, 0.14);
+      --shadow-soft: 0 18px 46px rgba(74, 94, 82, 0.1);
+      --glow: 0 0 42px rgba(213, 155, 108, 0.18);
+      --radius-lg: 26px;
+      --radius-md: 18px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Manrope", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(120deg, rgba(137, 174, 180, 0.16), transparent 34%),
+        linear-gradient(240deg, rgba(213, 155, 108, 0.18), transparent 42%),
+        linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+      overflow-x: hidden;
+      animation: ambientShift 18s ease-in-out infinite alternate;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.38;
+      background-image:
+        linear-gradient(rgba(36, 49, 43, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(36, 49, 43, 0.025) 1px, transparent 1px);
+      background-size: 72px 72px, 72px 72px;
+      mask-image: linear-gradient(180deg, transparent, #000 12%, #000 78%, transparent);
+    }
+
+    body.modal-active {
+      overflow: hidden;
+    }
+
+    .page {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 22px 0 44px;
+    }
+
+    .screen {
+      display: block;
+    }
+
+    .screen.hidden {
+      display: none;
+    }
+
+    .hero-panel,
+    .workspace,
+    .launch-card,
+    .fact-card {
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .landing-layout {
+      display: grid;
+      gap: 24px;
+    }
+
+    .landing-layout > * {
+      animation: riseIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .landing-layout > *:nth-child(2) {
+      animation-delay: 0.12s;
+    }
+
+    .landing-layout > *:nth-child(3) {
+      animation-delay: 0.22s;
+    }
+
+    .hero-panel {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      padding: clamp(28px, 5vw, 52px);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 252, 0.92), rgba(238, 246, 237, 0.66) 58%, rgba(249, 235, 218, 0.72)),
+        var(--paper);
+    }
+
+    .hero-panel::before,
+    .hero-panel::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      pointer-events: none;
+    }
+
+    .hero-panel::before {
+      width: 46%;
+      height: 1px;
+      top: 32px;
+      right: 28px;
+      background: linear-gradient(90deg, transparent, rgba(109, 143, 120, 0.32), transparent);
+      transform: rotate(-4deg);
+    }
+
+    .hero-panel::after {
+      width: 110%;
+      height: 38%;
+      left: -5%;
+      bottom: -16%;
+      background: linear-gradient(90deg, rgba(137, 174, 180, 0.1), rgba(213, 155, 108, 0.14), rgba(109, 143, 120, 0.1));
+      filter: blur(18px);
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+      gap: 28px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(62, 83, 72, 0.14);
+      background: rgba(255, 255, 252, 0.62);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(36, 49, 43, 0.58);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 16px;
+      font-size: clamp(38px, 6vw, 70px);
+      line-height: 0.98;
+      font-family: "Literata", Georgia, serif;
+      font-weight: 650;
+      max-width: 12ch;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 650px;
+      margin-bottom: 0;
+      font-size: clamp(18px, 2.2vw, 22px);
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+
+    .hero-side {
+      display: grid;
+      gap: 14px;
+    }
+
+    .quote-card,
+    .fact-card {
+      padding: 20px 22px;
+      border-radius: var(--radius-md);
+      background: var(--paper);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .quote-card {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 252, 0.94), rgba(237, 246, 237, 0.74));
+      border: 1px solid var(--line);
+    }
+
+    .quote-card p {
+      margin-bottom: 0;
+      font-size: 17px;
+      line-height: 1.6;
+      color: rgba(36, 49, 43, 0.82);
+    }
+
+    .fact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .fact-card {
+      min-height: 100%;
+    }
+
+    .fact-card strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(36, 49, 43, 0.56);
+    }
+
+    .fact-card p {
+      margin-bottom: 0;
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .launch-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+      align-content: start;
+      padding: 24px;
+      border-radius: var(--radius-lg);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 252, 0.9), rgba(240, 247, 239, 0.72));
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .launch-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.64), transparent);
+      opacity: 0;
+      transform: translateX(-40%);
+      transition: opacity 0.35s ease, transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+    }
+
+    .launch-card:hover,
+    .launch-card:focus-visible {
+      transform: translateY(-4px);
+      box-shadow: 0 36px 86px rgba(74, 94, 82, 0.16), var(--glow);
+      border-color: rgba(109, 143, 120, 0.32);
+      outline: none;
+    }
+
+    .launch-card:hover::before,
+    .launch-card:focus-visible::before {
+      opacity: 0.8;
+      transform: translateX(40%);
+    }
+
+    .launch-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .launch-grid .launch-card:first-child {
+      background:
+        linear-gradient(145deg, rgba(255, 255, 252, 0.92), rgba(251, 237, 218, 0.68) 58%, rgba(238, 246, 237, 0.72));
+    }
+
+    .launch-grid .launch-card:nth-child(2) {
+      background:
+        linear-gradient(145deg, rgba(255, 255, 252, 0.92), rgba(225, 239, 239, 0.72) 58%, rgba(238, 246, 237, 0.74));
+    }
+
+    .launch-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 0;
+      align-items: flex-start;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 252, 0.76);
+      border: 1px solid rgba(62, 83, 72, 0.12);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: rgba(36, 49, 43, 0.58);
+    }
+
+    .launch-copy {
+      display: grid;
+      gap: 16px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .launch-copy h2 {
+      margin-bottom: 0;
+      max-width: 12ch;
+      font-size: clamp(32px, 4vw, 46px);
+      line-height: 1;
+      font-family: "Literata", Georgia, serif;
+      font-weight: 650;
+    }
+
+    .launch-copy p {
+      margin-bottom: 0;
+      max-width: 34ch;
+      font-size: 18px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+
+    .launch-field {
+      display: grid;
+      gap: 8px;
+      width: min(100%, 420px);
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 252, 0.6);
+      border: 1px solid rgba(62, 83, 72, 0.1);
+    }
+
+    .launch-field strong {
+      font-size: 12px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: rgba(36, 49, 43, 0.5);
+    }
+
+    .launch-field span {
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .launch-preview {
+      position: relative;
+      width: min(100%, 380px);
+      margin: 0 auto;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow-soft);
+      background: #dfe9df;
+      min-height: 260px;
+      aspect-ratio: 1.08 / 1;
+      border: 1px solid rgba(255, 255, 252, 0.86);
+    }
+
+    .launch-preview img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(0.92) contrast(1.02) brightness(1.02);
+      transform: scale(1.02);
+    }
+
+    .launch-preview::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(36, 49, 43, 0.02), rgba(36, 49, 43, 0.26)),
+        linear-gradient(120deg, rgba(255, 255, 255, 0.38), transparent 44%);
+    }
+
+    .launch-caption {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      z-index: 1;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 252, 0.78);
+      color: rgba(36, 49, 43, 0.88);
+      font-size: 15px;
+      line-height: 1.45;
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 252, 0.7);
+    }
+
+    .experience-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .experience-title {
+      display: grid;
+      gap: 6px;
+    }
+
+    .experience-title p {
+      margin-bottom: 0;
+      color: var(--ink-soft);
+      font-size: 16px;
+    }
+
+    .workspace {
+      position: relative;
+      padding: clamp(12px, 2vw, 22px);
+      border-radius: var(--radius-lg);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 252, 0.74), rgba(238, 246, 237, 0.76));
+    }
+
+    .stage {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 48%),
+        #dde8dd;
+      user-select: none;
+      touch-action: none;
+      box-shadow: inset 0 0 0 1px rgba(62, 83, 72, 0.12);
+    }
+
+    .painting-base,
+    .reveal-layer {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .painting-base {
+      position: relative;
+      z-index: 1;
+      background: #dde8dd;
+    }
+
+    .reveal-layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 2;
+      cursor: none;
+    }
+
+    .brush {
+      position: absolute;
+      width: 84px;
+      height: 84px;
+      margin-left: -42px;
+      margin-top: -42px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      background:
+        radial-gradient(circle, rgba(255, 255, 255, 0.18) 0 26%, rgba(137, 174, 180, 0.22) 27% 52%, rgba(36, 49, 43, 0.42) 53% 56%, transparent 57%);
+      mix-blend-mode: multiply;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.24));
+    }
+
+    .hud {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(36, 49, 43, 0.82);
+      color: #fbfff9;
+      backdrop-filter: blur(18px);
+    }
+
+    .hud-copy {
+      min-width: 170px;
+    }
+
+    .hud-title {
+      margin: 0 0 4px;
+      font-size: 15px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .hud-text {
+      margin: 0;
+      font-size: 14px;
+      color: rgba(255, 247, 236, 0.8);
+    }
+
+    .progress-wrap {
+      flex: 1;
+    }
+
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 7px;
+      font-size: 14px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 252, 0.2);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-blue), var(--accent-warm));
+      box-shadow: 0 0 20px rgba(137, 174, 180, 0.38);
+      transition: width 0.18s ease-out;
+    }
+
+    .hint {
+      margin-top: 14px;
+      padding: 0 6px;
+      text-align: center;
+      font-size: 14px;
+      color: rgba(36, 49, 43, 0.7);
+    }
+
+    @media (min-width: 721px) {
+      #experienceScreen {
+        min-height: calc(100dvh - 64px);
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      #experienceScreen.hidden {
+        display: none;
+      }
+
+      #experienceScreen .experience-topbar {
+        margin-bottom: 0;
+      }
+
+      #experienceScreen .workspace {
+        min-height: 0;
+        height: 100%;
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto auto;
+        padding: 16px;
+      }
+
+      #experienceScreen .stage {
+        min-height: 0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #experienceScreen .hud {
+        margin-top: 12px;
+      }
+
+      #experienceScreen .hint {
+        margin-top: 10px;
+      }
+    }
+
+    .explore-shell {
+      display: grid;
+      gap: 18px;
+    }
+
+    .explore-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 0;
+    }
+
+    .explore-title {
+      display: grid;
+      gap: 6px;
+    }
+
+    .explore-title p {
+      margin-bottom: 0;
+      max-width: 760px;
+      color: var(--ink-soft);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .explore-workspace {
+      position: relative;
+      padding: clamp(14px, 2.3vw, 24px);
+      border-radius: var(--radius-lg);
+      background:
+        linear-gradient(120deg, rgba(137, 174, 180, 0.12), transparent 42%),
+        linear-gradient(180deg, rgba(255, 255, 252, 0.78), rgba(238, 246, 237, 0.8));
+    }
+
+    .explore-stage {
+      position: relative;
+      min-height: 70vh;
+      padding: clamp(16px, 2vw, 26px);
+      border-radius: 24px;
+      overflow: hidden;
+      background:
+        linear-gradient(145deg, #f8fbf5, #dce9df 48%, #cdded8 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.82),
+        inset 0 0 0 1px rgba(62, 83, 72, 0.16),
+        0 28px 56px rgba(74, 94, 82, 0.16);
+    }
+
+    .explore-stage::before {
+      content: "";
+      position: absolute;
+      inset: clamp(8px, 1.2vw, 14px);
+      border-radius: 18px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 252, 0.62), rgba(137, 174, 180, 0.12) 38%, rgba(213, 155, 108, 0.08) 100%);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 252, 0.64),
+        inset 0 0 0 10px rgba(109, 143, 120, 0.08);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .explore-viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 70vh;
+      overflow: hidden;
+      cursor: grab;
+      touch-action: none;
+      border-radius: 14px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 30%),
+        #edf3ed;
+      box-shadow:
+        inset 0 0 0 1px rgba(62, 83, 72, 0.18),
+        inset 0 18px 32px rgba(255, 255, 252, 0.5);
+      z-index: 1;
+    }
+
+    .explore-viewport.dragging {
+      cursor: grabbing;
+    }
+
+    .explore-canvas {
+      position: absolute;
+      left: 0;
+      top: 0;
+      overflow: hidden;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+
+    .explore-canvas img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+      filter: saturate(0.96) contrast(1.02);
+    }
+
+    .hotspot {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      margin-left: -13px;
+      margin-top: -13px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 252, 0.82);
+      padding: 0;
+      background:
+        radial-gradient(circle at 35% 35%, rgba(255, 255, 252, 0.98), rgba(137, 174, 180, 0.86) 58%, rgba(109, 143, 120, 0.94));
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 252, 0.6),
+        0 0 0 10px rgba(137, 174, 180, 0.12),
+        0 12px 24px rgba(36, 49, 43, 0.18);
+      z-index: 2;
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease, opacity 0.3s ease;
+    }
+
+    .hotspot::before,
+    .hotspot::after {
+      content: "";
+      position: absolute;
+      inset: 50%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .hotspot::before {
+      width: 10px;
+      height: 10px;
+      background: rgba(36, 49, 43, 0.72);
+    }
+
+    .hotspot::after {
+      width: 100%;
+      height: 100%;
+      border: 1px solid rgba(109, 143, 120, 0.45);
+      animation: hotspotPulse 3.4s ease-out infinite;
+    }
+
+    .hotspot:hover,
+    .hotspot:focus-visible,
+    .hotspot.active {
+      transform: scale(1.12);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 252, 0.72),
+        0 0 0 14px rgba(137, 174, 180, 0.18),
+        0 18px 30px rgba(36, 49, 43, 0.2);
+      outline: none;
+    }
+
+    .explore-hud {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 16px;
+      align-items: center;
+    }
+
+    .zoom-panel {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      background: rgba(36, 49, 43, 0.84);
+      color: #fbfff9;
+      backdrop-filter: blur(18px);
+    }
+
+    .zoom-panel strong {
+      min-width: 58px;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .zoom-panel button {
+      min-width: 42px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 252, 0.12);
+      color: inherit;
+      border: 1px solid rgba(255, 255, 252, 0.18);
+    }
+
+    .zoom-panel button:hover {
+      background: rgba(255, 255, 252, 0.22);
+    }
+
+    .zoom-meter {
+      min-width: 64px;
+      text-align: center;
+      font-size: 18px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .explore-note {
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 252, 0.72);
+      border: 1px solid rgba(62, 83, 72, 0.1);
+      color: rgba(36, 49, 43, 0.74);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .narrative-shell {
+      min-height: calc(100dvh - 64px);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .narrative-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .narrative-title {
+      display: grid;
+      gap: 6px;
+    }
+
+    .narrative-title p {
+      margin-bottom: 0;
+      max-width: 720px;
+      color: var(--ink-soft);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .narrative-workspace {
+      display: grid;
+      place-items: center;
+      padding: clamp(14px, 2vw, 24px);
+      border-radius: var(--radius-lg);
+      background:
+        linear-gradient(120deg, rgba(213, 155, 108, 0.08), transparent 36%),
+        linear-gradient(180deg, rgba(255, 255, 252, 0.82), rgba(238, 246, 237, 0.84));
+    }
+
+    .narrative-card {
+      width: min(100%, 820px);
+      cursor: default;
+      text-align: left;
+    }
+
+    .narrative-card.is-animating {
+      animation: narrativeCardIn 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .narrative-card:hover,
+    .narrative-card:focus-visible {
+      transform: none;
+      box-shadow: var(--shadow);
+      border-color: var(--line);
+    }
+
+    .narrative-card .launch-copy {
+      justify-items: stretch;
+      text-align: left;
+    }
+
+    .narrative-card .launch-copy h2,
+    .narrative-card .launch-copy p {
+      max-width: none;
+    }
+
+    .narrative-progress {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 252, 0.66);
+      border: 1px solid rgba(62, 83, 72, 0.1);
+      color: rgba(36, 49, 43, 0.74);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .narrative-progress[hidden] {
+      display: none;
+    }
+
+    .narrative-step {
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: rgba(36, 49, 43, 0.5);
+    }
+
+    .narrative-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    @keyframes screenFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes narrativeCardIn {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.985);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .explore-note {
+      display: grid;
+      gap: 10px;
+    }
+
+    .explore-note strong {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(36, 49, 43, 0.5);
+    }
+
+    .explore-note p {
+      margin: 0;
+    }
+
+    @media (min-width: 721px) {
+      #narrativeScreen {
+        min-height: calc(100dvh - 64px);
+        display: grid;
+      }
+
+      #narrativeScreen.hidden {
+        display: none;
+      }
+
+      #narrativeScreen .narrative-shell {
+        min-height: 0;
+        height: 100%;
+      }
+
+      #narrativeScreen .narrative-workspace {
+        min-height: 0;
+        height: 100%;
+        align-items: stretch;
+        padding: 16px;
+      }
+
+      #narrativeScreen .narrative-card {
+        min-height: 0;
+        height: 100%;
+        max-height: 100%;
+        padding: 18px;
+      }
+
+      #narrativeScreen .narrative-card .launch-copy {
+        height: 100%;
+        align-content: stretch;
+        grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+        gap: 12px;
+      }
+
+      #narrativeScreen .launch-preview {
+        width: min(100%, 300px);
+        min-height: 0;
+        aspect-ratio: 1.18 / 1;
+      }
+
+      #narrativeScreen .launch-copy h2 {
+        font-size: clamp(28px, 3vw, 38px);
+      }
+
+      #narrativeScreen .launch-copy p {
+        font-size: 17px;
+        line-height: 1.42;
+      }
+
+      #narrativeScreen .launch-field {
+        padding: 14px 16px;
+      }
+
+      #narrativeScreen .narrative-actions {
+        margin-top: 0;
+      }
+    }
+
+    .story-modal .modal-card {
+      overflow: hidden;
+      transform-origin: 50% 100%;
+    }
+
+    .story-modal .modal-card::before {
+      content: "";
+      position: absolute;
+      inset: -20% -10% auto;
+      height: 180px;
+      background: radial-gradient(circle at center, rgba(137, 174, 180, 0.24), transparent 66%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .story-modal.open .modal-card {
+      animation: storyModalIn 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    @keyframes hotspotPulse {
+      0% {
+        transform: translate(-50%, -50%) scale(0.82);
+        opacity: 0.62;
+      }
+
+      70% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+      }
+    }
+
+    @keyframes storyModalIn {
+      0% {
+        opacity: 0;
+        transform: translateY(28px) scale(0.96);
+      }
+
+      55% {
+        opacity: 1;
+        transform: translateY(-4px) scale(1.01);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes ambientShift {
+      0% {
+        background-position: 0% 0%, 100% 0%, 0% 0%;
+      }
+
+      100% {
+        background-position: 4% 2%, 96% 6%, 0% 0%;
+      }
+    }
+
+    @keyframes riseIn {
+      0% {
+        opacity: 0;
+        transform: translateY(22px);
+        filter: blur(10px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font: 700 13px/1 "Manrope", "Segoe UI", sans-serif;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease, background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fbfff9;
+      box-shadow: 0 12px 24px rgba(73, 109, 93, 0.2);
+    }
+
+    .primary:hover {
+      background: var(--accent-deep);
+      box-shadow: 0 16px 30px rgba(73, 109, 93, 0.24);
+    }
+
+    .secondary {
+      background: var(--accent-soft);
+      color: var(--ink);
+    }
+
+    .ghost {
+      background: rgba(255, 255, 252, 0.64);
+      color: var(--ink);
+      border: 1px solid rgba(62, 83, 72, 0.12);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(36, 49, 43, 0.38);
+      backdrop-filter: blur(12px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      z-index: 1000;
+    }
+
+    .modal.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      width: min(680px, 100%);
+      padding: clamp(22px, 4vw, 34px);
+      border-radius: var(--radius-lg);
+      background: var(--paper-strong);
+      box-shadow: 0 40px 90px rgba(36, 49, 43, 0.22);
+      border: 1px solid rgba(62, 83, 72, 0.12);
+      transform: translateY(18px) scale(0.98);
+      transition: transform 0.35s ease;
+      position: relative;
+      z-index: 1001;
+    }
+
+    .modal.open .modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-label {
+      margin: 0 0 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(36, 49, 43, 0.54);
+    }
+
+    .modal h2 {
+      margin: 0 0 14px;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1;
+      font-family: "Literata", Georgia, serif;
+      font-weight: 650;
+    }
+
+    .modal p {
+      margin: 0 0 12px;
+      font-size: 18px;
+      line-height: 1.55;
+      color: rgba(36, 49, 43, 0.84);
+    }
+
+    .screen-transition-enter {
+      animation: screenFloatIn 0.72s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes screenFloatIn {
+      0% {
+        opacity: 0;
+        transform: translateY(22px);
+        filter: blur(8px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    @media (max-width: 960px) {
+      .hero-grid,
+      .launch-card,
+      .launch-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .fact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(100vw - 20px, 1200px);
+        padding-top: 18px;
+      }
+
+      .experience-topbar,
+      .hud,
+      .explore-topbar,
+      .explore-hud {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .hud-copy {
+        min-width: 0;
+      }
+
+      .explore-viewport,
+      .explore-stage {
+        min-height: 62vh;
+      }
+
+      .brush {
+        width: 72px;
+        height: 72px;
+        margin-left: -36px;
+        margin-top: -36px;
+      }
+
+      .launch-card,
+      .hero-panel {
+        border-radius: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="screen" id="landingScreen">
+      <div class="landing-layout">
+        <section class="hero-panel">
+          <div class="hero-grid">
+            <div>
+              <div class="eyebrow">Прототип музея Кугача</div>
+              <h1>Войти в картину и вернуть ей цвет</h1>
+              <p class="lead">
+                Это не витрина с картинами, а тихий цифровой маршрут: здесь можно замедлиться,
+                вслушаться в пространство и пройти по живописи как по знакомой дороге за городом.
+              </p>
+            </div>
+            <div class="hero-side">
+              <div class="quote-card">
+                <p>
+                  В этих работах важны тишина, покой и момент. Дом, окно, старая стена или свет
+                  становятся не фоном, а способом почувствовать живую, узнаваемую Россию.
+                </p>
+              </div>
+              <div class="button-row">
+                <button class="primary" id="heroStartButton" type="button">Начать погружение</button>
+                <button class="ghost" id="heroScrollButton" type="button">Выбрать маршрут</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="launch-grid">
+          <button class="launch-card" id="launchCard" type="button" aria-label="Открыть интерактив раскрашивания">
+            <div class="launch-copy">
+              <div class="launch-meta">
+                <span class="meta-pill">Интерактив</span>
+                <span class="meta-pill">1 картина</span>
+                <span class="meta-pill">1-2 минуты</span>
+              </div>
+              <h2>Возвращение цвета</h2>
+              <div class="launch-preview" aria-hidden="true">
+                <img src="../src/Kugach_picture_1.png" alt="">
+                <div class="launch-caption">
+                  Сначала цвет будто спрятан под временем. Его можно вернуть мягким жестом.
+                </div>
+              </div>
+              <p>
+                Проведите по картине, чтобы из приглушённого слоя проступили свет, воздух и тепло.
+                Это короткое действие похоже не на игру на скорость, а на бережное прикосновение.
+              </p>
+              <div class="launch-field">
+                <strong>Описание интерактива</strong>
+                <span>
+                  Маршрут начинается с восстановления: пользователь не просто нажимает кнопку,
+                  а возвращает полотну ощущение присутствия и живой ручной работы.
+                </span>
+              </div>
+            </div>
+          </button>
+
+          <button class="launch-card" id="launchExploreCard" type="button" aria-label="Открыть интерактив исследования картины">
+            <div class="launch-copy">
+              <div class="launch-meta">
+                <span class="meta-pill">Новый сценарий</span>
+                <span class="meta-pill">Зум и точки</span>
+                <span class="meta-pill">Свободный просмотр</span>
+              </div>
+              <h2>Приблизить детали</h2>
+              <div class="launch-preview" aria-hidden="true">
+                <img src="../src/Kugach_picture_2.png" alt="">
+                <div class="launch-caption">
+                  Вторая картина открывается как место: с вывеской, стеной, окном и следами времени.
+                </div>
+              </div>
+              <p>
+                Приближайте полотно и двигайтесь от детали к детали. Здесь важны не тайники,
+                а внимательный взгляд: как устроена среда, что уходит, что ещё держится.
+              </p>
+              <div class="launch-field">
+                <strong>Описание интерактива</strong>
+                <span>
+                  Каждая точка становится тропинкой к смыслу: от бытовой подробности к разговору
+                  о периферии, памяти места и красоте того, что написано с натуры.
+                </span>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <section class="fact-grid" aria-label="Краткое описание">
+          <article class="fact-card">
+            <strong>О художнике</strong>
+            <p>
+              Иван Кугач пишет узнаваемую повседневность: тихие места, человеческий масштаб,
+              свет, который держит настроение.
+            </p>
+          </article>
+          <article class="fact-card">
+            <strong>О прототипе</strong>
+            <p>
+              Это цифровой слой к живописи: интерактивная книга, где работу можно рассмотреть,
+              услышать и прожить в собственном темпе.
+            </p>
+          </article>
+          <article class="fact-card">
+            <strong>О входе</strong>
+            <p>
+              Сайт ведёт не к архиву, а к маршруту: через жест, взгляд и детали пользователь
+              постепенно входит в мир картины.
+            </p>
+          </article>
+        </section>
+      </div>
+    </section>
+
+    <section class="screen hidden" id="experienceScreen">
+      <div class="experience-topbar">
+        <div class="experience-title">
+          <div class="eyebrow">Интерактивный прототип</div>
+          <p>Проведите по полотну, чтобы вернуть цвет и открыть историю картины.</p>
+        </div>
+        <div class="button-row">
+          <button class="ghost" id="backToLandingButton" type="button">На главную</button>
+        </div>
+      </div>
+
+      <section class="workspace">
+        <div class="stage" id="stage">
+          <canvas class="painting-base" id="baseCanvas"></canvas>
+          <img id="colorImage" src="../src/Kugach_picture_1.png" alt="Картина" hidden>
+          <canvas class="reveal-layer" id="revealCanvas"></canvas>
+          <div class="brush" id="brush"></div>
+        </div>
+        <div class="hud">
+          <div class="hud-copy">
+            <p class="hud-title">Возвращение цвета</p>
+            <p class="hud-text">Ведите мягко: цвет возвращается там, где взгляд задерживается.</p>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-row">
+              <span>Прогресс</span>
+              <strong id="progressValue">0%</strong>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+          </div>
+        </div>
+        <p class="hint">Зажмите и медленно ведите курсором или пальцем, будто снимаете пыль со света.</p>
+      </section>
+    </section>
+
+    <section class="screen hidden" id="narrativeScreen">
+      <div class="narrative-shell">
+        <div class="narrative-topbar">
+          <div class="narrative-title">
+            <div class="eyebrow" id="narrativeSequenceEyebrow">Сюжетная линия</div>
+            <p id="narrativeSequenceLead">
+              Сюжетные вставки связывают интерактивы в одну спокойную прогулку по живописи.
+            </p>
+          </div>
+          <div class="button-row">
+            <button class="ghost" id="narrativeExitButton" type="button">На главную</button>
+          </div>
+        </div>
+
+        <section class="workspace narrative-workspace">
+          <article class="launch-card narrative-card" aria-live="polite">
+            <div class="launch-copy">
+              <div class="launch-meta" id="narrativeMeta" hidden></div>
+              <h2 id="narrativeTitle">Сюжетное окно</h2>
+              <div class="launch-preview">
+                <img id="narrativeImage" src="../src/Kugach_picture_1.png" alt="Иллюстрация сюжетной вставки">
+                <div class="launch-caption" id="narrativeCaption">
+                  Фрагмент маршрута, где картина становится не объектом, а местом.
+                </div>
+              </div>
+              <p id="narrativeText">
+                Перед вами не экскурсионная витрина, а пространство для замедления. В нём можно
+                смотреть, трогать взглядом и постепенно собирать смысл из деталей.
+              </p>
+              <div class="launch-field">
+                <strong>Что происходит сейчас</strong>
+                <span id="narrativeSecondaryText">
+                  Этот маршрут работает как интерактивная книга: каждое окно открывает следующий
+                  слой восприятия.
+                </span>
+              </div>
+              <div class="narrative-progress" hidden>
+                <span class="narrative-step" id="narrativeStep">Окно 1 из 3</span>
+                <span id="narrativeProgressText">Подготовка первого сюжетного блока.</span>
+              </div>
+              <div class="narrative-actions">
+                <button class="ghost" id="narrativePrevButton" type="button">Назад</button>
+                <div class="button-row">
+                  <button class="secondary" id="narrativeSkipButton" type="button">Пропустить блок</button>
+                  <button class="primary" id="narrativeNextButton" type="button">Далее</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+      </div>
+    </section>
+
+    <section class="screen hidden" id="exploreScreen">
+      <div class="explore-shell">
+        <div class="explore-topbar">
+          <div class="explore-title">
+            <div class="eyebrow">Интерактив исследования</div>
+            <p>
+              Приближайте изображение и перемещайтесь по полотну как по тихому месту. Точки
+              помогают заметить вывеску, трещину, окно и фактуру стены.
+            </p>
+          </div>
+          <div class="button-row">
+            <button class="ghost" id="backFromExploreButton" type="button">На главную</button>
+          </div>
+        </div>
+
+        <section class="workspace explore-workspace">
+          <div class="explore-stage">
+            <div class="explore-viewport" id="exploreViewport" aria-label="Область просмотра картины">
+              <div class="explore-canvas" id="exploreCanvas">
+                <img id="exploreImage" src="../src/Kugach_picture_2.png" alt="Картина с точками взаимодействия" draggable="false">
+              </div>
+            </div>
+          </div>
+
+          <div class="explore-hud">
+            <div class="zoom-panel" aria-label="Управление масштабом">
+              <strong>Масштаб</strong>
+              <button class="secondary" id="zoomOutButton" type="button" aria-label="Уменьшить масштаб">−</button>
+              <div class="zoom-meter" id="zoomValue">100%</div>
+              <button class="secondary" id="zoomInButton" type="button" aria-label="Увеличить масштаб">+</button>
+              <button class="ghost" id="zoomResetButton" type="button">Сбросить</button>
+            </div>
+
+            <div class="explore-note">
+              <strong>Прогресс исследования</strong>
+              <p id="exploreProgressText">
+                Перетаскивайте картину мышью или пальцем. Откройте все наблюдения, чтобы собрать финальный смысл маршрута.
+              </p>
+              <button class="primary" id="openFinaleButton" type="button" hidden>Открыть финальную вставку</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="infoModal" aria-hidden="true">
+    <div class="modal-card">
+      <p class="modal-label">Картина раскрыта</p>
+      <h2>Цвет снова держит пространство</h2>
+      <p>
+        Цвет возвращает не только изображение, но и ощущение присутствия: становится слышнее
+        тишина комнаты, теплее свет, заметнее след ручной работы.
+      </p>
+      <p>
+        Это первый слой маршрута. Дальше взгляд перейдёт от общего впечатления к деталям:
+        к местам, где повседневность хранит время.
+      </p>
+      <div class="modal-actions">
+        <button class="primary" id="continueJourneyButton" type="button">Продолжить историю</button>
+        <button class="primary" id="restartButton" type="button">Раскрасить ещё раз</button>
+        <button class="secondary" id="closeButton" type="button">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal story-modal" id="storyModal" aria-hidden="true">
+    <div class="modal-card">
+      <p class="modal-label" id="storyModalLabel">Точка исследования</p>
+      <h2 id="storyModalTitle">Деталь картины</h2>
+      <p id="storyModalText">
+        Эта деталь помогает увидеть картину как живую среду: не набор объектов, а место,
+        где у каждого следа есть собственная тишина.
+      </p>
+      <div class="modal-actions">
+        <button class="primary" id="storyCloseButton" type="button">Продолжить просмотр</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="exploreCompletionModal" aria-hidden="true">
+    <div class="modal-card">
+      <p class="modal-label">Исследование завершено</p>
+      <h2>Все точки уже открыты</h2>
+      <p>
+        Вы прошли по главным деталям картины: вывеске, стене, окну и нижнему слою фактуры.
+        Можно остаться здесь и рассматривать дальше или перейти к финальному размышлению.
+      </p>
+      <div class="modal-actions">
+        <button class="secondary" id="stayInExploreButton" type="button">Остаться у картины</button>
+        <button class="primary" id="goToFinaleButton" type="button">К финальному блоку</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ART_BOUNDS = {
+      x: 0,
+      y: 0,
+      width: 579,
+      height: 480
+    };
+
+    const landingScreen = document.getElementById("landingScreen");
+    const experienceScreen = document.getElementById("experienceScreen");
+    const narrativeScreen = document.getElementById("narrativeScreen");
+    const exploreScreen = document.getElementById("exploreScreen");
+    const launchCard = document.getElementById("launchCard");
+    const launchExploreCard = document.getElementById("launchExploreCard");
+    const heroStartButton = document.getElementById("heroStartButton");
+    const heroScrollButton = document.getElementById("heroScrollButton");
+    const backToLandingButton = document.getElementById("backToLandingButton");
+    const backFromExploreButton = document.getElementById("backFromExploreButton");
+    const colorImage = document.getElementById("colorImage");
+    const baseCanvas = document.getElementById("baseCanvas");
+    const revealCanvas = document.getElementById("revealCanvas");
+    const stage = document.getElementById("stage");
+    const brush = document.getElementById("brush");
+    const progressFill = document.getElementById("progressFill");
+    const progressValue = document.getElementById("progressValue");
+    const infoModal = document.getElementById("infoModal");
+    const continueJourneyButton = document.getElementById("continueJourneyButton");
+    const restartButton = document.getElementById("restartButton");
+    const closeButton = document.getElementById("closeButton");
+    const exploreViewport = document.getElementById("exploreViewport");
+    const exploreCanvas = document.getElementById("exploreCanvas");
+    const exploreImage = document.getElementById("exploreImage");
+    const zoomOutButton = document.getElementById("zoomOutButton");
+    const zoomInButton = document.getElementById("zoomInButton");
+    const zoomResetButton = document.getElementById("zoomResetButton");
+    const zoomValue = document.getElementById("zoomValue");
+    const exploreProgressText = document.getElementById("exploreProgressText");
+    const openFinaleButton = document.getElementById("openFinaleButton");
+    const narrativeSequenceEyebrow = document.getElementById("narrativeSequenceEyebrow");
+    const narrativeSequenceLead = document.getElementById("narrativeSequenceLead");
+    const narrativeMeta = document.getElementById("narrativeMeta");
+    const narrativeCard = document.querySelector(".narrative-card");
+    const narrativeTitle = document.getElementById("narrativeTitle");
+    const narrativeImage = document.getElementById("narrativeImage");
+    const narrativeCaption = document.getElementById("narrativeCaption");
+    const narrativeText = document.getElementById("narrativeText");
+    const narrativeSecondaryText = document.getElementById("narrativeSecondaryText");
+    const narrativeStep = document.getElementById("narrativeStep");
+    const narrativeProgressText = document.getElementById("narrativeProgressText");
+    const narrativePrevButton = document.getElementById("narrativePrevButton");
+    const narrativeNextButton = document.getElementById("narrativeNextButton");
+    const narrativeSkipButton = document.getElementById("narrativeSkipButton");
+    const narrativeExitButton = document.getElementById("narrativeExitButton");
+    const storyModal = document.getElementById("storyModal");
+    const storyModalLabel = document.getElementById("storyModalLabel");
+    const storyModalTitle = document.getElementById("storyModalTitle");
+    const storyModalText = document.getElementById("storyModalText");
+    const storyCloseButton = document.getElementById("storyCloseButton");
+    const exploreCompletionModal = document.getElementById("exploreCompletionModal");
+    const stayInExploreButton = document.getElementById("stayInExploreButton");
+    const goToFinaleButton = document.getElementById("goToFinaleButton");
+
+    const baseCtx = baseCanvas.getContext("2d");
+    const colorCtx = revealCanvas.getContext("2d", { willReadFrequently: true });
+    const offscreenCanvas = document.createElement("canvas");
+    const offscreenCtx = offscreenCanvas.getContext("2d", { willReadFrequently: true });
+
+    const BRUSH_RADIUS = 64;
+    const SPLASH_RADIUS = 110;
+    const COMPLETION_TARGET = 82;
+    const AUTO_REVEAL_DURATION = 2100;
+    const ZOOM_STEP = 0.14;
+    const NARRATIVE_SEQUENCES = {
+      intro: {
+        eyebrow: "Сюжетная линия",
+        lead: "Первый блок вводит в тихое пространство картины и готовит к бережному возвращению цвета.",
+        completionLabel: "Перейти к интерактиву",
+        skipLabel: "Пропустить вступление",
+        completionAction: "experience",
+        slides: [
+          {
+            id: "intro-1",
+            meta: ["Пролог", "Окно 1", "Тишина"],
+            title: "Сначала становится слышна тишина",
+            image: "../src/Kugach_picture_1.png",
+            caption: "Картина встречает не громким эффектом, а паузой, в которой можно задержаться.",
+            text: "Живопись Кугача начинается с ощущения момента: тихий свет, знакомая среда, предметы без позы и шума. Здесь важно не пробежать взглядом, а дать картине время раскрыться.",
+            secondaryText: "Это цифровое пространство задумано как тропинка к работам, а не как обычная музейная витрина."
+          },
+          {
+            id: "intro-2",
+            meta: ["Пролог", "Окно 2", "Маршрут"],
+            title: "Повседневность оказывается главным событием",
+            image: "../src/Kugach_picture_1.png",
+            caption: "В этих сюжетах нет случайной декорации: дом, окно и свет держат память места.",
+            text: "Работы написаны с натуры, поэтому в них есть особая честность: не выдуманная сцена, а увиденная жизнь. То, что кажется простым, постепенно становится точным образом времени.",
+            secondaryText: "Маршрут предлагает смотреть медленно: от общего настроения к деталям, от цвета к следам среды."
+          },
+          {
+            id: "intro-3",
+            meta: ["Пролог", "Окно 3", "Переход"],
+            title: "Теперь можно прикоснуться к поверхности",
+            image: "../src/Kugach_picture_1.png",
+            caption: "Первый жест маршрута — вернуть цвет и увидеть, как меняется дыхание картины.",
+            text: "Цвет здесь не награда и не спецэффект. Он возвращает ощущение живого присутствия: будто с поверхности уходит слой пыли, а вместе с ним проявляются воздух, тепло и рука художника.",
+            secondaryText: "Ведите спокойно. Этот интерактив рассчитан на состояние созерцания, а не на скорость."
+          }
+        ]
+      },
+      bridge: {
+        eyebrow: "Связка маршрутов",
+        lead: "Второй блок переводит маршрут от жеста восстановления к внимательному исследованию деталей.",
+        completionLabel: "Перейти к исследованию",
+        skipLabel: "Пропустить вставку",
+        completionAction: "explore",
+        slides: [
+          {
+            id: "bridge-1",
+            meta: ["Интерлюдия", "Окно 1", "После финала"],
+            title: "Цвет вернулся, но взгляд только настроился",
+            image: "../src/Kugach_picture_1.png",
+            caption: "После первого действия картина перестаёт быть плоскостью и начинает ощущаться как место.",
+            text: "Когда цвет проявлен, становится заметно главное: живопись держится не на одном сюжете, а на множестве малых признаков. Свет, фактура, стена, окно и пустота между ними начинают говорить.",
+            secondaryText: "Дальше маршрут меняет темп: от широкого жеста к близкому рассматриванию."
+          },
+          {
+            id: "bridge-2",
+            meta: ["Интерлюдия", "Окно 2", "Подготовка"],
+            title: "Чтобы понять пространство глубже, надо приблизиться",
+            image: "../src/Kugach_picture_2.png",
+            caption: "Вторая работа ведёт к другой интонации: к фасаду, вывеске, трещинам и тёмному окну.",
+            text: "Здесь появляется тема периферии: не как удалённости от центра, а как самостоятельного мира со своей памятью. Чтобы войти в него, нужны тропинки — маленькие точки внимания.",
+            secondaryText: "Каждая деталь помогает увидеть не только предмет, но и слой времени, который за ним стоит."
+          },
+          {
+            id: "bridge-3",
+            meta: ["Интерлюдия", "Окно 3", "Вход"],
+            title: "Теперь картина открывается как пространство для исследования",
+            image: "../src/Kugach_picture_2.png",
+            caption: "Приближайте полотно так, будто подходите к старой стене и читаете её следы.",
+            text: "В режиме исследования не нужно искать правильный ответ. Достаточно двигаться по картине, выбирать детали и замечать, как из них складывается среда: немного утраченная, немного родная, очень настоящая.",
+            secondaryText: "Откройте все точки, чтобы собрать финальное размышление о месте, времени и взгляде."
+          }
+        ]
+      },
+      finale: {
+        eyebrow: "Финальная вставка",
+        lead: "Последний блок собирает найденные детали в цельное ощущение картины.",
+        completionLabel: "Завершить блок",
+        skipLabel: "Пропустить блок",
+        completionAction: "landing",
+        slides: [
+          {
+            id: "finale-1",
+            meta: ["Эпилог", "Окно 1", "После исследования"],
+            title: "Собранные детали начинают складываться в целое",
+            image: "../src/Kugach_picture_2.png",
+            caption: "Вы прошли не по экспонату, а по маленькому миру внутри живописной поверхности.",
+            text: "Вывеска, трещина, окно и кирпичи были не заданиями, а способами замедлить взгляд. Через них картина раскрывает то, что легко пропустить: тихую жизнь места и следы времени.",
+            secondaryText: "Так цифровой формат не заменяет живопись, а помогает найти к ней собственную дорожку."
+          },
+          {
+            id: "finale-2",
+            meta: ["Эпилог", "Окно 2", "Смысл"],
+            title: "Маршрут соединяет жест, взгляд и память о месте",
+            image: "../src/Kugach_picture_2.png",
+            caption: "В работах Кугача периферия становится центром внимания.",
+            text: "Здесь важна не громкая история, а сохранённое присутствие: то, что уходит, но ещё держится в стенах, окнах, привычных маршрутах и ручной фактуре письма.",
+            secondaryText: "Погружение заканчивается не точкой, а привычкой смотреть внимательнее."
+          },
+          {
+            id: "finale-3",
+            meta: ["Эпилог", "Окно 3", "Возврат"],
+            title: "История остаётся открытой",
+            image: "../src/Kugach_picture_1.png",
+            caption: "Маршрут можно пройти снова или вернуться к выбору другого способа смотреть.",
+            text: "Такой проект не должен быть закрытой экспозицией. Он может расти, обновляться и каждый раз находить новую тропинку к живописи: через звук, видео, игру, дневник или встречу с работой вживую.",
+            secondaryText: "To be continued: история продолжается, пока у картин появляются новые зрители."
+          }
+        ]
+      }
+    };
+    const HOTSPOTS = [
+      {
+        id: "sign",
+        x: 0.172,
+        y: 0.195,
+        targetScale: 0.94,
+        label: "Вывеска",
+        title: "Вывеска на стене",
+        text: "Вывеска делает место конкретным. Это уже не обобщённый фасад, а точка на карте памяти: маленькая надпись связывает живописную сцену с реальной средой, где повседневность становится историей."
+      },
+      {
+        id: "crack",
+        x: 0.12,
+        y: 0.105,
+        targetScale: 0.9,
+        label: "Трещина",
+        title: "Трещина и след времени",
+        text: "Трещина здесь не дефект, а знак прожитого пространства. В ней виден слой времени: то, что утрачивается, но ещё держится на поверхности стены и в живописной фактуре."
+      },
+      {
+        id: "window",
+        x: 0.575,
+        y: 0.425,
+        targetScale: 1,
+        label: "Окно",
+        title: "Окно как центр взгляда",
+        text: "Окно собирает вокруг себя всю композицию. Тёмное стекло ничего не объясняет напрямую, но удерживает паузу: за ним будто есть жизнь, звук и воздух, которые картина оставляет воображению."
+      },
+      {
+        id: "brick",
+        x: 0.59,
+        y: 0.91,
+        targetScale: 0.88,
+        label: "Кладка",
+        title: "Кирпичная кладка внизу",
+        text: "Внизу особенно заметна ручная работа: ритм кладки, неровность цвета, плотность мазка. Эта деталь возвращает картину к материальности — к тому, что сделано руками и поэтому не повторяется дважды."
+      }
+    ];
+    let isPainting = false;
+    let isPointerInside = false;
+    let isAutoCompleting = false;
+    let progress = 0;
+    let modalShown = false;
+    let coverageCellSize = 24;
+    let coverageCols = 0;
+    let coverageRows = 0;
+    let revealedCells = 0;
+    let totalCells = 0;
+    let coverageMap = [];
+    let autoRevealFrame = null;
+    let lastPaintPoint = null;
+    let imageNaturalWidth = 0;
+    let imageNaturalHeight = 0;
+    let maxExploreScale = 1;
+    let minExploreScale = 1;
+    let currentExploreScale = 1;
+    let currentExploreX = 0;
+    let currentExploreY = 0;
+    let explorePointerId = null;
+    let isDraggingExplore = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let dragOriginX = 0;
+    let dragOriginY = 0;
+    let activeHotspotId = null;
+    let viewedHotspotIds = new Set();
+    let hasShownExploreCompletionModal = false;
+    let activeNarrativeSequenceId = "intro";
+    let activeNarrativeSlideIndex = 0;
+
+    function syncModalState() {
+      const hasOpenModal =
+        infoModal.classList.contains("open") ||
+        storyModal.classList.contains("open") ||
+        exploreCompletionModal.classList.contains("open");
+      document.body.classList.toggle("modal-active", hasOpenModal);
+    }
+
+    function isExperienceVisible() {
+      return !experienceScreen.classList.contains("hidden");
+    }
+
+    function isExploreVisible() {
+      return !exploreScreen.classList.contains("hidden");
+    }
+
+    function getActiveNarrativeSequence() {
+      return NARRATIVE_SEQUENCES[activeNarrativeSequenceId] || NARRATIVE_SEQUENCES.intro;
+    }
+
+    function updateNarrativeControls() {
+      const sequence = getActiveNarrativeSequence();
+      const isFirstSlide = activeNarrativeSlideIndex === 0;
+      const isLastSlide = activeNarrativeSlideIndex >= sequence.slides.length - 1;
+      narrativePrevButton.disabled = isFirstSlide;
+      narrativeNextButton.textContent = isLastSlide ? (sequence.completionLabel || "Завершить блок") : "Далее";
+      narrativeSkipButton.textContent = sequence.skipLabel || "Пропустить блок";
+    }
+
+    function animateNarrativeCard() {
+      if (!narrativeCard) {
+        return;
+      }
+
+      narrativeCard.classList.remove("is-animating");
+      void narrativeCard.offsetWidth;
+      narrativeCard.classList.add("is-animating");
+      window.setTimeout(() => {
+        narrativeCard.classList.remove("is-animating");
+      }, 460);
+    }
+
+    function renderNarrativeSlide() {
+      const sequence = getActiveNarrativeSequence();
+      const slide = sequence.slides[activeNarrativeSlideIndex];
+      if (!slide) {
+        return;
+      }
+
+      narrativeSequenceEyebrow.textContent = sequence.eyebrow;
+      narrativeSequenceLead.textContent = sequence.lead;
+      narrativeMeta.innerHTML = "";
+      slide.meta.forEach((item) => {
+        const pill = document.createElement("span");
+        pill.className = "meta-pill";
+        pill.textContent = item;
+        narrativeMeta.appendChild(pill);
+      });
+      narrativeTitle.textContent = slide.title;
+      narrativeImage.src = slide.image;
+      narrativeImage.alt = slide.title;
+      narrativeCaption.textContent = slide.caption;
+      narrativeText.textContent = slide.text;
+      narrativeSecondaryText.textContent = slide.secondaryText;
+      narrativeStep.textContent = `Окно ${activeNarrativeSlideIndex + 1} из ${sequence.slides.length}`;
+      narrativeProgressText.textContent = `Блок: ${sequence.eyebrow.toLowerCase()}.`;
+      updateNarrativeControls();
+      animateNarrativeCard();
+    }
+
+    function showScreen(screen) {
+      [landingScreen, experienceScreen, narrativeScreen, exploreScreen].forEach((item) => {
+        item.classList.toggle("hidden", item !== screen);
+        item.classList.remove("screen-transition-enter");
+      });
+      screen.classList.add("screen-transition-enter");
+      window.setTimeout(() => {
+        screen.classList.remove("screen-transition-enter");
+      }, 520);
+    }
+
+    function openNarrativeSequence(sequenceId, startIndex = 0) {
+      const sequence = NARRATIVE_SEQUENCES[sequenceId];
+      if (!sequence) {
+        return;
+      }
+
+      activeNarrativeSequenceId = sequenceId;
+      activeNarrativeSlideIndex = Math.max(0, Math.min(sequence.slides.length - 1, startIndex));
+      closeModal();
+      closeStoryModal();
+      showScreen(narrativeScreen);
+      renderNarrativeSlide();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.setTimeout(() => narrativeNextButton.focus({ preventScroll: true }), 40);
+    }
+
+    function completeNarrativeSequence() {
+      const sequence = getActiveNarrativeSequence();
+
+      if (sequence.completionAction === "experience") {
+        goToExperience();
+        return;
+      }
+
+      if (sequence.completionAction === "explore") {
+        goToExplore();
+        return;
+      }
+
+      goToLanding();
+    }
+
+    function moveNarrativeSlide(direction) {
+      const sequence = getActiveNarrativeSequence();
+      const nextIndex = activeNarrativeSlideIndex + direction;
+      if (direction > 0 && activeNarrativeSlideIndex >= sequence.slides.length - 1) {
+        completeNarrativeSequence();
+        return;
+      }
+
+      activeNarrativeSlideIndex = Math.max(0, Math.min(sequence.slides.length - 1, nextIndex));
+      renderNarrativeSlide();
+    }
+
+    function goToExperience() {
+      showScreen(experienceScreen);
+      closeExploreCompletionModal();
+      closeStoryModal();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.requestAnimationFrame(() => {
+        fitCanvasToImage();
+      });
+    }
+
+    function goToExplore() {
+      resetExploreNarrativeProgress();
+      showScreen(exploreScreen);
+      closeExploreCompletionModal();
+      closeModal();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.requestAnimationFrame(() => {
+        fitExploreView();
+      });
+    }
+
+    function goToLanding() {
+      resetExperience();
+      resetExploreNarrativeProgress();
+      closeModal();
+      closeExploreCompletionModal();
+      closeStoryModal();
+      showScreen(landingScreen);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function ensureExploreHotspots() {
+      if (!exploreViewport || exploreViewport.querySelector(".hotspot")) {
+        return;
+      }
+
+      HOTSPOTS.forEach((hotspot) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "hotspot";
+        button.dataset.hotspotId = hotspot.id;
+        button.setAttribute("aria-label", hotspot.title);
+        button.style.left = (hotspot.x * 100) + "%";
+        button.style.top = (hotspot.y * 100) + "%";
+        exploreCanvas.appendChild(button);
+      });
+    }
+
+    function getExploreBounds(scale = currentExploreScale) {
+      const viewportRect = exploreViewport.getBoundingClientRect();
+      const scaledWidth = imageNaturalWidth * scale;
+      const scaledHeight = imageNaturalHeight * scale;
+      const minX = scaledWidth <= viewportRect.width ? (viewportRect.width - scaledWidth) / 2 : viewportRect.width - scaledWidth;
+      const maxX = scaledWidth <= viewportRect.width ? minX : 0;
+      const minY = scaledHeight <= viewportRect.height ? (viewportRect.height - scaledHeight) / 2 : viewportRect.height - scaledHeight;
+      const maxY = scaledHeight <= viewportRect.height ? minY : 0;
+
+      return { minX, maxX, minY, maxY, viewportRect };
+    }
+
+    function clampExplorePosition(scale = currentExploreScale, x = currentExploreX, y = currentExploreY) {
+      const bounds = getExploreBounds(scale);
+      return {
+        x: Math.min(bounds.maxX, Math.max(bounds.minX, x)),
+        y: Math.min(bounds.maxY, Math.max(bounds.minY, y))
+      };
+    }
+
+    function updateZoomValue() {
+      const percent = maxExploreScale > 0 ? Math.round((currentExploreScale / maxExploreScale) * 100) : 100;
+      zoomValue.textContent = percent + "%";
+    }
+
+    function updateHotspotState() {
+      const buttons = exploreCanvas.querySelectorAll(".hotspot");
+      buttons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.hotspotId === activeHotspotId);
+      });
+    }
+
+    function hasViewedAllHotspots() {
+      return viewedHotspotIds.size >= HOTSPOTS.length;
+    }
+
+    function updateExploreProgressUI() {
+      if (!exploreProgressText || !openFinaleButton) {
+        return;
+      }
+
+      const viewedCount = viewedHotspotIds.size;
+      if (hasViewedAllHotspots()) {
+        exploreProgressText.textContent = "Все наблюдения собраны. Можно остаться у картины и смотреть дальше или перейти к финальному размышлению.";
+        openFinaleButton.hidden = false;
+        return;
+      }
+
+      exploreProgressText.textContent = `Собрано наблюдений: ${viewedCount} из ${HOTSPOTS.length}. Двигайтесь по картине и ищите места, где время оставило след.`;
+      openFinaleButton.hidden = true;
+    }
+
+    function resetExploreNarrativeProgress() {
+      viewedHotspotIds = new Set();
+      hasShownExploreCompletionModal = false;
+      updateExploreProgressUI();
+    }
+
+    function openExploreCompletionModal() {
+      closeStoryModal();
+      exploreCompletionModal.classList.add("open");
+      exploreCompletionModal.setAttribute("aria-hidden", "false");
+      syncModalState();
+      window.setTimeout(() => goToFinaleButton.focus({ preventScroll: true }), 40);
+    }
+
+    function closeExploreCompletionModal() {
+      exploreCompletionModal.classList.remove("open");
+      exploreCompletionModal.setAttribute("aria-hidden", "true");
+      syncModalState();
+    }
+
+    function applyExploreTransform(useTransition = false) {
+      if (!exploreCanvas) {
+        return;
+      }
+
+      exploreCanvas.style.width = imageNaturalWidth + "px";
+      exploreCanvas.style.height = imageNaturalHeight + "px";
+      exploreCanvas.style.transition = useTransition ? "transform 0.72s cubic-bezier(0.22, 1, 0.36, 1)" : "none";
+      exploreCanvas.style.transform = `translate(${currentExploreX}px, ${currentExploreY}px) scale(${currentExploreScale})`;
+      updateZoomValue();
+      updateHotspotState();
+    }
+
+    function fitExploreView() {
+      if (!isExploreVisible() || !exploreImage.complete) {
+        return;
+      }
+
+      imageNaturalWidth = exploreImage.naturalWidth || 1;
+      imageNaturalHeight = exploreImage.naturalHeight || 1;
+      ensureExploreHotspots();
+
+      const viewportRect = exploreViewport.getBoundingClientRect();
+      if (!viewportRect.width || !viewportRect.height) {
+        return;
+      }
+
+      const fitScale = Math.min(viewportRect.width / imageNaturalWidth, viewportRect.height / imageNaturalHeight);
+      maxExploreScale = fitScale * 1.9;
+      minExploreScale = fitScale * 0.72;
+      currentExploreScale = minExploreScale;
+      const centered = clampExplorePosition(minExploreScale, (viewportRect.width - imageNaturalWidth * minExploreScale) / 2, (viewportRect.height - imageNaturalHeight * minExploreScale) / 2);
+      currentExploreX = centered.x;
+      currentExploreY = centered.y;
+      activeHotspotId = null;
+      applyExploreTransform(false);
+      updateExploreProgressUI();
+    }
+
+    function setExploreScale(nextScale, focusX, focusY, useTransition = false) {
+      if (!imageNaturalWidth || !imageNaturalHeight) {
+        return;
+      }
+
+      const clampedScale = Math.max(minExploreScale, Math.min(maxExploreScale, nextScale));
+      const viewportRect = exploreViewport.getBoundingClientRect();
+      const localFocusX = typeof focusX === "number" ? focusX : viewportRect.width / 2;
+      const localFocusY = typeof focusY === "number" ? focusY : viewportRect.height / 2;
+
+      const imagePointX = (localFocusX - currentExploreX) / currentExploreScale;
+      const imagePointY = (localFocusY - currentExploreY) / currentExploreScale;
+      const proposedX = localFocusX - imagePointX * clampedScale;
+      const proposedY = localFocusY - imagePointY * clampedScale;
+      const clamped = clampExplorePosition(clampedScale, proposedX, proposedY);
+
+      currentExploreScale = clampedScale;
+      currentExploreX = clamped.x;
+      currentExploreY = clamped.y;
+      applyExploreTransform(useTransition);
+    }
+
+    function centerExploreOn(hotspot, useTransition = true) {
+      if (!hotspot) {
+        return;
+      }
+
+      const viewportRect = exploreViewport.getBoundingClientRect();
+      const targetScale = Math.max(minExploreScale, Math.min(maxExploreScale, maxExploreScale * (hotspot.targetScale || 1)));
+      const proposedX = viewportRect.width / 2 - hotspot.x * imageNaturalWidth * targetScale;
+      const proposedY = viewportRect.height / 2 - hotspot.y * imageNaturalHeight * targetScale;
+      const clamped = clampExplorePosition(targetScale, proposedX, proposedY);
+
+      currentExploreScale = targetScale;
+      currentExploreX = clamped.x;
+      currentExploreY = clamped.y;
+      applyExploreTransform(useTransition);
+    }
+
+    function openStoryModal(hotspot) {
+      if (!hotspot) {
+        return;
+      }
+
+      storyModalLabel.textContent = hotspot.label;
+      storyModalTitle.textContent = hotspot.title;
+      storyModalText.textContent = hotspot.text;
+      storyModal.classList.add("open");
+      storyModal.setAttribute("aria-hidden", "false");
+      syncModalState();
+      window.setTimeout(() => storyCloseButton.focus({ preventScroll: true }), 60);
+    }
+
+    function closeStoryModal() {
+      storyModal.classList.remove("open");
+      storyModal.setAttribute("aria-hidden", "true");
+      syncModalState();
+    }
+
+    function activateHotspotById(hotspotId) {
+      const hotspot = HOTSPOTS.find((item) => item.id === hotspotId);
+      if (!hotspot) {
+        return;
+      }
+
+      activeHotspotId = hotspot.id;
+      viewedHotspotIds.add(hotspot.id);
+      updateExploreProgressUI();
+      centerExploreOn(hotspot, true);
+      window.setTimeout(() => {
+        if (activeHotspotId === hotspot.id) {
+          openStoryModal(hotspot);
+        }
+      }, 460);
+
+      if (hasViewedAllHotspots() && !hasShownExploreCompletionModal) {
+        hasShownExploreCompletionModal = true;
+        window.setTimeout(openExploreCompletionModal, 620);
+      }
+    }
+
+    function resetExploreView() {
+      activeHotspotId = null;
+      closeStoryModal();
+      fitExploreView();
+    }
+
+    function beginExploreDrag(event) {
+      if (!isExploreVisible() || event.button !== 0 || event.target.closest(".hotspot")) {
+        return;
+      }
+
+      event.preventDefault();
+
+      isDraggingExplore = true;
+      explorePointerId = event.pointerId;
+      dragStartX = event.clientX;
+      dragStartY = event.clientY;
+      dragOriginX = currentExploreX;
+      dragOriginY = currentExploreY;
+      activeHotspotId = null;
+      updateHotspotState();
+      closeStoryModal();
+      exploreViewport.classList.add("dragging");
+      exploreCanvas.style.transition = "none";
+
+      if (typeof exploreViewport.setPointerCapture === "function") {
+        exploreViewport.setPointerCapture(event.pointerId);
+      }
+    }
+
+    function moveExploreDrag(event) {
+      if (!isDraggingExplore || event.pointerId !== explorePointerId) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const deltaX = event.clientX - dragStartX;
+      const deltaY = event.clientY - dragStartY;
+      const clamped = clampExplorePosition(currentExploreScale, dragOriginX + deltaX, dragOriginY + deltaY);
+      currentExploreX = clamped.x;
+      currentExploreY = clamped.y;
+      applyExploreTransform(false);
+    }
+
+    function endExploreDrag(event) {
+      if (!isDraggingExplore || (event && event.pointerId !== explorePointerId)) {
+        return;
+      }
+
+      if (event && typeof exploreViewport.releasePointerCapture === "function" && exploreViewport.hasPointerCapture(event.pointerId)) {
+        exploreViewport.releasePointerCapture(event.pointerId);
+      }
+
+      isDraggingExplore = false;
+      explorePointerId = null;
+      exploreViewport.classList.remove("dragging");
+    }
+
+    function fitCanvasToImage() {
+      if (!isExperienceVisible()) {
+        return;
+      }
+
+      const stageRect = stage.getBoundingClientRect();
+      const stageWidth = Math.round(stage.clientWidth || stageRect.width || ART_BOUNDS.width);
+      const stageHeight = Math.round(stage.clientHeight || stageRect.height || 0);
+      if (!stageWidth) {
+        return;
+      }
+
+      const artAspect = ART_BOUNDS.width / ART_BOUNDS.height;
+      let renderWidth = Math.max(1, stageWidth);
+      let renderHeight = Math.round(renderWidth / artAspect);
+
+      if (stageHeight && renderHeight > stageHeight) {
+        renderHeight = Math.max(1, stageHeight);
+        renderWidth = Math.round(renderHeight * artAspect);
+      }
+
+      const offsetX = Math.max(0, Math.round((stageWidth - renderWidth) / 2));
+      const offsetY = Math.max(0, Math.round((stageHeight - renderHeight) / 2));
+
+      baseCanvas.width = renderWidth;
+      baseCanvas.height = renderHeight;
+      baseCanvas.style.width = renderWidth + "px";
+      baseCanvas.style.height = renderHeight + "px";
+      baseCanvas.style.display = "block";
+      revealCanvas.width = renderWidth;
+      revealCanvas.height = renderHeight;
+      revealCanvas.style.width = renderWidth + "px";
+      revealCanvas.style.height = renderHeight + "px";
+      revealCanvas.style.left = offsetX + "px";
+      revealCanvas.style.top = offsetY + "px";
+      offscreenCanvas.width = revealCanvas.width;
+      offscreenCanvas.height = revealCanvas.height;
+      stage.style.aspectRatio = "auto";
+      initializeCoverageMap();
+      drawBasePainting();
+      drawGrayOverlay();
+      updateProgress();
+    }
+
+    function initializeCoverageMap() {
+      coverageCols = Math.max(1, Math.ceil(revealCanvas.width / coverageCellSize));
+      coverageRows = Math.max(1, Math.ceil(revealCanvas.height / coverageCellSize));
+      totalCells = coverageCols * coverageRows;
+      revealedCells = 0;
+      coverageMap = new Array(totalCells).fill(0);
+    }
+
+    function drawBasePainting() {
+      baseCtx.clearRect(0, 0, baseCanvas.width, baseCanvas.height);
+      baseCtx.drawImage(
+        colorImage,
+        ART_BOUNDS.x,
+        ART_BOUNDS.y,
+        ART_BOUNDS.width,
+        ART_BOUNDS.height,
+        0,
+        0,
+        baseCanvas.width,
+        baseCanvas.height
+      );
+    }
+
+    function drawGrayOverlay() {
+      offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+      offscreenCtx.filter = "grayscale(1) contrast(1.08) brightness(0.94)";
+      offscreenCtx.drawImage(
+        colorImage,
+        ART_BOUNDS.x,
+        ART_BOUNDS.y,
+        ART_BOUNDS.width,
+        ART_BOUNDS.height,
+        0,
+        0,
+        offscreenCanvas.width,
+        offscreenCanvas.height
+      );
+      offscreenCtx.filter = "none";
+
+      colorCtx.clearRect(0, 0, revealCanvas.width, revealCanvas.height);
+      colorCtx.globalCompositeOperation = "source-over";
+      colorCtx.drawImage(offscreenCanvas, 0, 0);
+    }
+
+    function eraseAt(x, y, radius, softness) {
+      const gradient = colorCtx.createRadialGradient(x, y, radius * 0.18, x, y, radius);
+      gradient.addColorStop(0, `rgba(0, 0, 0, ${softness})`);
+      gradient.addColorStop(0.65, `rgba(0, 0, 0, ${softness * 0.85})`);
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+
+      colorCtx.save();
+      colorCtx.globalCompositeOperation = "destination-out";
+      colorCtx.fillStyle = gradient;
+      colorCtx.beginPath();
+      colorCtx.arc(x, y, radius, 0, Math.PI * 2);
+      colorCtx.fill();
+      colorCtx.restore();
+    }
+
+    function eraseEverywhere(strength) {
+      colorCtx.save();
+      colorCtx.globalCompositeOperation = "destination-out";
+      colorCtx.fillStyle = `rgba(0, 0, 0, ${strength})`;
+      colorCtx.fillRect(0, 0, revealCanvas.width, revealCanvas.height);
+      colorCtx.restore();
+    }
+
+    function eraseRestorationSwab(x, y, radius, opacity, stretchX = 1, stretchY = 1) {
+      colorCtx.save();
+      colorCtx.globalCompositeOperation = "destination-out";
+      colorCtx.translate(x, y);
+      colorCtx.scale(stretchX, stretchY);
+
+      const gradient = colorCtx.createRadialGradient(0, 0, radius * 0.12, 0, 0, radius);
+      gradient.addColorStop(0, `rgba(0, 0, 0, ${opacity})`);
+      gradient.addColorStop(0.58, `rgba(0, 0, 0, ${opacity * 0.55})`);
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+      colorCtx.fillStyle = gradient;
+      colorCtx.beginPath();
+      colorCtx.arc(0, 0, radius, 0, Math.PI * 2);
+      colorCtx.fill();
+      colorCtx.restore();
+    }
+
+    function eraseRestorationTrail(fromX, fromY, toX, toY, width, opacity) {
+      const length = Math.hypot(toX - fromX, toY - fromY);
+      const angle = Math.atan2(toY - fromY, toX - fromX);
+      const steps = Math.max(8, Math.ceil(length / Math.max(14, width * 0.22)));
+
+      colorCtx.save();
+      colorCtx.globalCompositeOperation = "destination-out";
+      colorCtx.translate(fromX, fromY);
+      colorCtx.rotate(angle);
+
+      for (let step = 0; step <= steps; step += 1) {
+        const t = step / steps;
+        const x = t * length;
+        const y = Math.sin(t * Math.PI) * (Math.random() - 0.5) * width * 0.08;
+        const radius = width * (0.18 + Math.sin(t * Math.PI) * 0.16 + Math.random() * 0.06);
+        const gradient = colorCtx.createRadialGradient(x, y, radius * 0.12, x, y, radius);
+        gradient.addColorStop(0, `rgba(0, 0, 0, ${opacity * 0.42})`);
+        gradient.addColorStop(0.7, `rgba(0, 0, 0, ${opacity * 0.18})`);
+        gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+        colorCtx.fillStyle = gradient;
+        colorCtx.beginPath();
+        colorCtx.ellipse(x, y, radius * 1.4, radius * 0.82, 0, 0, Math.PI * 2);
+        colorCtx.fill();
+      }
+
+      colorCtx.restore();
+    }
+    function createRestorationZone(x, y, radiusScale, delay, opacity = 0.3, stretchX = 1.3, stretchY = 0.9) {
+      const radius = Math.max(revealCanvas.width, revealCanvas.height) * radiusScale;
+      return {
+        x,
+        y,
+        radius,
+        delay,
+        opacity: opacity + Math.random() * 0.05,
+        stretchX,
+        stretchY
+      };
+    }
+
+    function createRestorationPass(startX, startY, controlX, controlY, endX, endY, widthScale, delay, opacity = 0.22) {
+      const width = Math.max(revealCanvas.width, revealCanvas.height) * widthScale;
+      return {
+        startX,
+        startY,
+        controlX,
+        controlY,
+        endX,
+        endY,
+        width,
+        delay,
+        opacity: opacity + Math.random() * 0.04
+      };
+    }
+
+    function getQuadraticPoint(t, startX, startY, controlX, controlY, endX, endY) {
+      const oneMinusT = 1 - t;
+      return {
+        x: oneMinusT * oneMinusT * startX + 2 * oneMinusT * t * controlX + t * t * endX,
+        y: oneMinusT * oneMinusT * startY + 2 * oneMinusT * t * controlY + t * t * endY
+      };
+    }
+
+    function splashReveal(x, y) {
+      eraseAt(x, y, BRUSH_RADIUS, 0.92);
+
+      for (let i = 0; i < 3; i += 1) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 20 + Math.random() * 52;
+        const size = 26 + Math.random() * 34;
+        eraseAt(
+          x + Math.cos(angle) * distance,
+          y + Math.sin(angle) * distance,
+          size,
+          0.34
+        );
+      }
+
+      eraseAt(x, y, SPLASH_RADIUS, 0.14);
+      stampCoverage(x, y, SPLASH_RADIUS * 1.15);
+    }
+
+    function stampCoverage(x, y, radius) {
+      const minCol = Math.max(0, Math.floor((x - radius) / coverageCellSize));
+      const maxCol = Math.min(coverageCols - 1, Math.floor((x + radius) / coverageCellSize));
+      const minRow = Math.max(0, Math.floor((y - radius) / coverageCellSize));
+      const maxRow = Math.min(coverageRows - 1, Math.floor((y + radius) / coverageCellSize));
+
+      for (let row = minRow; row <= maxRow; row += 1) {
+        for (let col = minCol; col <= maxCol; col += 1) {
+          const cellCenterX = col * coverageCellSize + coverageCellSize / 2;
+          const cellCenterY = row * coverageCellSize + coverageCellSize / 2;
+          const distance = Math.hypot(cellCenterX - x, cellCenterY - y);
+
+          if (distance <= radius) {
+            const index = row * coverageCols + col;
+            if (!coverageMap[index]) {
+              coverageMap[index] = 1;
+              revealedCells += 1;
+            }
+          }
+        }
+      }
+    }
+
+    function getPoint(event) {
+      const rect = revealCanvas.getBoundingClientRect();
+      const scaleX = revealCanvas.width / rect.width;
+      const scaleY = revealCanvas.height / rect.height;
+      return {
+        x: (event.clientX - rect.left) * scaleX,
+        y: (event.clientY - rect.top) * scaleY
+      };
+    }
+
+    function moveBrush(event) {
+      const stageRect = stage.getBoundingClientRect();
+      brush.style.left = event.clientX - stageRect.left + "px";
+      brush.style.top = event.clientY - stageRect.top + "px";
+    }
+
+    function sampleProgress() {
+      if (!totalCells) {
+        return 0;
+      }
+      return (revealedCells / totalCells) * 100;
+    }
+
+    function updateProgress() {
+      progress = Math.min(100, sampleProgress());
+      const displayProgress = Math.min(100, Math.round((progress / COMPLETION_TARGET) * 100));
+      progressFill.style.width = displayProgress + "%";
+      progressValue.textContent = displayProgress + "%";
+
+      if (!modalShown && !isAutoCompleting && progress >= COMPLETION_TARGET) {
+        modalShown = true;
+        progressFill.style.width = "100%";
+        progressValue.textContent = "100%";
+        autoCompletePainting();
+      }
+    }
+
+    function autoCompletePainting() {
+      if (isAutoCompleting) {
+        return;
+      }
+
+      isAutoCompleting = true;
+      isPainting = false;
+      revealedCells = totalCells;
+      coverageMap.fill(1);
+      progress = 100;
+      progressFill.style.width = "100%";
+      progressValue.textContent = "100%";
+      brush.style.opacity = isPointerInside ? "0.9" : "0";
+
+      const anchor = lastPaintPoint || {
+        x: revealCanvas.width / 2,
+        y: revealCanvas.height / 2
+      };
+      const width = revealCanvas.width;
+      const height = revealCanvas.height;
+      const restorationZones = [
+        createRestorationZone(width * 0.22, height * 0.72, 0.16, 0, 0.34, 1.5, 0.9),
+        createRestorationZone(width * 0.52, height * 0.56, 0.18, 180, 0.3, 1.35, 1),
+        createRestorationZone(width * 0.72, height * 0.34, 0.15, 360, 0.27, 1.4, 0.88),
+        createRestorationZone(anchor.x, anchor.y, 0.14, 560, 0.25, 1.2, 1.05),
+        createRestorationZone(width * 0.4, height * 0.28, 0.12, 790, 0.22, 1.25, 0.92),
+        createRestorationZone(width * 0.68, height * 0.72, 0.11, 980, 0.2, 1.3, 0.9)
+      ];
+      const restorationPasses = [
+        createRestorationPass(width * 0.1, height * 0.82, width * 0.28, height * 0.62, width * 0.54, height * 0.36, 0.05, 260, 0.2),
+        createRestorationPass(width * 0.58, height * 0.18, width * 0.68, height * 0.28, width * 0.82, height * 0.48, 0.045, 640, 0.19),
+        createRestorationPass(width * 0.22, height * 0.44, width * 0.42, height * 0.46, width * 0.72, height * 0.4, 0.04, 1040, 0.18)
+      ];
+
+      let startTime = null;
+
+      const animateReveal = (timestamp) => {
+        if (startTime === null) {
+          startTime = timestamp;
+        }
+
+        const elapsed = timestamp - startTime;
+        const zoneWindow = 380;
+        const passWindow = 430;
+
+        for (const zone of restorationZones) {
+          const local = Math.min(1, Math.max(0, (elapsed - zone.delay) / zoneWindow));
+          if (local <= 0 || zone.done) {
+            continue;
+          }
+
+          const eased = 1 - Math.pow(1 - local, 2.3);
+          eraseRestorationSwab(
+            zone.x,
+            zone.y,
+            zone.radius * (0.58 + eased * 0.5),
+            zone.opacity * (0.32 + eased * 0.42),
+            zone.stretchX,
+            zone.stretchY
+          );
+
+          if (local > 0.28) {
+            for (let mote = 0; mote < 3; mote += 1) {
+              const angle = Math.random() * Math.PI * 2;
+              const distance = zone.radius * (0.15 + Math.random() * 0.6);
+              eraseAt(
+                zone.x + Math.cos(angle) * distance,
+                zone.y + Math.sin(angle) * distance,
+                zone.radius * (0.08 + Math.random() * 0.08),
+                zone.opacity * 0.18
+              );
+            }
+          }
+
+          if (local >= 1) {
+            zone.done = true;
+          }
+        }
+
+        for (const pass of restorationPasses) {
+          const local = Math.min(1, Math.max(0, (elapsed - pass.delay) / passWindow));
+          if (local <= 0 || pass.done) {
+            continue;
+          }
+
+          const eased = 1 - Math.pow(1 - local, 2);
+          const previousPoint = getQuadraticPoint(
+            Math.max(0, eased - 0.16),
+            pass.startX,
+            pass.startY,
+            pass.controlX,
+            pass.controlY,
+            pass.endX,
+            pass.endY
+          );
+          const currentPoint = getQuadraticPoint(
+            eased,
+            pass.startX,
+            pass.startY,
+            pass.controlX,
+            pass.controlY,
+            pass.endX,
+            pass.endY
+          );
+          eraseRestorationTrail(
+            previousPoint.x,
+            previousPoint.y,
+            currentPoint.x,
+            currentPoint.y,
+            pass.width * (0.92 + eased * 0.12),
+            pass.opacity
+          );
+
+          if (local >= 1) {
+            pass.done = true;
+          }
+        }
+
+        const completion = Math.min(1, elapsed / AUTO_REVEAL_DURATION);
+        if (completion > 0.6) {
+          eraseEverywhere(0.004 + (completion - 0.6) * 0.03);
+        }
+
+        if (elapsed < AUTO_REVEAL_DURATION) {
+          autoRevealFrame = window.requestAnimationFrame(animateReveal);
+          return;
+        }
+
+        colorCtx.clearRect(0, 0, revealCanvas.width, revealCanvas.height);
+        isAutoCompleting = false;
+        autoRevealFrame = null;
+        window.setTimeout(openModal, 160);
+      };
+
+      autoRevealFrame = window.requestAnimationFrame(animateReveal);
+    }
+
+    function paint(event) {
+      if (!isPainting || isAutoCompleting) {
+        return;
+      }
+
+      event.preventDefault();
+      const point = getPoint(event);
+      lastPaintPoint = { x: point.x, y: point.y };
+      moveBrush(event);
+      splashReveal(point.x, point.y);
+      updateProgress();
+    }
+
+    function beginPainting(event) {
+      if (isAutoCompleting || !isExperienceVisible()) {
+        return;
+      }
+
+      event.preventDefault();
+      isPainting = true;
+      isPointerInside = true;
+      if (typeof revealCanvas.setPointerCapture === "function") {
+        revealCanvas.setPointerCapture(event.pointerId);
+      }
+      brush.style.opacity = "1";
+      moveBrush(event);
+      paint(event);
+    }
+
+    function endPainting(event) {
+      if (event && typeof revealCanvas.releasePointerCapture === "function" && revealCanvas.hasPointerCapture(event.pointerId)) {
+        revealCanvas.releasePointerCapture(event.pointerId);
+      }
+      isPainting = false;
+      brush.style.opacity = isPointerInside ? "0.9" : "0";
+    }
+
+    function openModal() {
+      infoModal.classList.add("open");
+      infoModal.setAttribute("aria-hidden", "false");
+      syncModalState();
+      window.setTimeout(() => continueJourneyButton.focus({ preventScroll: true }), 30);
+    }
+
+    function closeModal() {
+      infoModal.classList.remove("open");
+      infoModal.setAttribute("aria-hidden", "true");
+      syncModalState();
+    }
+
+    function resetExperience() {
+      if (autoRevealFrame !== null) {
+        window.cancelAnimationFrame(autoRevealFrame);
+        autoRevealFrame = null;
+      }
+
+      closeModal();
+      isAutoCompleting = false;
+      isPainting = false;
+      isPointerInside = false;
+      modalShown = false;
+      progress = 0;
+      lastPaintPoint = null;
+      brush.style.opacity = "0";
+
+      if (revealCanvas.width && revealCanvas.height) {
+        initializeCoverageMap();
+        drawGrayOverlay();
+        updateProgress();
+      } else {
+        progressFill.style.width = "0%";
+        progressValue.textContent = "0%";
+      }
+    }
+
+    heroStartButton.addEventListener("click", () => openNarrativeSequence("intro"));
+    launchCard.addEventListener("click", goToExperience);
+    launchExploreCard.addEventListener("click", goToExplore);
+    narrativePrevButton.addEventListener("click", () => moveNarrativeSlide(-1));
+    narrativeNextButton.addEventListener("click", () => moveNarrativeSlide(1));
+    narrativeSkipButton.addEventListener("click", completeNarrativeSequence);
+    narrativeExitButton.addEventListener("click", goToLanding);
+    openFinaleButton.addEventListener("click", () => {
+      closeExploreCompletionModal();
+      openNarrativeSequence("finale");
+    });
+    stayInExploreButton.addEventListener("click", closeExploreCompletionModal);
+    goToFinaleButton.addEventListener("click", () => {
+      closeExploreCompletionModal();
+      openNarrativeSequence("finale");
+    });
+    backToLandingButton.addEventListener("click", goToLanding);
+    backFromExploreButton.addEventListener("click", goToLanding);
+    heroScrollButton.addEventListener("click", () => {
+      launchCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    colorImage.addEventListener("load", () => {
+      if (isExperienceVisible()) {
+        fitCanvasToImage();
+      }
+    });
+
+    exploreImage.addEventListener("load", () => {
+      if (isExploreVisible()) {
+        fitExploreView();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (isExperienceVisible()) {
+        fitCanvasToImage();
+      }
+
+      if (isExploreVisible()) {
+        if (activeHotspotId) {
+          const hotspot = HOTSPOTS.find((item) => item.id === activeHotspotId);
+          fitExploreView();
+          activeHotspotId = hotspot ? hotspot.id : null;
+          if (hotspot) {
+            centerExploreOn(hotspot, false);
+          }
+        } else {
+          fitExploreView();
+        }
+      }
+    });
+
+    revealCanvas.addEventListener("pointerdown", beginPainting);
+    window.addEventListener("pointerup", endPainting);
+    window.addEventListener("pointercancel", endPainting);
+    revealCanvas.addEventListener("pointermove", (event) => {
+      moveBrush(event);
+      paint(event);
+    });
+    revealCanvas.addEventListener("pointerenter", () => {
+      isPointerInside = true;
+      brush.style.opacity = isPainting ? "1" : "0.9";
+    });
+    revealCanvas.addEventListener("pointerleave", () => {
+      isPointerInside = false;
+      if (!isPainting) {
+        brush.style.opacity = "0";
+      }
+    });
+
+    restartButton.addEventListener("click", resetExperience);
+    continueJourneyButton.addEventListener("click", () => openNarrativeSequence("bridge"));
+    closeButton.addEventListener("click", closeModal);
+    infoModal.addEventListener("click", (event) => {
+      if (event.target === infoModal) {
+        closeModal();
+      }
+    });
+
+    zoomInButton.addEventListener("click", () => {
+      setExploreScale(currentExploreScale + ZOOM_STEP, undefined, undefined, true);
+    });
+    zoomOutButton.addEventListener("click", () => {
+      setExploreScale(currentExploreScale - ZOOM_STEP, undefined, undefined, true);
+    });
+    zoomResetButton.addEventListener("click", resetExploreView);
+
+    exploreViewport.addEventListener("pointerdown", beginExploreDrag);
+    exploreViewport.addEventListener("pointermove", moveExploreDrag);
+    exploreViewport.addEventListener("pointerup", endExploreDrag);
+    exploreViewport.addEventListener("pointercancel", endExploreDrag);
+    exploreViewport.addEventListener("dragstart", (event) => {
+      event.preventDefault();
+    });
+    exploreViewport.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      const rect = exploreViewport.getBoundingClientRect();
+      const focusX = event.clientX - rect.left;
+      const focusY = event.clientY - rect.top;
+      const direction = event.deltaY < 0 ? 1 : -1;
+      setExploreScale(currentExploreScale + direction * ZOOM_STEP * 0.5, focusX, focusY, false);
+    }, { passive: false });
+
+    exploreCanvas.addEventListener("click", (event) => {
+      const hotspotButton = event.target.closest(".hotspot");
+      if (!hotspotButton) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      activateHotspotById(hotspotButton.dataset.hotspotId);
+    });
+
+    storyCloseButton.addEventListener("click", closeStoryModal);
+    storyModal.addEventListener("click", (event) => {
+      if (event.target === storyModal) {
+        closeStoryModal();
+      }
+    });
+    exploreCompletionModal.addEventListener("click", (event) => {
+      if (event.target === exploreCompletionModal) {
+        closeExploreCompletionModal();
+      }
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (!narrativeScreen.classList.contains("hidden") && !document.body.classList.contains("modal-active")) {
+        if (event.key === "ArrowRight") {
+          event.preventDefault();
+          moveNarrativeSlide(1);
+          return;
+        }
+
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          moveNarrativeSlide(-1);
+          return;
+        }
+      }
+
+      if (event.key === "Escape") {
+        closeModal();
+        closeStoryModal();
+        closeExploreCompletionModal();
+      }
+    });
+
+    if (colorImage.complete && isExperienceVisible()) {
+      fitCanvasToImage();
+    }
+
+    if (exploreImage.complete && isExploreVisible()) {
+      fitExploreView();
+    }
+
+    renderNarrativeSlide();
+    updateExploreProgressUI();
+  </script>
+</body>
+</html>

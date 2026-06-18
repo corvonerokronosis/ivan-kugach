@@ -1,0 +1,3984 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Иван Кугач: интерактив и работы для покупки</title>
+  <meta name="description" content="Интерактивный прототип о творчестве Ивана Кугача и MVP-страница работ для покупки с каталогом, статусами, ценами и формой заявки.">
+  <meta property="og:title" content="Иван Кугач: интерактив и работы для покупки">
+  <meta property="og:description" content="Каталог работ Ивана Кугача внутри прототипа: доступные, зарезервированные и проданные работы, заявка без онлайн-оплаты.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="src/for_sales/DOR_3518.jpg">
+  <style>
+    :root {
+      --bg-top: #efe4d1;
+      --bg-bottom: #d8bf9b;
+      --paper: rgba(255, 248, 238, 0.78);
+      --paper-strong: rgba(255, 248, 238, 0.9);
+      --ink: #2f2419;
+      --ink-soft: rgba(47, 36, 25, 0.74);
+      --accent: #8b4b2d;
+      --accent-deep: #6d3318;
+      --accent-soft: rgba(139, 75, 45, 0.14);
+      --line: rgba(94, 63, 31, 0.12);
+      --shadow: 0 30px 70px rgba(53, 35, 18, 0.18);
+      --shadow-soft: 0 18px 40px rgba(53, 35, 18, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.7), transparent 32%),
+        linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+      overflow-x: hidden;
+    }
+
+    body.modal-active {
+      overflow: hidden;
+    }
+
+    .page {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 24px 0 40px;
+    }
+
+    .screen {
+      display: block;
+    }
+
+    .screen.hidden {
+      display: none;
+    }
+
+    .hero-panel,
+    .workspace,
+    .launch-card,
+    .fact-card {
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .landing-layout {
+      display: grid;
+      gap: 24px;
+    }
+
+    .hero-panel {
+      position: relative;
+      overflow: hidden;
+      border-radius: 32px;
+      padding: clamp(28px, 5vw, 52px);
+      background:
+        linear-gradient(140deg, rgba(255, 252, 246, 0.9), rgba(242, 226, 199, 0.82)),
+        var(--paper);
+    }
+
+    .hero-panel::before,
+    .hero-panel::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      pointer-events: none;
+    }
+
+    .hero-panel::before {
+      width: 280px;
+      height: 280px;
+      top: -120px;
+      right: -60px;
+      background: radial-gradient(circle, rgba(139, 75, 45, 0.15), transparent 68%);
+    }
+
+    .hero-panel::after {
+      width: 220px;
+      height: 220px;
+      left: -90px;
+      bottom: -110px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.5), transparent 72%);
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+      gap: 28px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(47, 36, 25, 0.15);
+      background: rgba(255, 248, 236, 0.64);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 16px;
+      font-size: clamp(38px, 6vw, 70px);
+      line-height: 0.95;
+      font-weight: 600;
+      max-width: 11ch;
+    }
+
+    .lead {
+      max-width: 650px;
+      margin-bottom: 0;
+      font-size: clamp(18px, 2.2vw, 22px);
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+
+    .hero-side {
+      display: grid;
+      gap: 14px;
+    }
+
+    .quote-card,
+    .fact-card {
+      padding: 20px 22px;
+      border-radius: 24px;
+      background: var(--paper);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .quote-card {
+      background:
+        linear-gradient(180deg, rgba(255, 249, 241, 0.98), rgba(244, 232, 209, 0.88));
+    }
+
+    .quote-card p {
+      margin-bottom: 0;
+      font-size: 17px;
+      line-height: 1.6;
+      color: rgba(47, 36, 25, 0.86);
+    }
+
+    .fact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .fact-card {
+      min-height: 100%;
+    }
+
+    .fact-card strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(47, 36, 25, 0.62);
+    }
+
+    .fact-card p {
+      margin-bottom: 0;
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .launch-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+      align-content: start;
+      padding: 24px;
+      border-radius: 30px;
+      background:
+        linear-gradient(145deg, rgba(255, 249, 241, 0.94), rgba(239, 223, 194, 0.88));
+      color: inherit;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .launch-card:hover,
+    .launch-card:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 34px 76px rgba(53, 35, 18, 0.2);
+      border-color: rgba(139, 75, 45, 0.3);
+      outline: none;
+    }
+
+    .launch-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .launch-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 0;
+      align-items: flex-start;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: rgba(255, 248, 236, 0.86);
+      border: 1px solid rgba(47, 36, 25, 0.12);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .launch-copy {
+      display: grid;
+      gap: 16px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .launch-copy h2 {
+      margin-bottom: 0;
+      max-width: 12ch;
+      font-size: clamp(32px, 4vw, 46px);
+      line-height: 0.98;
+    }
+
+    .launch-copy p {
+      margin-bottom: 0;
+      max-width: 34ch;
+      font-size: 18px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+
+    .launch-field {
+      display: grid;
+      gap: 8px;
+      width: min(100%, 420px);
+      padding: 16px 18px;
+      border-radius: 22px;
+      background: rgba(255, 252, 247, 0.72);
+      border: 1px solid rgba(47, 36, 25, 0.1);
+    }
+
+    .launch-field strong {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(47, 36, 25, 0.56);
+    }
+
+    .launch-field span {
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .launch-preview {
+      position: relative;
+      width: min(100%, 380px);
+      margin: 0 auto;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow-soft);
+      background: #d2b692;
+      min-height: 260px;
+      aspect-ratio: 1.08 / 1;
+    }
+
+    .launch-preview img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(0.9) contrast(1.02);
+      transform: scale(1.02);
+    }
+
+    .launch-preview::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(28, 20, 14, 0.04), rgba(28, 20, 14, 0.38)),
+        linear-gradient(120deg, rgba(255, 255, 255, 0.26), transparent 44%);
+    }
+
+    .launch-caption {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      z-index: 1;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(32, 22, 14, 0.72);
+      color: #fff6ea;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .experience-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .experience-title {
+      display: grid;
+      gap: 6px;
+    }
+
+    .experience-title p {
+      margin-bottom: 0;
+      color: var(--ink-soft);
+      font-size: 16px;
+    }
+
+    .workspace {
+      position: relative;
+      padding: clamp(12px, 2vw, 22px);
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(255, 248, 236, 0.72), rgba(247, 234, 211, 0.88));
+    }
+
+    .stage {
+      position: relative;
+      border-radius: 22px;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.14), transparent 48%),
+        #cab08d;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .painting-base,
+    .reveal-layer {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .painting-base {
+      position: relative;
+      z-index: 1;
+      background: #cab08d;
+    }
+
+    .reveal-layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 2;
+      cursor: none;
+    }
+
+    .brush {
+      position: absolute;
+      width: 84px;
+      height: 84px;
+      margin-left: -42px;
+      margin-top: -42px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      background:
+        radial-gradient(circle, rgba(255, 255, 255, 0.16) 0 26%, rgba(139, 75, 45, 0.2) 27% 52%, rgba(47, 36, 25, 0.55) 53% 56%, transparent 57%);
+      mix-blend-mode: multiply;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.24));
+    }
+
+    .hud {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(34, 26, 19, 0.78);
+      color: #fff7ec;
+      backdrop-filter: blur(10px);
+    }
+
+    .hud-copy {
+      min-width: 170px;
+    }
+
+    .hud-title {
+      margin: 0 0 4px;
+      font-size: 15px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .hud-text {
+      margin: 0;
+      font-size: 14px;
+      color: rgba(255, 247, 236, 0.8);
+    }
+
+    .progress-wrap {
+      flex: 1;
+    }
+
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 7px;
+      font-size: 14px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255, 248, 236, 0.18);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #d59153, #f4d28f);
+      box-shadow: 0 0 20px rgba(244, 210, 143, 0.4);
+      transition: width 0.18s ease-out;
+    }
+
+    .hint {
+      margin-top: 14px;
+      padding: 0 6px;
+      text-align: center;
+      font-size: 14px;
+      color: rgba(47, 36, 25, 0.78);
+    }
+
+    @media (min-width: 721px) {
+      #experienceScreen {
+        min-height: calc(100dvh - 64px);
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      #experienceScreen.hidden {
+        display: none;
+      }
+
+      #experienceScreen .experience-topbar {
+        margin-bottom: 0;
+      }
+
+      #experienceScreen .workspace {
+        min-height: 0;
+        height: 100%;
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto auto;
+        padding: 16px;
+      }
+
+      #experienceScreen .stage {
+        min-height: 0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #experienceScreen .hud {
+        margin-top: 12px;
+      }
+
+      #experienceScreen .hint {
+        margin-top: 10px;
+      }
+    }
+
+    .explore-shell {
+      display: grid;
+      gap: 18px;
+    }
+
+    .explore-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 0;
+    }
+
+    .explore-title {
+      display: grid;
+      gap: 6px;
+    }
+
+    .explore-title p {
+      margin-bottom: 0;
+      max-width: 760px;
+      color: var(--ink-soft);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .explore-workspace {
+      position: relative;
+      padding: clamp(14px, 2.3vw, 24px);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.58), transparent 34%),
+        linear-gradient(180deg, rgba(255, 249, 241, 0.76), rgba(235, 214, 186, 0.92));
+    }
+
+    .explore-stage {
+      position: relative;
+      min-height: 70vh;
+      padding: clamp(16px, 2vw, 26px);
+      border-radius: 30px;
+      overflow: hidden;
+      background:
+        linear-gradient(145deg, #7d5534, #4c2e1e 42%, #2c180f 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 242, 222, 0.14),
+        inset 0 0 0 1px rgba(55, 28, 13, 0.54),
+        0 28px 50px rgba(31, 18, 10, 0.22);
+    }
+
+    .explore-stage::before {
+      content: "";
+      position: absolute;
+      inset: clamp(8px, 1.2vw, 14px);
+      border-radius: 22px;
+      background:
+        linear-gradient(135deg, rgba(255, 219, 160, 0.42), rgba(122, 77, 42, 0.14) 34%, rgba(35, 18, 10, 0.28) 100%);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 230, 193, 0.3),
+        inset 0 0 0 10px rgba(117, 71, 38, 0.24);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .explore-viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 70vh;
+      overflow: hidden;
+      cursor: grab;
+      touch-action: none;
+      border-radius: 14px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 30%),
+        #9c7351;
+      box-shadow:
+        inset 0 0 0 1px rgba(79, 46, 25, 0.42),
+        inset 0 18px 32px rgba(255, 246, 232, 0.08);
+      z-index: 1;
+    }
+
+    .explore-viewport.dragging {
+      cursor: grabbing;
+    }
+
+    .explore-canvas {
+      position: absolute;
+      left: 0;
+      top: 0;
+      overflow: hidden;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+
+    .explore-canvas img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+      filter: saturate(0.96) contrast(1.02);
+    }
+
+    .hotspot {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      margin-left: -13px;
+      margin-top: -13px;
+      border-radius: 50%;
+      border: 0;
+      padding: 0;
+      background:
+        radial-gradient(circle at 35% 35%, rgba(255, 249, 240, 0.96), rgba(233, 172, 93, 0.94) 58%, rgba(133, 72, 38, 0.98));
+      box-shadow:
+        0 0 0 1px rgba(255, 244, 229, 0.48),
+        0 0 0 10px rgba(240, 178, 98, 0.12),
+        0 12px 24px rgba(17, 11, 8, 0.3);
+      z-index: 2;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+    }
+
+    .hotspot::before,
+    .hotspot::after {
+      content: "";
+      position: absolute;
+      inset: 50%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .hotspot::before {
+      width: 10px;
+      height: 10px;
+      background: rgba(77, 36, 14, 0.88);
+    }
+
+    .hotspot::after {
+      width: 100%;
+      height: 100%;
+      border: 1px solid rgba(252, 223, 174, 0.7);
+      animation: hotspotPulse 2.6s ease-out infinite;
+    }
+
+    .hotspot:hover,
+    .hotspot:focus-visible,
+    .hotspot.active {
+      transform: scale(1.12);
+      box-shadow:
+        0 0 0 1px rgba(255, 244, 229, 0.6),
+        0 0 0 14px rgba(240, 178, 98, 0.18),
+        0 18px 30px rgba(17, 11, 8, 0.35);
+      outline: none;
+    }
+
+    .explore-hud {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 16px;
+      align-items: center;
+    }
+
+    .zoom-panel {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 18px;
+      background: rgba(34, 26, 19, 0.78);
+      color: #fff7ec;
+      backdrop-filter: blur(10px);
+    }
+
+    .zoom-panel strong {
+      min-width: 58px;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .zoom-panel button {
+      min-width: 42px;
+      padding: 10px 14px;
+      background: rgba(255, 248, 236, 0.12);
+      color: inherit;
+      border: 1px solid rgba(255, 248, 236, 0.16);
+    }
+
+    .zoom-panel button:hover {
+      background: rgba(255, 248, 236, 0.2);
+    }
+
+    .zoom-meter {
+      min-width: 64px;
+      text-align: center;
+      font-size: 18px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .explore-note {
+      padding: 10px 14px;
+      border-radius: 18px;
+      background: rgba(255, 249, 241, 0.72);
+      border: 1px solid rgba(47, 36, 25, 0.08);
+      color: rgba(47, 36, 25, 0.76);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .narrative-shell {
+      min-height: calc(100dvh - 64px);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .narrative-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .narrative-title {
+      display: grid;
+      gap: 6px;
+    }
+
+    .narrative-title p {
+      margin-bottom: 0;
+      max-width: 720px;
+      color: var(--ink-soft);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .narrative-workspace {
+      display: grid;
+      place-items: center;
+      padding: clamp(14px, 2vw, 24px);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.5), transparent 28%),
+        linear-gradient(180deg, rgba(255, 248, 236, 0.82), rgba(235, 214, 186, 0.94));
+    }
+
+    .narrative-card {
+      width: min(100%, 820px);
+      cursor: default;
+      text-align: left;
+    }
+
+    .narrative-card.is-animating {
+      animation: narrativeCardIn 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .narrative-card:hover,
+    .narrative-card:focus-visible {
+      transform: none;
+      box-shadow: var(--shadow);
+      border-color: var(--line);
+    }
+
+    .narrative-card .launch-copy {
+      justify-items: stretch;
+      text-align: left;
+    }
+
+    .narrative-card .launch-copy h2,
+    .narrative-card .launch-copy p {
+      max-width: none;
+    }
+
+    .narrative-progress {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(255, 252, 247, 0.72);
+      border: 1px solid rgba(47, 36, 25, 0.08);
+      color: rgba(47, 36, 25, 0.76);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .narrative-progress[hidden] {
+      display: none;
+    }
+
+    .narrative-step {
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: rgba(47, 36, 25, 0.56);
+    }
+
+    .narrative-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .screen-transition-enter {
+      animation: screenFadeIn 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes screenFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes narrativeCardIn {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.985);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .explore-note {
+      display: grid;
+      gap: 10px;
+    }
+
+    .explore-note strong {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(47, 36, 25, 0.56);
+    }
+
+    .explore-note p {
+      margin: 0;
+    }
+
+    @media (min-width: 721px) {
+      #narrativeScreen {
+        min-height: calc(100dvh - 64px);
+        display: grid;
+      }
+
+      #narrativeScreen.hidden {
+        display: none;
+      }
+
+      #narrativeScreen .narrative-shell {
+        min-height: 0;
+        height: 100%;
+      }
+
+      #narrativeScreen .narrative-workspace {
+        min-height: 0;
+        height: 100%;
+        align-items: stretch;
+        padding: 16px;
+      }
+
+      #narrativeScreen .narrative-card {
+        min-height: 0;
+        height: 100%;
+        max-height: 100%;
+        padding: 18px;
+      }
+
+      #narrativeScreen .narrative-card .launch-copy {
+        height: 100%;
+        align-content: stretch;
+        grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+        gap: 12px;
+      }
+
+      #narrativeScreen .launch-preview {
+        width: min(100%, 300px);
+        min-height: 0;
+        aspect-ratio: 1.18 / 1;
+      }
+
+      #narrativeScreen .launch-copy h2 {
+        font-size: clamp(28px, 3vw, 38px);
+      }
+
+      #narrativeScreen .launch-copy p {
+        font-size: 17px;
+        line-height: 1.42;
+      }
+
+      #narrativeScreen .launch-field {
+        padding: 14px 16px;
+      }
+
+      #narrativeScreen .narrative-actions {
+        margin-top: 0;
+      }
+    }
+
+    .story-modal .modal-card {
+      overflow: hidden;
+      transform-origin: 50% 100%;
+    }
+
+    .story-modal .modal-card::before {
+      content: "";
+      position: absolute;
+      inset: -20% -10% auto;
+      height: 180px;
+      background: radial-gradient(circle at center, rgba(244, 206, 143, 0.34), transparent 66%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .story-modal.open .modal-card {
+      animation: storyModalIn 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    @keyframes hotspotPulse {
+      0% {
+        transform: translate(-50%, -50%) scale(0.82);
+        opacity: 0.8;
+      }
+
+      70% {
+        transform: translate(-50%, -50%) scale(1.8);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(1.8);
+        opacity: 0;
+      }
+    }
+
+    @keyframes storyModalIn {
+      0% {
+        opacity: 0;
+        transform: translateY(42px) scale(0.78) rotate(-4deg);
+      }
+
+      55% {
+        opacity: 1;
+        transform: translateY(-8px) scale(1.03) rotate(1deg);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0deg);
+      }
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font: inherit;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fff8ee;
+    }
+
+    .primary:hover {
+      background: var(--accent-deep);
+    }
+
+    .secondary {
+      background: var(--accent-soft);
+      color: var(--ink);
+    }
+
+    .ghost {
+      background: rgba(255, 249, 240, 0.64);
+      color: var(--ink);
+      border: 1px solid rgba(47, 36, 25, 0.12);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(32, 22, 14, 0.56);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      z-index: 1000;
+    }
+
+    .modal.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      width: min(680px, 100%);
+      padding: clamp(22px, 4vw, 34px);
+      border-radius: 28px;
+      background: var(--paper-strong);
+      box-shadow: 0 40px 90px rgba(20, 14, 8, 0.28);
+      border: 1px solid rgba(70, 47, 23, 0.1);
+      transform: translateY(18px) scale(0.98);
+      transition: transform 0.35s ease;
+      position: relative;
+      z-index: 1001;
+    }
+
+    .modal.open .modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-label {
+      margin: 0 0 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      color: rgba(47, 36, 25, 0.62);
+    }
+
+    .modal h2 {
+      margin: 0 0 14px;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1;
+      font-weight: 600;
+    }
+
+    .modal p {
+      margin: 0 0 12px;
+      font-size: 18px;
+      line-height: 1.55;
+      color: rgba(47, 36, 25, 0.88);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .sales-shell {
+      display: grid;
+      gap: 22px;
+      color: #2f2419;
+    }
+
+    .sales-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 249, 241, 0.82);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .sales-nav strong {
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .sales-nav-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .sales-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
+      gap: clamp(20px, 4vw, 42px);
+      align-items: stretch;
+      padding: clamp(26px, 4vw, 48px);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: rgba(255, 250, 243, 0.86);
+      box-shadow: var(--shadow);
+    }
+
+    .sales-hero h1 {
+      max-width: 13ch;
+      font-size: clamp(36px, 5vw, 62px);
+      line-height: 1;
+    }
+
+    .sales-hero-copy {
+      display: grid;
+      align-content: center;
+      gap: 18px;
+    }
+
+    .sales-hero-copy p {
+      margin: 0;
+      max-width: 680px;
+      font-size: 19px;
+      line-height: 1.58;
+      color: var(--ink-soft);
+    }
+
+    .sales-hero-gallery {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 12px;
+      min-height: 420px;
+    }
+
+    .sales-hero-gallery img {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      object-fit: cover;
+      border-radius: 16px;
+      border: 1px solid rgba(47, 36, 25, 0.1);
+      background: #d3b995;
+    }
+
+    .sales-hero-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .sales-section {
+      display: grid;
+      gap: 16px;
+      padding: clamp(20px, 3vw, 30px);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255, 249, 241, 0.78);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .sales-section-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-end;
+    }
+
+    .sales-section-header h2 {
+      margin: 0;
+      font-size: clamp(28px, 3vw, 40px);
+      line-height: 1.05;
+    }
+
+    .sales-section-header p {
+      margin: 0;
+      max-width: 650px;
+      color: var(--ink-soft);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .sales-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .art-card {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 14px;
+      padding: 14px;
+      border: 1px solid rgba(47, 36, 25, 0.1);
+      border-radius: 18px;
+      background: rgba(255, 253, 248, 0.76);
+      text-align: left;
+      color: inherit;
+      box-shadow: 0 12px 28px rgba(53, 35, 18, 0.08);
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .art-card:hover,
+    .art-card:focus-visible {
+      border-color: rgba(139, 75, 45, 0.32);
+      box-shadow: 0 18px 38px rgba(53, 35, 18, 0.13);
+      outline: none;
+    }
+
+    .art-card.sold {
+      background: rgba(239, 232, 219, 0.7);
+      color: rgba(47, 36, 25, 0.72);
+    }
+
+    .art-card.reserved {
+      border-color: rgba(125, 92, 43, 0.24);
+      background: rgba(255, 248, 233, 0.84);
+    }
+
+    .art-card-image {
+      display: grid;
+      place-items: center;
+      min-height: 280px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #d2b692;
+    }
+
+    .art-card-image img {
+      width: 100%;
+      height: 100%;
+      max-height: 360px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .art-card-body {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .art-card-body h3 {
+      margin: 0;
+      font-size: 23px;
+      line-height: 1.12;
+    }
+
+    .art-card-meta,
+    .art-card-description {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .art-card-footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .art-card-action {
+      padding: 9px 12px;
+      font-size: 14px;
+    }
+
+    .sales-detail-modal-card {
+      width: min(1040px, 100%);
+      max-height: min(860px, calc(100vh - 40px));
+      overflow: auto;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(139, 75, 45, 0.12);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .status-pill.available {
+      background: rgba(74, 118, 72, 0.14);
+      color: #345b31;
+    }
+
+    .status-pill.reserved {
+      background: rgba(156, 113, 39, 0.16);
+      color: #714d16;
+    }
+
+    .status-pill.sold {
+      background: rgba(47, 36, 25, 0.12);
+      color: rgba(47, 36, 25, 0.66);
+    }
+
+    .price-label {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .sales-detail {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .sales-detail img {
+      width: 100%;
+      max-height: 560px;
+      object-fit: contain;
+      border-radius: 16px;
+      background: #d2b692;
+      border: 1px solid rgba(47, 36, 25, 0.1);
+    }
+
+    .sales-detail-copy {
+      display: grid;
+      gap: 12px;
+    }
+
+    .sales-detail-copy h3 {
+      margin: 0;
+      font-size: clamp(28px, 3vw, 42px);
+      line-height: 1.05;
+    }
+
+    .sales-detail-copy p {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .sales-specs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .sales-spec {
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255, 253, 248, 0.74);
+      border: 1px solid rgba(47, 36, 25, 0.08);
+    }
+
+    .sales-spec strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(47, 36, 25, 0.56);
+    }
+
+    .series-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: 18px;
+    }
+
+    .series-panel,
+    .legal-panel {
+      padding: 18px;
+      border-radius: 16px;
+      background: rgba(255, 253, 248, 0.74);
+      border: 1px solid rgba(47, 36, 25, 0.08);
+    }
+
+    .series-panel p,
+    .legal-panel p {
+      margin: 0;
+      color: var(--ink-soft);
+      line-height: 1.55;
+    }
+
+    .series-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .series-work {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255, 250, 243, 0.72);
+      border: 1px solid rgba(47, 36, 25, 0.08);
+      font-size: 15px;
+    }
+
+    .sales-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .sales-field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .sales-field.full {
+      grid-column: 1 / -1;
+    }
+
+    .sales-field label,
+    .sales-consent {
+      font-size: 15px;
+      line-height: 1.45;
+      color: rgba(47, 36, 25, 0.8);
+    }
+
+    .sales-field input,
+    .sales-field select,
+    .sales-field textarea {
+      width: 100%;
+      border: 1px solid rgba(47, 36, 25, 0.16);
+      border-radius: 12px;
+      padding: 12px 13px;
+      background: rgba(255, 253, 248, 0.92);
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .sales-field textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .sales-field input:focus,
+    .sales-field select:focus,
+    .sales-field textarea:focus {
+      outline: 2px solid rgba(139, 75, 45, 0.28);
+      border-color: rgba(139, 75, 45, 0.42);
+    }
+
+    .sales-consent {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 9px;
+      align-items: start;
+    }
+
+    .sales-consent input {
+      margin-top: 3px;
+    }
+
+    .sales-link {
+      color: var(--accent-deep);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    .sales-form-note {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .sales-message {
+      min-height: 24px;
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    .sales-message.error {
+      color: #8a2c1e;
+    }
+
+    .sales-message.success {
+      color: #345b31;
+    }
+
+    .legal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    @media (max-width: 960px) {
+      .hero-grid,
+      .launch-card,
+      .launch-grid,
+      .sales-hero,
+      .sales-detail,
+      .series-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .fact-grid,
+      .sales-grid,
+      .legal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(100vw - 20px, 1200px);
+        padding-top: 18px;
+      }
+
+      .experience-topbar,
+      .hud,
+      .explore-topbar,
+      .explore-hud,
+      .sales-nav,
+      .sales-section-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .sales-nav-actions,
+      .sales-form-grid,
+      .sales-specs {
+        grid-template-columns: 1fr;
+      }
+
+      .sales-hero-gallery {
+        grid-template-columns: 1fr;
+        min-height: 0;
+      }
+
+      .sales-hero-stack {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .hud-copy {
+        min-width: 0;
+      }
+
+      .explore-viewport,
+      .explore-stage {
+        min-height: 62vh;
+      }
+
+      .brush {
+        width: 72px;
+        height: 72px;
+        margin-left: -36px;
+        margin-top: -36px;
+      }
+
+      .launch-card,
+      .hero-panel,
+      .sales-hero,
+      .sales-section {
+        border-radius: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="screen" id="landingScreen">
+      <div class="landing-layout">
+        <section class="hero-panel">
+          <div class="hero-grid">
+            <div>
+              <div class="eyebrow">Прототип музея Кугача</div>
+              <h1>Войти в картину и вернуть ей цвет</h1>
+              <p class="lead">
+                Стартовая страница теперь подводит пользователя к интерактиву: коротко рассказывает
+                о живописи Кугача, задаёт музейное настроение и даёт понятную точку входа в опыт.
+              </p>
+            </div>
+            <div class="hero-side">
+              <div class="quote-card">
+                <p>
+                  Мир Кугача держится на тепле повседневности: в его работах важны свет, человеческое
+                  присутствие и ощущение живой, узнаваемой среды.
+                </p>
+              </div>
+              <div class="button-row">
+                <button class="primary" id="heroStartButton" type="button">Перейти к интерактиву</button>
+                <button class="ghost" id="heroScrollButton" type="button">Посмотреть карточку</button>
+                <button class="secondary" id="heroSalesButton" type="button">Работы для покупки</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="launch-grid">
+          <button class="launch-card" id="launchCard" type="button" aria-label="Открыть интерактив раскрашивания">
+            <div class="launch-copy">
+              <div class="launch-meta">
+                <span class="meta-pill">Интерактив</span>
+                <span class="meta-pill">1 картина</span>
+                <span class="meta-pill">1-2 минуты</span>
+              </div>
+              <h2>Возвращение цвета</h2>
+              <div class="launch-preview" aria-hidden="true">
+                <img src="src/Kugach_picture_1.png" alt="">
+                <div class="launch-caption">
+                  Миниатюра картины и быстрый переход в экран раскрашивания.
+                </div>
+              </div>
+              <p>
+                Проведите по картине, чтобы проявить живопись из монохромного слоя. Механика мягкая:
+                прогресс идёт быстро, а финальное раскрытие завершает композицию автоматически.
+              </p>
+              <div class="launch-field">
+                <strong>Описание интерактива</strong>
+                <span>
+                  Поле для текста внутри карточки: короткая подводка к сценарию и обещание того, что
+                  пользователь увидит после входа.
+                </span>
+              </div>
+            </div>
+          </button>
+
+          <button class="launch-card" id="launchExploreCard" type="button" aria-label="Открыть интерактив исследования картины">
+            <div class="launch-copy">
+              <div class="launch-meta">
+                <span class="meta-pill">Новый сценарий</span>
+                <span class="meta-pill">Зум и точки</span>
+                <span class="meta-pill">Свободный просмотр</span>
+              </div>
+              <h2>Приблизить детали</h2>
+              <div class="launch-preview" aria-hidden="true">
+                <img src="src/Kugach_picture_2.png" alt="">
+                <div class="launch-caption">
+                  Отдельный переход в экран исследования с приближением и всплывающими историями.
+                </div>
+              </div>
+              <p>
+                Исследуйте вторую картину в режиме просмотра: приближайте полотно, нажимайте на точки
+                интереса и читайте небольшие пояснения к заметным фрагментам.
+              </p>
+              <div class="launch-field">
+                <strong>Описание интерактива</strong>
+                <span>
+                  При выборе точки вид плавно подлетает к детали, а текст появляется во всплывающем
+                  окне с более выразительной анимацией.
+                </span>
+              </div>
+            </div>
+          </button>
+
+          <button class="launch-card" id="launchSalesCard" type="button" aria-label="Открыть страницу работ для покупки">
+            <div class="launch-copy">
+              <div class="launch-meta">
+                <span class="meta-pill">Заявочная галерея</span>
+                <span class="meta-pill">5 работ</span>
+                <span class="meta-pill">Без онлайн-оплаты</span>
+              </div>
+              <h2>Работы для покупки</h2>
+              <div class="launch-preview" aria-hidden="true">
+                <img src="src/for_sales/DOR_3518.jpg" alt="">
+                <div class="launch-caption">
+                  Отдельная спокойная страница с каталогом, статусами, ценами и формой заявки.
+                </div>
+              </div>
+              <p>
+                Этот переход отделяет коммерческий сценарий от интерактивного опыта: здесь можно посмотреть доступные
+                работы Ивана Кугача, открыть детальное описание и подготовить заявку на связь.
+              </p>
+              <div class="launch-field">
+                <strong>Покупка через заявку</strong>
+                <span>
+                  MVP не бронирует и не принимает оплату автоматически. Наличие, цена и условия передачи подтверждаются после связи.
+                </span>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <section class="fact-grid" aria-label="Краткое описание">
+          <article class="fact-card">
+            <strong>О художнике</strong>
+            <p>
+              Иван Кугач известен вниманием к тихим сюжетам, человеческому масштабу и мягкой
+              живописной атмосфере.
+            </p>
+          </article>
+          <article class="fact-card">
+            <strong>О прототипе</strong>
+            <p>
+              Пользователь не просто смотрит на произведение, а постепенно раскрывает его цвет,
+              словно участвуя в деликатной реставрации.
+            </p>
+          </article>
+          <article class="fact-card">
+            <strong>О входе</strong>
+            <p>
+              Основной переход оформлен как карточка с текстовым полем и миниатюрой картины, чтобы
+              сразу было ясно, что ждёт внутри.
+            </p>
+          </article>
+        </section>
+      </div>
+    </section>
+
+    <section class="screen hidden" id="experienceScreen">
+      <div class="experience-topbar">
+        <div class="experience-title">
+          <div class="eyebrow">Интерактивный прототип</div>
+          <p>Проведите по полотну, чтобы вернуть цвет и открыть историю картины.</p>
+        </div>
+        <div class="button-row">
+          <button class="ghost" id="backToLandingButton" type="button">На главную</button>
+        </div>
+      </div>
+
+      <section class="workspace">
+        <div class="stage" id="stage">
+          <canvas class="painting-base" id="baseCanvas"></canvas>
+          <img id="colorImage" src="src/Kugach_picture_1.png" alt="Картина" hidden>
+          <canvas class="reveal-layer" id="revealCanvas"></canvas>
+          <div class="brush" id="brush"></div>
+        </div>
+        <div class="hud">
+          <div class="hud-copy">
+            <p class="hud-title">Возвращение цвета</p>
+            <p class="hud-text">Большая мягкая кисть и ускоренное раскрытие рядом с мазком.</p>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-row">
+              <span>Прогресс</span>
+              <strong id="progressValue">0%</strong>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+          </div>
+        </div>
+        <p class="hint">Зажмите и ведите курсором или пальцем по картине.</p>
+      </section>
+    </section>
+
+    <section class="screen hidden" id="narrativeScreen">
+      <div class="narrative-shell">
+        <div class="narrative-topbar">
+          <div class="narrative-title">
+            <div class="eyebrow" id="narrativeSequenceEyebrow">Сюжетная линия</div>
+            <p id="narrativeSequenceLead">
+              Здесь появятся сюжетные вставки, которые будут связывать интерактивы в единое прохождение.
+            </p>
+          </div>
+          <div class="button-row">
+            <button class="ghost" id="narrativeExitButton" type="button">На главную</button>
+          </div>
+        </div>
+
+        <section class="workspace narrative-workspace">
+          <article class="launch-card narrative-card" aria-live="polite">
+            <div class="launch-copy">
+              <div class="launch-meta" id="narrativeMeta" hidden></div>
+              <h2 id="narrativeTitle">Сюжетное окно</h2>
+              <div class="launch-preview">
+                <img id="narrativeImage" src="src/Kugach_picture_1.png" alt="Иллюстрация сюжетной вставки">
+                <div class="launch-caption" id="narrativeCaption">
+                  Временная подпись для изображения внутри сюжетной карточки.
+                </div>
+              </div>
+              <p id="narrativeText">
+                Здесь будет основной текст сюжетной вставки: ввод в контекст, кураторская подводка
+                или связка между интерактивами.
+              </p>
+              <div class="launch-field">
+                <strong>Что происходит сейчас</strong>
+                <span id="narrativeSecondaryText">
+                  Временная подводка для дополнительного текста. На этом этапе она нужна как
+                  структурный слот под будущий narrative-контент.
+                </span>
+              </div>
+              <div class="narrative-progress" hidden>
+                <span class="narrative-step" id="narrativeStep">Окно 1 из 3</span>
+                <span id="narrativeProgressText">Подготовка первого сюжетного блока.</span>
+              </div>
+              <div class="narrative-actions">
+                <button class="ghost" id="narrativePrevButton" type="button">Назад</button>
+                <div class="button-row">
+                  <button class="secondary" id="narrativeSkipButton" type="button">Пропустить блок</button>
+                  <button class="primary" id="narrativeNextButton" type="button">Далее</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+      </div>
+    </section>
+
+    <section class="screen hidden" id="exploreScreen">
+      <div class="explore-shell">
+        <div class="explore-topbar">
+          <div class="explore-title">
+            <div class="eyebrow">Интерактив исследования</div>
+            <p>
+              Приближайте изображение, перемещайтесь по полотну и открывайте точки взаимодействия.
+              При выборе точки сцена автоматически фокусируется на нужной детали.
+            </p>
+          </div>
+          <div class="button-row">
+            <button class="ghost" id="backFromExploreButton" type="button">На главную</button>
+          </div>
+        </div>
+
+        <section class="workspace explore-workspace">
+          <div class="explore-stage">
+            <div class="explore-viewport" id="exploreViewport" aria-label="Область просмотра картины">
+              <div class="explore-canvas" id="exploreCanvas">
+                <img id="exploreImage" src="src/Kugach_picture_2.png" alt="Картина с точками взаимодействия" draggable="false">
+              </div>
+            </div>
+          </div>
+
+          <div class="explore-hud">
+            <div class="zoom-panel" aria-label="Управление масштабом">
+              <strong>Масштаб</strong>
+              <button class="secondary" id="zoomOutButton" type="button" aria-label="Уменьшить масштаб">−</button>
+              <div class="zoom-meter" id="zoomValue">100%</div>
+              <button class="secondary" id="zoomInButton" type="button" aria-label="Увеличить масштаб">+</button>
+              <button class="ghost" id="zoomResetButton" type="button">Сбросить</button>
+            </div>
+
+            <div class="explore-note">
+              <strong>Прогресс исследования</strong>
+              <p id="exploreProgressText">
+                Перетаскивайте картину мышью или пальцем. Откройте все точки, чтобы разблокировать финальную сюжетную вставку.
+              </p>
+              <button class="primary" id="openFinaleButton" type="button" hidden>Открыть финальную вставку</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="screen hidden" id="salesScreen">
+      <div class="sales-shell">
+        <nav class="sales-nav" aria-label="Навигация страницы продаж">
+          <strong>Иван Кугач: работы для покупки</strong>
+          <div class="sales-nav-actions">
+            <button class="ghost" id="salesBackButton" type="button">К первому экрану</button>
+            <button class="secondary" id="salesInteractiveButton" type="button">Перейти к интерактиву</button>
+          </div>
+        </nav>
+
+        <section class="sales-hero" aria-labelledby="salesTitle">
+          <div class="sales-hero-copy">
+            <div class="eyebrow">Галерея работ</div>
+            <h1 id="salesTitle">Работы Ивана Кугача</h1>
+            <p>
+              Здесь вы можете приобрести работы Ивана Кугача, узнать о коллекциях его работ и связаться с художником
+              по интересующим вас вопросам.
+            </p>
+            <div class="button-row">
+              <button class="primary" id="salesCatalogButton" type="button">Смотреть каталог</button>
+              <button class="ghost" id="salesFormJumpButton" type="button">Оставить заявку</button>
+            </div>
+          </div>
+          <div class="sales-hero-gallery" aria-hidden="true">
+            <img src="src/for_sales/DOR_3571.jpg" alt="">
+            <div class="sales-hero-stack">
+              <img src="src/for_sales/DSC_8578 1.jpg" alt="">
+              <img src="src/for_sales/DSC_8602 1.jpg" alt="">
+            </div>
+          </div>
+        </section>
+
+        <section class="sales-section" aria-labelledby="salesArtistTitle">
+          <div class="sales-section-header">
+            <div>
+              <div class="eyebrow">О художнике</div>
+              <h2 id="salesArtistTitle">Тихие сюжеты и человеческий масштаб</h2>
+            </div>
+            <p>
+              Иван Кугач представлен здесь через небольшой рабочий каталог. Тексты в MVP описывают настроение и
+              покупательский сценарий, а точные атрибуции, годы и размеры можно уточнить в данных позже.
+            </p>
+          </div>
+        </section>
+
+        <section class="sales-section" id="salesCatalogSection" aria-labelledby="salesCatalogTitle">
+          <div class="sales-section-header">
+            <div>
+              <div class="eyebrow">Каталог</div>
+              <h2 id="salesCatalogTitle">Доступные и зарезервированные работы</h2>
+            </div>
+            <p>
+              Карточки показывают цену, статус и краткое описание. Нажатие на карточку открывает детальный просмотр,
+              а кнопка внутри карточки сразу подставляет выбранную работу в форму заявки.
+            </p>
+          </div>
+          <div class="sales-grid" id="salesAvailableGrid"></div>
+        </section>
+
+        <section class="sales-section" id="salesSeriesSection" aria-labelledby="salesSeriesTitle">
+          <div class="sales-section-header">
+            <div>
+              <div class="eyebrow">Страница серии</div>
+              <h2 id="salesSeriesTitle">Демонстрационная серия: требует замены названия</h2>
+            </div>
+            <p>
+              Это заложенная структура страницы серии внутри MVP: описание, список работ, цены, статусы и переход к заявке.
+            </p>
+          </div>
+          <div class="series-layout">
+            <div class="series-panel">
+              <p>
+                Временное описание серии объединяет работы с камерным, бытовым и пейзажным настроением. После уточнения
+                данных этот блок можно заменить на реальное название серии и кураторский текст.
+              </p>
+            </div>
+            <div class="series-list" id="salesSeriesList"></div>
+          </div>
+        </section>
+
+        <section class="sales-section" aria-labelledby="salesArchiveTitle">
+          <div class="sales-section-header">
+            <div>
+              <div class="eyebrow">Архив</div>
+              <h2 id="salesArchiveTitle">Проданные работы</h2>
+            </div>
+            <p>
+              Архив показывает уже недоступные работы отдельно. Для них используется CTA про похожие работы или серию,
+              а не покупка конкретного произведения.
+            </p>
+          </div>
+          <div class="sales-grid" id="salesArchiveGrid"></div>
+        </section>
+
+        <section class="sales-section" id="salesFormSection" aria-labelledby="salesFormTitle">
+          <div class="sales-section-header">
+            <div>
+              <div class="eyebrow">Форма заявки</div>
+              <h2 id="salesFormTitle">Запросить покупку или уточнить цену</h2>
+            </div>
+            <p>
+              Форма работает как frontend-прототип: проверяет обязательные поля и показывает подтверждение подготовки заявки.
+            </p>
+          </div>
+          <form id="salesInquiryForm" novalidate>
+            <div class="sales-form-grid">
+              <div class="sales-field">
+                <label for="salesName">Имя *</label>
+                <input id="salesName" name="name" autocomplete="name" required>
+              </div>
+              <div class="sales-field">
+                <label for="salesEmail">Email</label>
+                <input id="salesEmail" name="email" type="email" autocomplete="email">
+              </div>
+              <div class="sales-field">
+                <label for="salesPhone">Телефон</label>
+                <input id="salesPhone" name="phone" autocomplete="tel">
+              </div>
+              <div class="sales-field">
+                <label for="salesWorkSelect">Выбранная работа *</label>
+                <select id="salesWorkSelect" name="work" required></select>
+              </div>
+              <div class="sales-field full">
+                <label for="salesComment">Комментарий</label>
+                <textarea id="salesComment" name="comment" placeholder="Например: хочу уточнить цену, наличие, условия передачи или похожие работы."></textarea>
+              </div>
+            </div>
+            <p class="sales-form-note">
+              Заявка не является автоматическим резервом или оплатой. Наличие, цена и условия передачи подтверждаются после связи.
+            </p>
+            <label class="sales-consent">
+              <input id="salesConsent" name="consent" type="checkbox">
+              <span>
+                Я согласен на обработку персональных данных и ознакомлен с
+                <a class="sales-link" href="#salesPrivacy">политикой конфиденциальности</a>.
+              </span>
+            </label>
+            <div class="button-row">
+              <button class="primary" type="submit" data-analytics="sales-form-submit">Подготовить заявку</button>
+              <button class="ghost" id="salesResetButton" type="button">Очистить форму</button>
+            </div>
+            <p class="sales-message" id="salesFormMessage" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <section class="sales-section" aria-labelledby="salesLegalTitle">
+          <div class="sales-section-header">
+            <div>
+              <div class="eyebrow">Юридический минимум</div>
+              <h2 id="salesLegalTitle">Прототипные тексты для проверки</h2>
+            </div>
+            <p>
+              Эти блоки нужны для MVP и требуют финальной юридической проверки перед реальной публикацией.
+            </p>
+          </div>
+          <div class="legal-grid">
+            <article class="legal-panel" id="salesPrivacy">
+              <h3>Политика конфиденциальности</h3>
+              <p>
+                Данные из формы используются только для связи по выбранной работе Ивана Кугача. Текст является прототипом
+                и требует юридической проверки.
+              </p>
+            </article>
+            <article class="legal-panel">
+              <h3>Согласие на обработку данных</h3>
+              <p>
+                Отправляя форму, пользователь подтверждает согласие на обработку имени, контактов, выбранной работы и
+                комментария для ответа на заявку.
+              </p>
+            </article>
+            <article class="legal-panel">
+              <h3>Порядок приобретения</h3>
+              <p>
+                Заявка запускает личное уточнение наличия, цены и условий передачи. Онлайн-оплата, корзина и автоматический
+                резерв в MVP не реализованы.
+              </p>
+            </article>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="infoModal" aria-hidden="true">
+    <div class="modal-card">
+      <p class="modal-label">Картина раскрыта</p>
+      <h2>Краткая история полотна</h2>
+      <p>
+        Здесь можно показать информацию о картине: автора, название, год создания и короткий
+        рассказ о сюжете или месте этой работы в творчестве художника.
+      </p>
+      <p>
+        В прототипе текст универсальный, но блок уже готов для замены на реальные музейные данные.
+      </p>
+      <div class="modal-actions">
+        <button class="primary" id="continueJourneyButton" type="button">Продолжить историю</button>
+        <button class="primary" id="restartButton" type="button">Раскрасить ещё раз</button>
+        <button class="secondary" id="closeButton" type="button">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal story-modal" id="storyModal" aria-hidden="true">
+    <div class="modal-card">
+      <p class="modal-label" id="storyModalLabel">Точка исследования</p>
+      <h2 id="storyModalTitle">Деталь картины</h2>
+      <p id="storyModalText">
+        Здесь будет текст о выбранной зоне картины: краткий визуальный комментарий, историческая
+        справка или кураторская подводка.
+      </p>
+      <div class="modal-actions">
+        <button class="primary" id="storyCloseButton" type="button">Продолжить просмотр</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="exploreCompletionModal" aria-hidden="true">
+    <div class="modal-card">
+      <p class="modal-label">Исследование завершено</p>
+      <h2>Все точки уже открыты</h2>
+      <p>
+        Вы можете остаться в этом экране и дальше рассматривать картину в свободном режиме
+        или перейти к последнему блоку истории.
+      </p>
+      <div class="modal-actions">
+        <button class="secondary" id="stayInExploreButton" type="button">Остаться у картины</button>
+        <button class="primary" id="goToFinaleButton" type="button">К финальному блоку</button>
+        <button class="ghost" id="goToSalesFromExploreButton" type="button">Работы для покупки</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="salesDetailModal" aria-hidden="true">
+    <div class="modal-card sales-detail-modal-card">
+      <p class="modal-label">Детальный просмотр</p>
+      <h2 id="salesDetailTitle">Выбранная работа</h2>
+      <p id="salesDetailHint">Описание, статус и параметры выбранной работы.</p>
+      <div class="sales-detail" id="salesDetail"></div>
+      <div class="modal-actions">
+        <button class="secondary" id="salesDetailCloseButton" type="button">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="salesOrderModal" aria-hidden="true">
+    <div class="modal-card sales-detail-modal-card">
+      <p class="modal-label">Форма заказа</p>
+      <h2 id="salesOrderTitle">Запросить покупку</h2>
+      <p id="salesOrderHint">
+        Заполните контакты, и заявка будет подготовлена внутри прототипа.
+      </p>
+      <form id="salesOrderForm" novalidate>
+        <div class="sales-form-grid">
+          <div class="sales-field">
+            <label for="salesOrderName">Имя *</label>
+            <input id="salesOrderName" name="name" autocomplete="name" required>
+          </div>
+          <div class="sales-field">
+            <label for="salesOrderEmail">Email</label>
+            <input id="salesOrderEmail" name="email" type="email" autocomplete="email">
+          </div>
+          <div class="sales-field">
+            <label for="salesOrderPhone">Телефон</label>
+            <input id="salesOrderPhone" name="phone" autocomplete="tel">
+          </div>
+          <div class="sales-field">
+            <label for="salesOrderWorkSelect">Выбранная работа *</label>
+            <select id="salesOrderWorkSelect" name="work" required></select>
+          </div>
+          <div class="sales-field full">
+            <label for="salesOrderComment">Комментарий</label>
+            <textarea id="salesOrderComment" name="comment" placeholder="Например: хочу уточнить цену, наличие, условия передачи или похожие работы."></textarea>
+          </div>
+        </div>
+        <p class="sales-form-note">
+          Заявка не является автоматическим резервом или оплатой. Наличие, цена и условия передачи подтверждаются после связи.
+        </p>
+        <label class="sales-consent">
+          <input id="salesOrderConsent" name="consent" type="checkbox">
+          <span>
+            Я согласен на обработку персональных данных и ознакомлен с
+            <a class="sales-link" href="#salesPrivacy">политикой конфиденциальности</a>.
+          </span>
+        </label>
+        <div class="modal-actions">
+          <button class="primary" type="submit" data-analytics="sales-order-modal-submit">Подготовить заявку</button>
+          <button class="secondary" id="salesOrderCloseButton" type="button">Закрыть</button>
+        </div>
+        <p class="sales-message" id="salesOrderMessage" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const ART_BOUNDS = {
+      x: 0,
+      y: 0,
+      width: 579,
+      height: 480
+    };
+
+    const landingScreen = document.getElementById("landingScreen");
+    const experienceScreen = document.getElementById("experienceScreen");
+    const narrativeScreen = document.getElementById("narrativeScreen");
+    const exploreScreen = document.getElementById("exploreScreen");
+    const launchCard = document.getElementById("launchCard");
+    const launchExploreCard = document.getElementById("launchExploreCard");
+    const heroStartButton = document.getElementById("heroStartButton");
+    const heroScrollButton = document.getElementById("heroScrollButton");
+    const backToLandingButton = document.getElementById("backToLandingButton");
+    const backFromExploreButton = document.getElementById("backFromExploreButton");
+    const colorImage = document.getElementById("colorImage");
+    const baseCanvas = document.getElementById("baseCanvas");
+    const revealCanvas = document.getElementById("revealCanvas");
+    const stage = document.getElementById("stage");
+    const brush = document.getElementById("brush");
+    const progressFill = document.getElementById("progressFill");
+    const progressValue = document.getElementById("progressValue");
+    const infoModal = document.getElementById("infoModal");
+    const continueJourneyButton = document.getElementById("continueJourneyButton");
+    const restartButton = document.getElementById("restartButton");
+    const closeButton = document.getElementById("closeButton");
+    const exploreViewport = document.getElementById("exploreViewport");
+    const exploreCanvas = document.getElementById("exploreCanvas");
+    const exploreImage = document.getElementById("exploreImage");
+    const zoomOutButton = document.getElementById("zoomOutButton");
+    const zoomInButton = document.getElementById("zoomInButton");
+    const zoomResetButton = document.getElementById("zoomResetButton");
+    const zoomValue = document.getElementById("zoomValue");
+    const exploreProgressText = document.getElementById("exploreProgressText");
+    const openFinaleButton = document.getElementById("openFinaleButton");
+    const narrativeSequenceEyebrow = document.getElementById("narrativeSequenceEyebrow");
+    const narrativeSequenceLead = document.getElementById("narrativeSequenceLead");
+    const narrativeMeta = document.getElementById("narrativeMeta");
+    const narrativeCard = document.querySelector(".narrative-card");
+    const narrativeTitle = document.getElementById("narrativeTitle");
+    const narrativeImage = document.getElementById("narrativeImage");
+    const narrativeCaption = document.getElementById("narrativeCaption");
+    const narrativeText = document.getElementById("narrativeText");
+    const narrativeSecondaryText = document.getElementById("narrativeSecondaryText");
+    const narrativeStep = document.getElementById("narrativeStep");
+    const narrativeProgressText = document.getElementById("narrativeProgressText");
+    const narrativePrevButton = document.getElementById("narrativePrevButton");
+    const narrativeNextButton = document.getElementById("narrativeNextButton");
+    const narrativeSkipButton = document.getElementById("narrativeSkipButton");
+    const narrativeExitButton = document.getElementById("narrativeExitButton");
+    const storyModal = document.getElementById("storyModal");
+    const storyModalLabel = document.getElementById("storyModalLabel");
+    const storyModalTitle = document.getElementById("storyModalTitle");
+    const storyModalText = document.getElementById("storyModalText");
+    const storyCloseButton = document.getElementById("storyCloseButton");
+    const exploreCompletionModal = document.getElementById("exploreCompletionModal");
+    const stayInExploreButton = document.getElementById("stayInExploreButton");
+    const goToFinaleButton = document.getElementById("goToFinaleButton");
+    const goToSalesFromExploreButton = document.getElementById("goToSalesFromExploreButton");
+    const salesScreen = document.getElementById("salesScreen");
+    const heroSalesButton = document.getElementById("heroSalesButton");
+    const launchSalesCard = document.getElementById("launchSalesCard");
+    const salesBackButton = document.getElementById("salesBackButton");
+    const salesInteractiveButton = document.getElementById("salesInteractiveButton");
+    const salesCatalogButton = document.getElementById("salesCatalogButton");
+    const salesFormJumpButton = document.getElementById("salesFormJumpButton");
+    const salesAvailableGrid = document.getElementById("salesAvailableGrid");
+    const salesArchiveGrid = document.getElementById("salesArchiveGrid");
+    const salesSeriesList = document.getElementById("salesSeriesList");
+    const salesDetailModal = document.getElementById("salesDetailModal");
+    const salesDetailCloseButton = document.getElementById("salesDetailCloseButton");
+    const salesDetail = document.getElementById("salesDetail");
+    const salesDetailHint = document.getElementById("salesDetailHint");
+    const salesOrderModal = document.getElementById("salesOrderModal");
+    const salesOrderTitle = document.getElementById("salesOrderTitle");
+    const salesOrderHint = document.getElementById("salesOrderHint");
+    const salesOrderForm = document.getElementById("salesOrderForm");
+    const salesOrderName = document.getElementById("salesOrderName");
+    const salesOrderEmail = document.getElementById("salesOrderEmail");
+    const salesOrderPhone = document.getElementById("salesOrderPhone");
+    const salesOrderWorkSelect = document.getElementById("salesOrderWorkSelect");
+    const salesOrderComment = document.getElementById("salesOrderComment");
+    const salesOrderConsent = document.getElementById("salesOrderConsent");
+    const salesOrderCloseButton = document.getElementById("salesOrderCloseButton");
+    const salesOrderMessage = document.getElementById("salesOrderMessage");
+    const salesInquiryForm = document.getElementById("salesInquiryForm");
+    const salesName = document.getElementById("salesName");
+    const salesEmail = document.getElementById("salesEmail");
+    const salesPhone = document.getElementById("salesPhone");
+    const salesWorkSelect = document.getElementById("salesWorkSelect");
+    const salesComment = document.getElementById("salesComment");
+    const salesConsent = document.getElementById("salesConsent");
+    const salesResetButton = document.getElementById("salesResetButton");
+    const salesFormMessage = document.getElementById("salesFormMessage");
+
+    const baseCtx = baseCanvas.getContext("2d");
+    const colorCtx = revealCanvas.getContext("2d", { willReadFrequently: true });
+    const offscreenCanvas = document.createElement("canvas");
+    const offscreenCtx = offscreenCanvas.getContext("2d", { willReadFrequently: true });
+
+    const BRUSH_RADIUS = 64;
+    const SPLASH_RADIUS = 110;
+    const COMPLETION_TARGET = 82;
+    const AUTO_REVEAL_DURATION = 2100;
+    const ZOOM_STEP = 0.14;
+    const SALES_WORKS = [
+      {
+        id: "dor-3518",
+        title: "Название уточняется",
+        year: "Год уточняется",
+        series: "Демонстрационная серия: требует замены названия",
+        image: "src/for_sales/DOR_3518.jpg",
+        technique: "Техника уточняется",
+        size: "Размер уточняется",
+        priceType: "fixed",
+        price: "420 000 ₽",
+        availability: "available",
+        shortDescription: "Работа из стартовой подборки для заявочной галереи.",
+        fullDescription: "Временное описание фиксирует место произведения в MVP-каталоге. После уточнения атрибуции здесь появится реальный сюжет, техника, размер и история работы Ивана Кугача."
+      },
+      {
+        id: "dor-3571",
+        title: "Название уточняется",
+        year: "Год уточняется",
+        series: "Демонстрационная серия: требует замены названия",
+        image: "src/for_sales/DOR_3571.jpg",
+        technique: "Техника уточняется",
+        size: "Размер уточняется",
+        priceType: "request",
+        price: "",
+        availability: "available",
+        shortDescription: "Доступная работа с ценой по запросу.",
+        fullDescription: "Эта карточка демонстрирует сценарий уточнения цены. Пользователь может открыть детальный просмотр и отправить заявку, не воспринимая страницу как интернет-магазин с мгновенной оплатой."
+      },
+      {
+        id: "dsc-8578",
+        title: "Название уточняется",
+        year: "Год уточняется",
+        series: "Демонстрационная серия: требует замены названия",
+        image: "src/for_sales/DSC_8578 1.jpg",
+        technique: "Техника уточняется",
+        size: "Размер уточняется",
+        priceType: "fixed",
+        price: "360 000 ₽",
+        availability: "reserved",
+        shortDescription: "Зарезервированная работа остается видимой, но не выглядит свободной для покупки.",
+        fullDescription: "Статус резерва помогает показать реальное состояние каталога. Форма может принять вопрос о сроках, похожих работах или серии, но не обещает автоматическое снятие резерва."
+      },
+      {
+        id: "dsc-8599",
+        title: "Название уточняется",
+        year: "Год уточняется",
+        series: "Демонстрационная серия: требует замены названия",
+        image: "src/for_sales/DSC_8599 1.jpg",
+        technique: "Техника уточняется",
+        size: "Размер уточняется",
+        priceType: "request",
+        price: "",
+        availability: "sold",
+        shortDescription: "Проданная работа вынесена в архив и не предлагает покупку конкретного произведения.",
+        fullDescription: "Архивная карточка помогает понять диапазон творчества Ивана Кугача и может вести к вопросу о похожих произведениях или работах этой серии."
+      },
+      {
+        id: "dsc-8602",
+        title: "Название уточняется",
+        year: "Год уточняется",
+        series: "Демонстрационная серия: требует замены названия",
+        image: "src/for_sales/DSC_8602 1.jpg",
+        technique: "Техника уточняется",
+        size: "Размер уточняется",
+        priceType: "fixed",
+        price: "390 000 ₽",
+        availability: "sold",
+        shortDescription: "Архивная работа с фиксированной исторической ценой в данных MVP.",
+        fullDescription: "Работа отображается отдельно от доступного каталога. CTA формулируется как интерес к похожим работам, чтобы не создавать впечатления доступности."
+      }
+    ];
+    const SALES_STATUS_LABELS = {
+      available: "Доступна",
+      reserved: "Зарезервирована",
+      sold: "Продана"
+    };
+    const NARRATIVE_SEQUENCES = {
+      intro: {
+        eyebrow: "Сюжетная линия",
+        lead: "Первый блок вводит в историю и готовит пользователя к мягкому раскрытию живописи.",
+        completionLabel: "Перейти к интерактиву",
+        skipLabel: "Пропустить вступление",
+        completionAction: "experience",
+        slides: [
+          {
+            id: "intro-1",
+            meta: ["Пролог", "Окно 1", "Заглушка"],
+            title: "В музейном зале становится тише",
+            image: "src/Kugach_picture_1.png",
+            caption: "Временная иллюстрация вступления: здесь позже может появиться отдельный narrative-кадр.",
+            text: "Посетитель входит в зал и сначала видит не механику, а настроение. Это окно задаёт тон будущей истории и объясняет, что интерактивы будут частью одного маршрута, а не двумя отдельными упражнениями.",
+            secondaryText: "Здесь позже можно разместить короткую кураторскую ремарку о том, почему история начинается именно с возвращения цвета."
+          },
+          {
+            id: "intro-2",
+            meta: ["Пролог", "Окно 2", "Маршрут"],
+            title: "Перед нами картина, будто приглушённая временем",
+            image: "src/Kugach_picture_1.png",
+            caption: "Заглушка для второго сюжетного окна с опорой на первое произведение.",
+            text: "Во втором окне narrative может подвести пользователя к мысли, что работа ещё не раскрылась полностью. В текущем патче здесь стоит временный текст, который просто держит структуру и ритм последовательности.",
+            secondaryText: "Дополнительный слот можно использовать для короткой инструкции, эмоциональной подводки или музейного комментария."
+          },
+          {
+            id: "intro-3",
+            meta: ["Пролог", "Окно 3", "Переход"],
+            title: "Следующий шаг — прикоснуться к поверхности",
+            image: "src/Kugach_picture_1.png",
+            caption: "Финальное окно вступления должно подготовить вход в первый интерактив.",
+            text: "Третье окно завершает вводный блок и подводит к действию. Пока здесь заглушка, но позже именно это место станет смысловым мостом между историей и сценой 'Возвращение цвета'.",
+            secondaryText: "В следующем патче это окно будет связано с реальным переходом в экран раскрашивания."
+          }
+        ]
+      },
+      bridge: {
+        eyebrow: "Связка маршрутов",
+        lead: "Второй блок соединит завершение раскрашивания с переходом к исследованию другой картины.",
+        completionLabel: "Перейти к исследованию",
+        skipLabel: "Пропустить вставку",
+        completionAction: "explore",
+        slides: [
+          {
+            id: "bridge-1",
+            meta: ["Интерлюдия", "Окно 1", "После финала"],
+            title: "Цвет возвращается, но история ещё не закончена",
+            image: "src/Kugach_picture_1.png",
+            caption: "Здесь позже можно показать кадр-переход после завершения первого интерактива.",
+            text: "Первое промежуточное окно должно объяснять, что восстановление живописного слоя было только первой частью путешествия. Сейчас это временный текст, который помогает собрать будущую структуру сценария.",
+            secondaryText: "Блок предназначен для плавного перехода от действия к созерцанию и дальнейшему исследованию."
+          },
+          {
+            id: "bridge-2",
+            meta: ["Интерлюдия", "Окно 2", "Подготовка"],
+            title: "Чтобы понять пространство глубже, надо приблизиться",
+            image: "src/Kugach_picture_2.png",
+            caption: "Временный визуал для связки с исследовательским сценарием.",
+            text: "Во втором окне narrative может сместить фокус с общего впечатления на детали: следы времени, архитектуру, ритм фактур и малые элементы композиции.",
+            secondaryText: "Здесь удобно заложить будущую мотивацию для точек взаимодействия и режима свободного просмотра."
+          },
+          {
+            id: "bridge-3",
+            meta: ["Интерлюдия", "Окно 3", "Вход"],
+            title: "Теперь картина открывается как пространство для исследования",
+            image: "src/Kugach_picture_2.png",
+            caption: "Последнее окно второго блока позже поведёт пользователя в режим зума и точек.",
+            text: "Финал промежуточной вставки готовит вход во второй интерактив. На этом этапе текст работает как заглушка, но структура карточки и место под будущий переход уже заложены.",
+            secondaryText: "В следующем патче этот слайд станет отправной точкой для экрана исследования."
+          }
+        ]
+      },
+      finale: {
+        eyebrow: "Финальная вставка",
+        lead: "Последний блок завершит маршрут после просмотра всех точек на второй картине.",
+        completionLabel: "Завершить блок",
+        skipLabel: "Пропустить блок",
+        completionAction: "landing",
+        slides: [
+          {
+            id: "finale-1",
+            meta: ["Эпилог", "Окно 1", "После исследования"],
+            title: "Собранные детали начинают складываться в целое",
+            image: "src/Kugach_picture_2.png",
+            caption: "Заглушка для первой финальной narrative-карточки.",
+            text: "После просмотра всех точек здесь может появиться первый итоговый смысловой акцент. Пока это техническая заглушка, но экран уже рассчитан на финальную подачу истории.",
+            secondaryText: "Дополнительный текстовый слот можно использовать для вывода, цитаты или короткого музейного комментария."
+          },
+          {
+            id: "finale-2",
+            meta: ["Эпилог", "Окно 2", "Смысл"],
+            title: "Маршрут соединяет жест, взгляд и память о месте",
+            image: "src/Kugach_picture_2.png",
+            caption: "Второе окно эпилога может закрепить смысловую рамку всего прохождения.",
+            text: "Здесь narrative уже не ведёт к новой механике, а собирает опыт пользователя в завершённую историю. Сейчас текст заполнительный, но логика финальной трёхоконной вставки уже подготовлена.",
+            secondaryText: "В будущем сюда можно поместить вывод о живописной среде, авторском взгляде или ощущении времени."
+          },
+          {
+            id: "finale-3",
+            meta: ["Эпилог", "Окно 3", "Возврат"],
+            title: "История завершена, и можно вернуться к выбору маршрута",
+            image: "src/Kugach_picture_1.png",
+            caption: "Последнее окно эпилога станет точкой выхода обратно на главную страницу.",
+            text: "Это финальное окно должно замыкать весь путь и возвращать пользователя на посадочную страницу. Пока оно остаётся заглушкой, но уже занимает своё место в общей narrative-системе.",
+            secondaryText: "В одном из следующих патчей здесь появится реальный завершающий переход на главный экран."
+          }
+        ]
+      }
+    };
+    const HOTSPOTS = [
+      {
+        id: "sign",
+        x: 0.172,
+        y: 0.195,
+        targetScale: 0.94,
+        label: "Точка 1",
+        title: "Вывеска на стене",
+        text: "В этой версии прототипа вывеска работает как тестовая точка внимания. Здесь позже можно рассказать, как текст на фасаде вводит зрителя в сюжет, связывает бытовую сцену с конкретным местом и помогает считывать эпоху."
+      },
+      {
+        id: "crack",
+        x: 0.12,
+        y: 0.105,
+        targetScale: 0.9,
+        label: "Точка 2",
+        title: "Трещина и след времени",
+        text: "Эта зона может стать поводом для короткой музейной ремарки о материальности старого дома. Пока здесь заглушка: в финальной версии можно говорить о фактуре штукатурки, следах старения и том, как художник работает с ощущением прожитого пространства."
+      },
+      {
+        id: "window",
+        x: 0.575,
+        y: 0.425,
+        targetScale: 1,
+        label: "Точка 3",
+        title: "Окно как центр взгляда",
+        text: "Оконный проём удобно использовать как главный смысловой фокус. Внутри этой карточки потом можно разместить текст о композиции, ритме наличников и о том, как тёмное стекло собирает вокруг себя соседние детали."
+      },
+      {
+        id: "brick",
+        x: 0.59,
+        y: 0.91,
+        targetScale: 0.88,
+        label: "Точка 4",
+        title: "Кирпичная кладка внизу",
+        text: "Нижний фрагмент с кирпичом хорошо подходит для разговора о слоях поверхности и ручной фактуре письма. Сейчас это временный текст-заполнитель, который можно заменить на описание колорита, ритма кладки или состояния архитектурной среды."
+      }
+    ];
+    let isPainting = false;
+    let isPointerInside = false;
+    let isAutoCompleting = false;
+    let progress = 0;
+    let modalShown = false;
+    let coverageCellSize = 24;
+    let coverageCols = 0;
+    let coverageRows = 0;
+    let revealedCells = 0;
+    let totalCells = 0;
+    let coverageMap = [];
+    let autoRevealFrame = null;
+    let lastPaintPoint = null;
+    let imageNaturalWidth = 0;
+    let imageNaturalHeight = 0;
+    let maxExploreScale = 1;
+    let minExploreScale = 1;
+    let currentExploreScale = 1;
+    let currentExploreX = 0;
+    let currentExploreY = 0;
+    let explorePointerId = null;
+    let isDraggingExplore = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let dragOriginX = 0;
+    let dragOriginY = 0;
+    let activeHotspotId = null;
+    let viewedHotspotIds = new Set();
+    let hasShownExploreCompletionModal = false;
+    let activeNarrativeSequenceId = "intro";
+    let activeNarrativeSlideIndex = 0;
+
+    function syncModalState() {
+      const hasOpenModal =
+        infoModal.classList.contains("open") ||
+        storyModal.classList.contains("open") ||
+        exploreCompletionModal.classList.contains("open") ||
+        salesDetailModal.classList.contains("open") ||
+        salesOrderModal.classList.contains("open");
+      document.body.classList.toggle("modal-active", hasOpenModal);
+    }
+
+    function isExperienceVisible() {
+      return !experienceScreen.classList.contains("hidden");
+    }
+
+    function isExploreVisible() {
+      return !exploreScreen.classList.contains("hidden");
+    }
+
+    function getPriceLabel(work) {
+      return work.priceType === "fixed" && work.price ? work.price : "Цена по запросу";
+    }
+
+    function getWorkCtaLabel(work) {
+      if (work.availability === "sold") {
+        return "Узнать о похожих работах";
+      }
+
+      if (work.priceType === "request") {
+        return "Уточнить цену";
+      }
+
+      return "Запросить покупку";
+    }
+
+    function getWorkById(workId) {
+      return SALES_WORKS.find((work) => work.id === workId) || SALES_WORKS[0];
+    }
+
+    function createWorkCard(work) {
+      const card = document.createElement("article");
+      card.className = `art-card ${work.availability}`;
+      card.dataset.workId = work.id;
+      card.dataset.analytics = "sales-work-card";
+      card.tabIndex = 0;
+      card.setAttribute("role", "button");
+      card.setAttribute("aria-label", `${work.title}, ${SALES_STATUS_LABELS[work.availability]}`);
+
+      const imageWrap = document.createElement("span");
+      imageWrap.className = "art-card-image";
+      const image = document.createElement("img");
+      image.src = work.image;
+      image.alt = `${work.title}, работа Ивана Кугача`;
+      imageWrap.appendChild(image);
+
+      const body = document.createElement("span");
+      body.className = "art-card-body";
+      body.innerHTML = `
+        <span class="launch-meta">
+          <span class="status-pill ${work.availability}">${SALES_STATUS_LABELS[work.availability]}</span>
+          <span class="meta-pill">${work.year}</span>
+        </span>
+        <h3>${work.title}</h3>
+        <p class="art-card-meta">${work.series}</p>
+        <p class="art-card-description">${work.shortDescription}</p>
+        <span class="art-card-footer">
+          <span class="price-label">${getPriceLabel(work)}</span>
+          <button class="secondary art-card-action" type="button" data-work-action="${work.id}">${getWorkCtaLabel(work)}</button>
+        </span>
+      `;
+
+      card.append(imageWrap, body);
+      return card;
+    }
+
+    function renderSalesCatalog() {
+      salesAvailableGrid.innerHTML = "";
+      salesArchiveGrid.innerHTML = "";
+      salesSeriesList.innerHTML = "";
+      salesWorkSelect.innerHTML = "";
+      salesOrderWorkSelect.innerHTML = "";
+
+      SALES_WORKS.forEach((work) => {
+        const option = document.createElement("option");
+        option.value = work.id;
+        option.textContent = `${work.title} — ${SALES_STATUS_LABELS[work.availability]}, ${getPriceLabel(work)}`;
+        salesWorkSelect.appendChild(option);
+        salesOrderWorkSelect.appendChild(option.cloneNode(true));
+
+        const seriesItem = document.createElement("div");
+        seriesItem.className = "series-work";
+        seriesItem.innerHTML = `
+          <span>${work.title}</span>
+          <span>${SALES_STATUS_LABELS[work.availability]} · ${getPriceLabel(work)}</span>
+        `;
+        salesSeriesList.appendChild(seriesItem);
+
+        const card = createWorkCard(work);
+        if (work.availability === "sold") {
+          salesArchiveGrid.appendChild(card);
+        } else {
+          salesAvailableGrid.appendChild(card);
+        }
+      });
+
+      salesWorkSelect.value = SALES_WORKS[0].id;
+      salesOrderWorkSelect.value = SALES_WORKS[0].id;
+    }
+
+    function openSalesDetail(workId) {
+      const work = getWorkById(workId);
+      salesDetailHint.textContent = `${SALES_STATUS_LABELS[work.availability]} · ${getPriceLabel(work)} · ${work.series}`;
+      salesDetail.innerHTML = `
+        <img src="${work.image}" alt="${work.title}, детальный просмотр работы Ивана Кугача">
+        <div class="sales-detail-copy">
+          <span class="launch-meta">
+            <span class="status-pill ${work.availability}">${SALES_STATUS_LABELS[work.availability]}</span>
+            <span class="meta-pill">${work.year}</span>
+            <span class="meta-pill">${getPriceLabel(work)}</span>
+          </span>
+          <h3>${work.title}</h3>
+          <p>${work.fullDescription}</p>
+          <div class="sales-specs">
+            <div class="sales-spec"><strong>Серия</strong><span>${work.series}</span></div>
+            <div class="sales-spec"><strong>Техника</strong><span>${work.technique}</span></div>
+            <div class="sales-spec"><strong>Размер</strong><span>${work.size}</span></div>
+            <div class="sales-spec"><strong>Статус</strong><span>${SALES_STATUS_LABELS[work.availability]}</span></div>
+          </div>
+          <div class="button-row">
+            <button class="primary" id="salesDetailRequestButton" type="button">${getWorkCtaLabel(work)}</button>
+            <button class="ghost" id="salesDetailSeriesButton" type="button">Спросить о серии</button>
+          </div>
+        </div>
+      `;
+
+      salesWorkSelect.value = work.id;
+      document.getElementById("salesDetailRequestButton").addEventListener("click", () => {
+        closeSalesDetail();
+        openSalesOrderModal(work.id);
+      });
+      document.getElementById("salesDetailSeriesButton").addEventListener("click", () => {
+        closeSalesDetail();
+        openSalesOrderModal(work.id, "Интересует серия и похожие работы.");
+      });
+
+      salesDetailModal.classList.add("open");
+      salesDetailModal.setAttribute("aria-hidden", "false");
+      syncModalState();
+      window.setTimeout(() => salesDetailCloseButton.focus({ preventScroll: true }), 40);
+    }
+
+    function closeSalesDetail() {
+      salesDetailModal.classList.remove("open");
+      salesDetailModal.setAttribute("aria-hidden", "true");
+      syncModalState();
+    }
+
+    function setFormMessage(messageElement, type, text) {
+      messageElement.className = type ? `sales-message ${type}` : "sales-message";
+      messageElement.textContent = text;
+    }
+
+    function getSalesFormState(fields) {
+      return {
+        name: fields.name.value.trim(),
+        email: fields.email.value.trim(),
+        phone: fields.phone.value.trim(),
+        workId: fields.workSelect.value,
+        consent: fields.consent.checked
+      };
+    }
+
+    function validateSalesFormState(state) {
+      if (!state.name) {
+        return "Укажите имя.";
+      }
+
+      if (!state.email && !state.phone) {
+        return "Укажите email или телефон для связи.";
+      }
+
+      if (!state.workId) {
+        return "Выберите работу для заявки.";
+      }
+
+      if (!state.consent) {
+        return "Подтвердите согласие на обработку персональных данных.";
+      }
+
+      return "";
+    }
+
+    function getSalesFormFields(kind) {
+      if (kind === "order") {
+        return {
+          name: salesOrderName,
+          email: salesOrderEmail,
+          phone: salesOrderPhone,
+          workSelect: salesOrderWorkSelect,
+          comment: salesOrderComment,
+          consent: salesOrderConsent,
+          message: salesOrderMessage
+        };
+      }
+
+      return {
+        name: salesName,
+        email: salesEmail,
+        phone: salesPhone,
+        workSelect: salesWorkSelect,
+        comment: salesComment,
+        consent: salesConsent,
+        message: salesFormMessage
+      };
+    }
+
+    function submitSalesForm(event, kind) {
+      event.preventDefault();
+      const fields = getSalesFormFields(kind);
+      const state = getSalesFormState(fields);
+      const error = validateSalesFormState(state);
+
+      if (error) {
+        setFormMessage(fields.message, "error", error);
+        return;
+      }
+
+      const work = getWorkById(state.workId);
+      setFormMessage(
+        fields.message,
+        "success",
+        `Заявка подготовлена: ${work.title}. В MVP данные не отправляются на сервер, но сценарий формы и валидация работают.`
+      );
+    }
+
+    function openSalesOrderModal(workId, comment = "") {
+      const work = getWorkById(workId);
+      salesOrderTitle.textContent = getWorkCtaLabel(work);
+      salesOrderHint.textContent = `${work.title} · ${SALES_STATUS_LABELS[work.availability]} · ${getPriceLabel(work)}`;
+      salesOrderWorkSelect.value = work.id;
+      salesWorkSelect.value = work.id;
+      salesOrderComment.value = comment || (work.availability === "sold" ? "Интересуют похожие работы или произведения этой серии." : "");
+      setFormMessage(salesOrderMessage, "", "");
+      salesOrderModal.classList.add("open");
+      salesOrderModal.setAttribute("aria-hidden", "false");
+      syncModalState();
+      window.setTimeout(() => salesOrderName.focus({ preventScroll: true }), 40);
+    }
+
+    function closeSalesOrderModal() {
+      salesOrderModal.classList.remove("open");
+      salesOrderModal.setAttribute("aria-hidden", "true");
+      syncModalState();
+    }
+
+    function prepareSalesForm(workId, shouldScroll = true, comment = "") {
+      const work = getWorkById(workId);
+      salesWorkSelect.value = work.id;
+      if (comment) {
+        salesComment.value = comment;
+      } else if (work.availability === "sold") {
+        salesComment.value = "Интересуют похожие работы или произведения этой серии.";
+      }
+
+      setFormMessage(salesFormMessage, "", "");
+
+      if (shouldScroll) {
+        document.getElementById("salesFormSection").scrollIntoView({ behavior: "smooth", block: "start" });
+        window.setTimeout(() => salesName.focus({ preventScroll: true }), 420);
+      }
+    }
+
+    function submitSalesInquiry(event) {
+      submitSalesForm(event, "bottom");
+    }
+
+    function resetSalesForm() {
+      salesInquiryForm.reset();
+      salesWorkSelect.value = SALES_WORKS[0].id;
+      setFormMessage(salesFormMessage, "", "");
+    }
+
+    function getActiveNarrativeSequence() {
+      return NARRATIVE_SEQUENCES[activeNarrativeSequenceId] || NARRATIVE_SEQUENCES.intro;
+    }
+
+    function updateNarrativeControls() {
+      const sequence = getActiveNarrativeSequence();
+      const isFirstSlide = activeNarrativeSlideIndex === 0;
+      const isLastSlide = activeNarrativeSlideIndex >= sequence.slides.length - 1;
+      narrativePrevButton.disabled = isFirstSlide;
+      narrativeNextButton.textContent = isLastSlide ? (sequence.completionLabel || "Завершить блок") : "Далее";
+      narrativeSkipButton.textContent = sequence.skipLabel || "Пропустить блок";
+    }
+
+    function animateNarrativeCard() {
+      if (!narrativeCard) {
+        return;
+      }
+
+      narrativeCard.classList.remove("is-animating");
+      void narrativeCard.offsetWidth;
+      narrativeCard.classList.add("is-animating");
+      window.setTimeout(() => {
+        narrativeCard.classList.remove("is-animating");
+      }, 460);
+    }
+
+    function renderNarrativeSlide() {
+      const sequence = getActiveNarrativeSequence();
+      const slide = sequence.slides[activeNarrativeSlideIndex];
+      if (!slide) {
+        return;
+      }
+
+      narrativeSequenceEyebrow.textContent = sequence.eyebrow;
+      narrativeSequenceLead.textContent = sequence.lead;
+      narrativeMeta.innerHTML = "";
+      slide.meta.forEach((item) => {
+        const pill = document.createElement("span");
+        pill.className = "meta-pill";
+        pill.textContent = item;
+        narrativeMeta.appendChild(pill);
+      });
+      narrativeTitle.textContent = slide.title;
+      narrativeImage.src = slide.image;
+      narrativeImage.alt = slide.title;
+      narrativeCaption.textContent = slide.caption;
+      narrativeText.textContent = slide.text;
+      narrativeSecondaryText.textContent = slide.secondaryText;
+      narrativeStep.textContent = `Окно ${activeNarrativeSlideIndex + 1} из ${sequence.slides.length}`;
+      narrativeProgressText.textContent = `Блок: ${sequence.eyebrow.toLowerCase()}.`;
+      updateNarrativeControls();
+      animateNarrativeCard();
+    }
+
+    function showScreen(screen) {
+      [landingScreen, experienceScreen, narrativeScreen, exploreScreen, salesScreen].forEach((item) => {
+        item.classList.toggle("hidden", item !== screen);
+        item.classList.remove("screen-transition-enter");
+      });
+      screen.classList.add("screen-transition-enter");
+      window.setTimeout(() => {
+        screen.classList.remove("screen-transition-enter");
+      }, 520);
+    }
+
+    function openNarrativeSequence(sequenceId, startIndex = 0) {
+      const sequence = NARRATIVE_SEQUENCES[sequenceId];
+      if (!sequence) {
+        return;
+      }
+
+      activeNarrativeSequenceId = sequenceId;
+      activeNarrativeSlideIndex = Math.max(0, Math.min(sequence.slides.length - 1, startIndex));
+      closeModal();
+      closeStoryModal();
+      closeSalesDetail();
+      closeSalesOrderModal();
+      showScreen(narrativeScreen);
+      renderNarrativeSlide();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.setTimeout(() => narrativeNextButton.focus({ preventScroll: true }), 40);
+    }
+
+    function completeNarrativeSequence() {
+      const sequence = getActiveNarrativeSequence();
+
+      if (sequence.completionAction === "experience") {
+        goToExperience();
+        return;
+      }
+
+      if (sequence.completionAction === "explore") {
+        goToExplore();
+        return;
+      }
+
+      goToLanding();
+    }
+
+    function moveNarrativeSlide(direction) {
+      const sequence = getActiveNarrativeSequence();
+      const nextIndex = activeNarrativeSlideIndex + direction;
+      if (direction > 0 && activeNarrativeSlideIndex >= sequence.slides.length - 1) {
+        completeNarrativeSequence();
+        return;
+      }
+
+      activeNarrativeSlideIndex = Math.max(0, Math.min(sequence.slides.length - 1, nextIndex));
+      renderNarrativeSlide();
+    }
+
+    function goToExperience() {
+      showScreen(experienceScreen);
+      closeExploreCompletionModal();
+      closeStoryModal();
+      closeSalesDetail();
+      closeSalesOrderModal();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.requestAnimationFrame(() => {
+        fitCanvasToImage();
+      });
+    }
+
+    function goToExplore() {
+      resetExploreNarrativeProgress();
+      showScreen(exploreScreen);
+      closeExploreCompletionModal();
+      closeModal();
+      closeSalesDetail();
+      closeSalesOrderModal();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.requestAnimationFrame(() => {
+        fitExploreView();
+      });
+    }
+
+    function goToSales() {
+      resetExperience();
+      closeModal();
+      closeExploreCompletionModal();
+      closeStoryModal();
+      closeSalesDetail();
+      closeSalesOrderModal();
+      showScreen(salesScreen);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function goToLanding() {
+      resetExperience();
+      resetExploreNarrativeProgress();
+      closeModal();
+      closeExploreCompletionModal();
+      closeStoryModal();
+      closeSalesDetail();
+      closeSalesOrderModal();
+      showScreen(landingScreen);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function ensureExploreHotspots() {
+      if (!exploreViewport || exploreViewport.querySelector(".hotspot")) {
+        return;
+      }
+
+      HOTSPOTS.forEach((hotspot) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "hotspot";
+        button.dataset.hotspotId = hotspot.id;
+        button.setAttribute("aria-label", hotspot.title);
+        button.style.left = (hotspot.x * 100) + "%";
+        button.style.top = (hotspot.y * 100) + "%";
+        exploreCanvas.appendChild(button);
+      });
+    }
+
+    function getExploreBounds(scale = currentExploreScale) {
+      const viewportRect = exploreViewport.getBoundingClientRect();
+      const scaledWidth = imageNaturalWidth * scale;
+      const scaledHeight = imageNaturalHeight * scale;
+      const minX = scaledWidth <= viewportRect.width ? (viewportRect.width - scaledWidth) / 2 : viewportRect.width - scaledWidth;
+      const maxX = scaledWidth <= viewportRect.width ? minX : 0;
+      const minY = scaledHeight <= viewportRect.height ? (viewportRect.height - scaledHeight) / 2 : viewportRect.height - scaledHeight;
+      const maxY = scaledHeight <= viewportRect.height ? minY : 0;
+
+      return { minX, maxX, minY, maxY, viewportRect };
+    }
+
+    function clampExplorePosition(scale = currentExploreScale, x = currentExploreX, y = currentExploreY) {
+      const bounds = getExploreBounds(scale);
+      return {
+        x: Math.min(bounds.maxX, Math.max(bounds.minX, x)),
+        y: Math.min(bounds.maxY, Math.max(bounds.minY, y))
+      };
+    }
+
+    function updateZoomValue() {
+      const percent = maxExploreScale > 0 ? Math.round((currentExploreScale / maxExploreScale) * 100) : 100;
+      zoomValue.textContent = percent + "%";
+    }
+
+    function updateHotspotState() {
+      const buttons = exploreCanvas.querySelectorAll(".hotspot");
+      buttons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.hotspotId === activeHotspotId);
+      });
+    }
+
+    function hasViewedAllHotspots() {
+      return viewedHotspotIds.size >= HOTSPOTS.length;
+    }
+
+    function updateExploreProgressUI() {
+      if (!exploreProgressText || !openFinaleButton) {
+        return;
+      }
+
+      const viewedCount = viewedHotspotIds.size;
+      if (hasViewedAllHotspots()) {
+        exploreProgressText.textContent = "Все точки открыты. Можно остаться в режиме свободного просмотра или перейти к финальной сюжетной вставке.";
+        openFinaleButton.hidden = false;
+        return;
+      }
+
+      exploreProgressText.textContent = `Открыто точек: ${viewedCount} из ${HOTSPOTS.length}. Перетаскивайте картину мышью или пальцем и исследуйте оставшиеся детали.`;
+      openFinaleButton.hidden = true;
+    }
+
+    function resetExploreNarrativeProgress() {
+      viewedHotspotIds = new Set();
+      hasShownExploreCompletionModal = false;
+      updateExploreProgressUI();
+    }
+
+    function openExploreCompletionModal() {
+      closeStoryModal();
+      exploreCompletionModal.classList.add("open");
+      exploreCompletionModal.setAttribute("aria-hidden", "false");
+      syncModalState();
+      window.setTimeout(() => goToFinaleButton.focus({ preventScroll: true }), 40);
+    }
+
+    function closeExploreCompletionModal() {
+      exploreCompletionModal.classList.remove("open");
+      exploreCompletionModal.setAttribute("aria-hidden", "true");
+      syncModalState();
+    }
+
+    function applyExploreTransform(useTransition = false) {
+      if (!exploreCanvas) {
+        return;
+      }
+
+      exploreCanvas.style.width = imageNaturalWidth + "px";
+      exploreCanvas.style.height = imageNaturalHeight + "px";
+      exploreCanvas.style.transition = useTransition ? "transform 0.72s cubic-bezier(0.22, 1, 0.36, 1)" : "none";
+      exploreCanvas.style.transform = `translate(${currentExploreX}px, ${currentExploreY}px) scale(${currentExploreScale})`;
+      updateZoomValue();
+      updateHotspotState();
+    }
+
+    function fitExploreView() {
+      if (!isExploreVisible() || !exploreImage.complete) {
+        return;
+      }
+
+      imageNaturalWidth = exploreImage.naturalWidth || 1;
+      imageNaturalHeight = exploreImage.naturalHeight || 1;
+      ensureExploreHotspots();
+
+      const viewportRect = exploreViewport.getBoundingClientRect();
+      if (!viewportRect.width || !viewportRect.height) {
+        return;
+      }
+
+      const fitScale = Math.min(viewportRect.width / imageNaturalWidth, viewportRect.height / imageNaturalHeight);
+      maxExploreScale = fitScale * 1.9;
+      minExploreScale = fitScale * 0.72;
+      currentExploreScale = minExploreScale;
+      const centered = clampExplorePosition(minExploreScale, (viewportRect.width - imageNaturalWidth * minExploreScale) / 2, (viewportRect.height - imageNaturalHeight * minExploreScale) / 2);
+      currentExploreX = centered.x;
+      currentExploreY = centered.y;
+      activeHotspotId = null;
+      applyExploreTransform(false);
+      updateExploreProgressUI();
+    }
+
+    function setExploreScale(nextScale, focusX, focusY, useTransition = false) {
+      if (!imageNaturalWidth || !imageNaturalHeight) {
+        return;
+      }
+
+      const clampedScale = Math.max(minExploreScale, Math.min(maxExploreScale, nextScale));
+      const viewportRect = exploreViewport.getBoundingClientRect();
+      const localFocusX = typeof focusX === "number" ? focusX : viewportRect.width / 2;
+      const localFocusY = typeof focusY === "number" ? focusY : viewportRect.height / 2;
+
+      const imagePointX = (localFocusX - currentExploreX) / currentExploreScale;
+      const imagePointY = (localFocusY - currentExploreY) / currentExploreScale;
+      const proposedX = localFocusX - imagePointX * clampedScale;
+      const proposedY = localFocusY - imagePointY * clampedScale;
+      const clamped = clampExplorePosition(clampedScale, proposedX, proposedY);
+
+      currentExploreScale = clampedScale;
+      currentExploreX = clamped.x;
+      currentExploreY = clamped.y;
+      applyExploreTransform(useTransition);
+    }
+
+    function centerExploreOn(hotspot, useTransition = true) {
+      if (!hotspot) {
+        return;
+      }
+
+      const viewportRect = exploreViewport.getBoundingClientRect();
+      const targetScale = Math.max(minExploreScale, Math.min(maxExploreScale, maxExploreScale * (hotspot.targetScale || 1)));
+      const proposedX = viewportRect.width / 2 - hotspot.x * imageNaturalWidth * targetScale;
+      const proposedY = viewportRect.height / 2 - hotspot.y * imageNaturalHeight * targetScale;
+      const clamped = clampExplorePosition(targetScale, proposedX, proposedY);
+
+      currentExploreScale = targetScale;
+      currentExploreX = clamped.x;
+      currentExploreY = clamped.y;
+      applyExploreTransform(useTransition);
+    }
+
+    function openStoryModal(hotspot) {
+      if (!hotspot) {
+        return;
+      }
+
+      storyModalLabel.textContent = hotspot.label;
+      storyModalTitle.textContent = hotspot.title;
+      storyModalText.textContent = hotspot.text;
+      storyModal.classList.add("open");
+      storyModal.setAttribute("aria-hidden", "false");
+      syncModalState();
+      window.setTimeout(() => storyCloseButton.focus({ preventScroll: true }), 60);
+    }
+
+    function closeStoryModal() {
+      storyModal.classList.remove("open");
+      storyModal.setAttribute("aria-hidden", "true");
+      syncModalState();
+    }
+
+    function activateHotspotById(hotspotId) {
+      const hotspot = HOTSPOTS.find((item) => item.id === hotspotId);
+      if (!hotspot) {
+        return;
+      }
+
+      activeHotspotId = hotspot.id;
+      viewedHotspotIds.add(hotspot.id);
+      updateExploreProgressUI();
+      centerExploreOn(hotspot, true);
+      window.setTimeout(() => {
+        if (activeHotspotId === hotspot.id) {
+          openStoryModal(hotspot);
+        }
+      }, 460);
+
+      if (hasViewedAllHotspots() && !hasShownExploreCompletionModal) {
+        hasShownExploreCompletionModal = true;
+        window.setTimeout(openExploreCompletionModal, 620);
+      }
+    }
+
+    function resetExploreView() {
+      activeHotspotId = null;
+      closeStoryModal();
+      fitExploreView();
+    }
+
+    function beginExploreDrag(event) {
+      if (!isExploreVisible() || event.button !== 0 || event.target.closest(".hotspot")) {
+        return;
+      }
+
+      event.preventDefault();
+
+      isDraggingExplore = true;
+      explorePointerId = event.pointerId;
+      dragStartX = event.clientX;
+      dragStartY = event.clientY;
+      dragOriginX = currentExploreX;
+      dragOriginY = currentExploreY;
+      activeHotspotId = null;
+      updateHotspotState();
+      closeStoryModal();
+      exploreViewport.classList.add("dragging");
+      exploreCanvas.style.transition = "none";
+
+      if (typeof exploreViewport.setPointerCapture === "function") {
+        exploreViewport.setPointerCapture(event.pointerId);
+      }
+    }
+
+    function moveExploreDrag(event) {
+      if (!isDraggingExplore || event.pointerId !== explorePointerId) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const deltaX = event.clientX - dragStartX;
+      const deltaY = event.clientY - dragStartY;
+      const clamped = clampExplorePosition(currentExploreScale, dragOriginX + deltaX, dragOriginY + deltaY);
+      currentExploreX = clamped.x;
+      currentExploreY = clamped.y;
+      applyExploreTransform(false);
+    }
+
+    function endExploreDrag(event) {
+      if (!isDraggingExplore || (event && event.pointerId !== explorePointerId)) {
+        return;
+      }
+
+      if (event && typeof exploreViewport.releasePointerCapture === "function" && exploreViewport.hasPointerCapture(event.pointerId)) {
+        exploreViewport.releasePointerCapture(event.pointerId);
+      }
+
+      isDraggingExplore = false;
+      explorePointerId = null;
+      exploreViewport.classList.remove("dragging");
+    }
+
+    function fitCanvasToImage() {
+      if (!isExperienceVisible()) {
+        return;
+      }
+
+      const stageRect = stage.getBoundingClientRect();
+      const stageWidth = Math.round(stage.clientWidth || stageRect.width || ART_BOUNDS.width);
+      const stageHeight = Math.round(stage.clientHeight || stageRect.height || 0);
+      if (!stageWidth) {
+        return;
+      }
+
+      const artAspect = ART_BOUNDS.width / ART_BOUNDS.height;
+      let renderWidth = Math.max(1, stageWidth);
+      let renderHeight = Math.round(renderWidth / artAspect);
+
+      if (stageHeight && renderHeight > stageHeight) {
+        renderHeight = Math.max(1, stageHeight);
+        renderWidth = Math.round(renderHeight * artAspect);
+      }
+
+      const offsetX = Math.max(0, Math.round((stageWidth - renderWidth) / 2));
+      const offsetY = Math.max(0, Math.round((stageHeight - renderHeight) / 2));
+
+      baseCanvas.width = renderWidth;
+      baseCanvas.height = renderHeight;
+      baseCanvas.style.width = renderWidth + "px";
+      baseCanvas.style.height = renderHeight + "px";
+      baseCanvas.style.display = "block";
+      revealCanvas.width = renderWidth;
+      revealCanvas.height = renderHeight;
+      revealCanvas.style.width = renderWidth + "px";
+      revealCanvas.style.height = renderHeight + "px";
+      revealCanvas.style.left = offsetX + "px";
+      revealCanvas.style.top = offsetY + "px";
+      offscreenCanvas.width = revealCanvas.width;
+      offscreenCanvas.height = revealCanvas.height;
+      stage.style.aspectRatio = "auto";
+      initializeCoverageMap();
+      drawBasePainting();
+      drawGrayOverlay();
+      updateProgress();
+    }
+
+    function initializeCoverageMap() {
+      coverageCols = Math.max(1, Math.ceil(revealCanvas.width / coverageCellSize));
+      coverageRows = Math.max(1, Math.ceil(revealCanvas.height / coverageCellSize));
+      totalCells = coverageCols * coverageRows;
+      revealedCells = 0;
+      coverageMap = new Array(totalCells).fill(0);
+    }
+
+    function drawBasePainting() {
+      baseCtx.clearRect(0, 0, baseCanvas.width, baseCanvas.height);
+      baseCtx.drawImage(
+        colorImage,
+        ART_BOUNDS.x,
+        ART_BOUNDS.y,
+        ART_BOUNDS.width,
+        ART_BOUNDS.height,
+        0,
+        0,
+        baseCanvas.width,
+        baseCanvas.height
+      );
+    }
+
+    function drawGrayOverlay() {
+      offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+      offscreenCtx.filter = "grayscale(1) contrast(1.08) brightness(0.94)";
+      offscreenCtx.drawImage(
+        colorImage,
+        ART_BOUNDS.x,
+        ART_BOUNDS.y,
+        ART_BOUNDS.width,
+        ART_BOUNDS.height,
+        0,
+        0,
+        offscreenCanvas.width,
+        offscreenCanvas.height
+      );
+      offscreenCtx.filter = "none";
+
+      colorCtx.clearRect(0, 0, revealCanvas.width, revealCanvas.height);
+      colorCtx.globalCompositeOperation = "source-over";
+      colorCtx.drawImage(offscreenCanvas, 0, 0);
+    }
+
+    function eraseAt(x, y, radius, softness) {
+      const gradient = colorCtx.createRadialGradient(x, y, radius * 0.18, x, y, radius);
+      gradient.addColorStop(0, `rgba(0, 0, 0, ${softness})`);
+      gradient.addColorStop(0.65, `rgba(0, 0, 0, ${softness * 0.85})`);
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+
+      colorCtx.save();
+      colorCtx.globalCompositeOperation = "destination-out";
+      colorCtx.fillStyle = gradient;
+      colorCtx.beginPath();
+      colorCtx.arc(x, y, radius, 0, Math.PI * 2);
+      colorCtx.fill();
+      colorCtx.restore();
+    }
+
+    function eraseEverywhere(strength) {
+      colorCtx.save();
+      colorCtx.globalCompositeOperation = "destination-out";
+      colorCtx.fillStyle = `rgba(0, 0, 0, ${strength})`;
+      colorCtx.fillRect(0, 0, revealCanvas.width, revealCanvas.height);
+      colorCtx.restore();
+    }
+
+    function eraseRestorationSwab(x, y, radius, opacity, stretchX = 1, stretchY = 1) {
+      colorCtx.save();
+      colorCtx.globalCompositeOperation = "destination-out";
+      colorCtx.translate(x, y);
+      colorCtx.scale(stretchX, stretchY);
+
+      const gradient = colorCtx.createRadialGradient(0, 0, radius * 0.12, 0, 0, radius);
+      gradient.addColorStop(0, `rgba(0, 0, 0, ${opacity})`);
+      gradient.addColorStop(0.58, `rgba(0, 0, 0, ${opacity * 0.55})`);
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+      colorCtx.fillStyle = gradient;
+      colorCtx.beginPath();
+      colorCtx.arc(0, 0, radius, 0, Math.PI * 2);
+      colorCtx.fill();
+      colorCtx.restore();
+    }
+
+    function eraseRestorationTrail(fromX, fromY, toX, toY, width, opacity) {
+      const length = Math.hypot(toX - fromX, toY - fromY);
+      const angle = Math.atan2(toY - fromY, toX - fromX);
+      const steps = Math.max(8, Math.ceil(length / Math.max(14, width * 0.22)));
+
+      colorCtx.save();
+      colorCtx.globalCompositeOperation = "destination-out";
+      colorCtx.translate(fromX, fromY);
+      colorCtx.rotate(angle);
+
+      for (let step = 0; step <= steps; step += 1) {
+        const t = step / steps;
+        const x = t * length;
+        const y = Math.sin(t * Math.PI) * (Math.random() - 0.5) * width * 0.08;
+        const radius = width * (0.18 + Math.sin(t * Math.PI) * 0.16 + Math.random() * 0.06);
+        const gradient = colorCtx.createRadialGradient(x, y, radius * 0.12, x, y, radius);
+        gradient.addColorStop(0, `rgba(0, 0, 0, ${opacity * 0.42})`);
+        gradient.addColorStop(0.7, `rgba(0, 0, 0, ${opacity * 0.18})`);
+        gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+        colorCtx.fillStyle = gradient;
+        colorCtx.beginPath();
+        colorCtx.ellipse(x, y, radius * 1.4, radius * 0.82, 0, 0, Math.PI * 2);
+        colorCtx.fill();
+      }
+
+      colorCtx.restore();
+    }
+    function createRestorationZone(x, y, radiusScale, delay, opacity = 0.3, stretchX = 1.3, stretchY = 0.9) {
+      const radius = Math.max(revealCanvas.width, revealCanvas.height) * radiusScale;
+      return {
+        x,
+        y,
+        radius,
+        delay,
+        opacity: opacity + Math.random() * 0.05,
+        stretchX,
+        stretchY
+      };
+    }
+
+    function createRestorationPass(startX, startY, controlX, controlY, endX, endY, widthScale, delay, opacity = 0.22) {
+      const width = Math.max(revealCanvas.width, revealCanvas.height) * widthScale;
+      return {
+        startX,
+        startY,
+        controlX,
+        controlY,
+        endX,
+        endY,
+        width,
+        delay,
+        opacity: opacity + Math.random() * 0.04
+      };
+    }
+
+    function getQuadraticPoint(t, startX, startY, controlX, controlY, endX, endY) {
+      const oneMinusT = 1 - t;
+      return {
+        x: oneMinusT * oneMinusT * startX + 2 * oneMinusT * t * controlX + t * t * endX,
+        y: oneMinusT * oneMinusT * startY + 2 * oneMinusT * t * controlY + t * t * endY
+      };
+    }
+
+    function splashReveal(x, y) {
+      eraseAt(x, y, BRUSH_RADIUS, 0.92);
+
+      for (let i = 0; i < 3; i += 1) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 20 + Math.random() * 52;
+        const size = 26 + Math.random() * 34;
+        eraseAt(
+          x + Math.cos(angle) * distance,
+          y + Math.sin(angle) * distance,
+          size,
+          0.34
+        );
+      }
+
+      eraseAt(x, y, SPLASH_RADIUS, 0.14);
+      stampCoverage(x, y, SPLASH_RADIUS * 1.15);
+    }
+
+    function stampCoverage(x, y, radius) {
+      const minCol = Math.max(0, Math.floor((x - radius) / coverageCellSize));
+      const maxCol = Math.min(coverageCols - 1, Math.floor((x + radius) / coverageCellSize));
+      const minRow = Math.max(0, Math.floor((y - radius) / coverageCellSize));
+      const maxRow = Math.min(coverageRows - 1, Math.floor((y + radius) / coverageCellSize));
+
+      for (let row = minRow; row <= maxRow; row += 1) {
+        for (let col = minCol; col <= maxCol; col += 1) {
+          const cellCenterX = col * coverageCellSize + coverageCellSize / 2;
+          const cellCenterY = row * coverageCellSize + coverageCellSize / 2;
+          const distance = Math.hypot(cellCenterX - x, cellCenterY - y);
+
+          if (distance <= radius) {
+            const index = row * coverageCols + col;
+            if (!coverageMap[index]) {
+              coverageMap[index] = 1;
+              revealedCells += 1;
+            }
+          }
+        }
+      }
+    }
+
+    function getPoint(event) {
+      const rect = revealCanvas.getBoundingClientRect();
+      const scaleX = revealCanvas.width / rect.width;
+      const scaleY = revealCanvas.height / rect.height;
+      return {
+        x: (event.clientX - rect.left) * scaleX,
+        y: (event.clientY - rect.top) * scaleY
+      };
+    }
+
+    function moveBrush(event) {
+      const stageRect = stage.getBoundingClientRect();
+      brush.style.left = event.clientX - stageRect.left + "px";
+      brush.style.top = event.clientY - stageRect.top + "px";
+    }
+
+    function sampleProgress() {
+      if (!totalCells) {
+        return 0;
+      }
+      return (revealedCells / totalCells) * 100;
+    }
+
+    function updateProgress() {
+      progress = Math.min(100, sampleProgress());
+      const displayProgress = Math.min(100, Math.round((progress / COMPLETION_TARGET) * 100));
+      progressFill.style.width = displayProgress + "%";
+      progressValue.textContent = displayProgress + "%";
+
+      if (!modalShown && !isAutoCompleting && progress >= COMPLETION_TARGET) {
+        modalShown = true;
+        progressFill.style.width = "100%";
+        progressValue.textContent = "100%";
+        autoCompletePainting();
+      }
+    }
+
+    function autoCompletePainting() {
+      if (isAutoCompleting) {
+        return;
+      }
+
+      isAutoCompleting = true;
+      isPainting = false;
+      revealedCells = totalCells;
+      coverageMap.fill(1);
+      progress = 100;
+      progressFill.style.width = "100%";
+      progressValue.textContent = "100%";
+      brush.style.opacity = isPointerInside ? "0.9" : "0";
+
+      const anchor = lastPaintPoint || {
+        x: revealCanvas.width / 2,
+        y: revealCanvas.height / 2
+      };
+      const width = revealCanvas.width;
+      const height = revealCanvas.height;
+      const restorationZones = [
+        createRestorationZone(width * 0.22, height * 0.72, 0.16, 0, 0.34, 1.5, 0.9),
+        createRestorationZone(width * 0.52, height * 0.56, 0.18, 180, 0.3, 1.35, 1),
+        createRestorationZone(width * 0.72, height * 0.34, 0.15, 360, 0.27, 1.4, 0.88),
+        createRestorationZone(anchor.x, anchor.y, 0.14, 560, 0.25, 1.2, 1.05),
+        createRestorationZone(width * 0.4, height * 0.28, 0.12, 790, 0.22, 1.25, 0.92),
+        createRestorationZone(width * 0.68, height * 0.72, 0.11, 980, 0.2, 1.3, 0.9)
+      ];
+      const restorationPasses = [
+        createRestorationPass(width * 0.1, height * 0.82, width * 0.28, height * 0.62, width * 0.54, height * 0.36, 0.05, 260, 0.2),
+        createRestorationPass(width * 0.58, height * 0.18, width * 0.68, height * 0.28, width * 0.82, height * 0.48, 0.045, 640, 0.19),
+        createRestorationPass(width * 0.22, height * 0.44, width * 0.42, height * 0.46, width * 0.72, height * 0.4, 0.04, 1040, 0.18)
+      ];
+
+      let startTime = null;
+
+      const animateReveal = (timestamp) => {
+        if (startTime === null) {
+          startTime = timestamp;
+        }
+
+        const elapsed = timestamp - startTime;
+        const zoneWindow = 380;
+        const passWindow = 430;
+
+        for (const zone of restorationZones) {
+          const local = Math.min(1, Math.max(0, (elapsed - zone.delay) / zoneWindow));
+          if (local <= 0 || zone.done) {
+            continue;
+          }
+
+          const eased = 1 - Math.pow(1 - local, 2.3);
+          eraseRestorationSwab(
+            zone.x,
+            zone.y,
+            zone.radius * (0.58 + eased * 0.5),
+            zone.opacity * (0.32 + eased * 0.42),
+            zone.stretchX,
+            zone.stretchY
+          );
+
+          if (local > 0.28) {
+            for (let mote = 0; mote < 3; mote += 1) {
+              const angle = Math.random() * Math.PI * 2;
+              const distance = zone.radius * (0.15 + Math.random() * 0.6);
+              eraseAt(
+                zone.x + Math.cos(angle) * distance,
+                zone.y + Math.sin(angle) * distance,
+                zone.radius * (0.08 + Math.random() * 0.08),
+                zone.opacity * 0.18
+              );
+            }
+          }
+
+          if (local >= 1) {
+            zone.done = true;
+          }
+        }
+
+        for (const pass of restorationPasses) {
+          const local = Math.min(1, Math.max(0, (elapsed - pass.delay) / passWindow));
+          if (local <= 0 || pass.done) {
+            continue;
+          }
+
+          const eased = 1 - Math.pow(1 - local, 2);
+          const previousPoint = getQuadraticPoint(
+            Math.max(0, eased - 0.16),
+            pass.startX,
+            pass.startY,
+            pass.controlX,
+            pass.controlY,
+            pass.endX,
+            pass.endY
+          );
+          const currentPoint = getQuadraticPoint(
+            eased,
+            pass.startX,
+            pass.startY,
+            pass.controlX,
+            pass.controlY,
+            pass.endX,
+            pass.endY
+          );
+          eraseRestorationTrail(
+            previousPoint.x,
+            previousPoint.y,
+            currentPoint.x,
+            currentPoint.y,
+            pass.width * (0.92 + eased * 0.12),
+            pass.opacity
+          );
+
+          if (local >= 1) {
+            pass.done = true;
+          }
+        }
+
+        const completion = Math.min(1, elapsed / AUTO_REVEAL_DURATION);
+        if (completion > 0.6) {
+          eraseEverywhere(0.004 + (completion - 0.6) * 0.03);
+        }
+
+        if (elapsed < AUTO_REVEAL_DURATION) {
+          autoRevealFrame = window.requestAnimationFrame(animateReveal);
+          return;
+        }
+
+        colorCtx.clearRect(0, 0, revealCanvas.width, revealCanvas.height);
+        isAutoCompleting = false;
+        autoRevealFrame = null;
+        window.setTimeout(openModal, 160);
+      };
+
+      autoRevealFrame = window.requestAnimationFrame(animateReveal);
+    }
+
+    function paint(event) {
+      if (!isPainting || isAutoCompleting) {
+        return;
+      }
+
+      event.preventDefault();
+      const point = getPoint(event);
+      lastPaintPoint = { x: point.x, y: point.y };
+      moveBrush(event);
+      splashReveal(point.x, point.y);
+      updateProgress();
+    }
+
+    function beginPainting(event) {
+      if (isAutoCompleting || !isExperienceVisible()) {
+        return;
+      }
+
+      event.preventDefault();
+      isPainting = true;
+      isPointerInside = true;
+      if (typeof revealCanvas.setPointerCapture === "function") {
+        revealCanvas.setPointerCapture(event.pointerId);
+      }
+      brush.style.opacity = "1";
+      moveBrush(event);
+      paint(event);
+    }
+
+    function endPainting(event) {
+      if (event && typeof revealCanvas.releasePointerCapture === "function" && revealCanvas.hasPointerCapture(event.pointerId)) {
+        revealCanvas.releasePointerCapture(event.pointerId);
+      }
+      isPainting = false;
+      brush.style.opacity = isPointerInside ? "0.9" : "0";
+    }
+
+    function openModal() {
+      infoModal.classList.add("open");
+      infoModal.setAttribute("aria-hidden", "false");
+      syncModalState();
+      window.setTimeout(() => continueJourneyButton.focus({ preventScroll: true }), 30);
+    }
+
+    function closeModal() {
+      infoModal.classList.remove("open");
+      infoModal.setAttribute("aria-hidden", "true");
+      syncModalState();
+    }
+
+    function resetExperience() {
+      if (autoRevealFrame !== null) {
+        window.cancelAnimationFrame(autoRevealFrame);
+        autoRevealFrame = null;
+      }
+
+      closeModal();
+      isAutoCompleting = false;
+      isPainting = false;
+      isPointerInside = false;
+      modalShown = false;
+      progress = 0;
+      lastPaintPoint = null;
+      brush.style.opacity = "0";
+
+      if (revealCanvas.width && revealCanvas.height) {
+        initializeCoverageMap();
+        drawGrayOverlay();
+        updateProgress();
+      } else {
+        progressFill.style.width = "0%";
+        progressValue.textContent = "0%";
+      }
+    }
+
+    heroStartButton.addEventListener("click", () => openNarrativeSequence("intro"));
+    launchCard.addEventListener("click", goToExperience);
+    launchExploreCard.addEventListener("click", goToExplore);
+    launchSalesCard.addEventListener("click", goToSales);
+    heroSalesButton.addEventListener("click", goToSales);
+    narrativePrevButton.addEventListener("click", () => moveNarrativeSlide(-1));
+    narrativeNextButton.addEventListener("click", () => moveNarrativeSlide(1));
+    narrativeSkipButton.addEventListener("click", completeNarrativeSequence);
+    narrativeExitButton.addEventListener("click", goToLanding);
+    openFinaleButton.addEventListener("click", () => {
+      closeExploreCompletionModal();
+      openNarrativeSequence("finale");
+    });
+    stayInExploreButton.addEventListener("click", closeExploreCompletionModal);
+    goToFinaleButton.addEventListener("click", () => {
+      closeExploreCompletionModal();
+      openNarrativeSequence("finale");
+    });
+    goToSalesFromExploreButton.addEventListener("click", goToSales);
+    backToLandingButton.addEventListener("click", goToLanding);
+    backFromExploreButton.addEventListener("click", goToLanding);
+    salesBackButton.addEventListener("click", goToLanding);
+    salesInteractiveButton.addEventListener("click", () => openNarrativeSequence("intro"));
+    salesCatalogButton.addEventListener("click", () => {
+      document.getElementById("salesCatalogSection").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    salesFormJumpButton.addEventListener("click", () => prepareSalesForm(salesWorkSelect.value, true));
+    heroScrollButton.addEventListener("click", () => {
+      launchCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    salesAvailableGrid.addEventListener("click", (event) => {
+      const actionButton = event.target.closest("[data-work-action]");
+      if (actionButton) {
+        event.stopPropagation();
+        openSalesOrderModal(actionButton.dataset.workAction);
+        return;
+      }
+
+      const card = event.target.closest(".art-card");
+      if (card) {
+        openSalesDetail(card.dataset.workId);
+      }
+    });
+
+    salesArchiveGrid.addEventListener("click", (event) => {
+      const actionButton = event.target.closest("[data-work-action]");
+      if (actionButton) {
+        event.stopPropagation();
+        openSalesOrderModal(actionButton.dataset.workAction);
+        return;
+      }
+
+      const card = event.target.closest(".art-card");
+      if (card) {
+        openSalesDetail(card.dataset.workId);
+      }
+    });
+
+    [salesAvailableGrid, salesArchiveGrid].forEach((grid) => {
+      grid.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") {
+          return;
+        }
+
+        const card = event.target.closest(".art-card");
+        if (!card || event.target.closest("[data-work-action]")) {
+          return;
+        }
+
+        event.preventDefault();
+        openSalesDetail(card.dataset.workId);
+      });
+    });
+
+    salesWorkSelect.addEventListener("change", () => {
+      setFormMessage(salesFormMessage, "", "");
+    });
+
+    salesOrderWorkSelect.addEventListener("change", () => {
+      const work = getWorkById(salesOrderWorkSelect.value);
+      salesOrderTitle.textContent = getWorkCtaLabel(work);
+      salesOrderHint.textContent = `${work.title} · ${SALES_STATUS_LABELS[work.availability]} · ${getPriceLabel(work)}`;
+      setFormMessage(salesOrderMessage, "", "");
+    });
+
+    salesDetailCloseButton.addEventListener("click", closeSalesDetail);
+    salesDetailModal.addEventListener("click", (event) => {
+      if (event.target === salesDetailModal) {
+        closeSalesDetail();
+      }
+    });
+
+    salesOrderForm.addEventListener("submit", (event) => submitSalesForm(event, "order"));
+    salesOrderCloseButton.addEventListener("click", closeSalesOrderModal);
+    salesOrderModal.addEventListener("click", (event) => {
+      if (event.target === salesOrderModal) {
+        closeSalesOrderModal();
+      }
+    });
+
+    salesInquiryForm.addEventListener("submit", submitSalesInquiry);
+    salesResetButton.addEventListener("click", resetSalesForm);
+
+    colorImage.addEventListener("load", () => {
+      if (isExperienceVisible()) {
+        fitCanvasToImage();
+      }
+    });
+
+    exploreImage.addEventListener("load", () => {
+      if (isExploreVisible()) {
+        fitExploreView();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (isExperienceVisible()) {
+        fitCanvasToImage();
+      }
+
+      if (isExploreVisible()) {
+        if (activeHotspotId) {
+          const hotspot = HOTSPOTS.find((item) => item.id === activeHotspotId);
+          fitExploreView();
+          activeHotspotId = hotspot ? hotspot.id : null;
+          if (hotspot) {
+            centerExploreOn(hotspot, false);
+          }
+        } else {
+          fitExploreView();
+        }
+      }
+    });
+
+    revealCanvas.addEventListener("pointerdown", beginPainting);
+    window.addEventListener("pointerup", endPainting);
+    window.addEventListener("pointercancel", endPainting);
+    revealCanvas.addEventListener("pointermove", (event) => {
+      moveBrush(event);
+      paint(event);
+    });
+    revealCanvas.addEventListener("pointerenter", () => {
+      isPointerInside = true;
+      brush.style.opacity = isPainting ? "1" : "0.9";
+    });
+    revealCanvas.addEventListener("pointerleave", () => {
+      isPointerInside = false;
+      if (!isPainting) {
+        brush.style.opacity = "0";
+      }
+    });
+
+    restartButton.addEventListener("click", resetExperience);
+    continueJourneyButton.addEventListener("click", () => openNarrativeSequence("bridge"));
+    closeButton.addEventListener("click", closeModal);
+    infoModal.addEventListener("click", (event) => {
+      if (event.target === infoModal) {
+        closeModal();
+      }
+    });
+
+    zoomInButton.addEventListener("click", () => {
+      setExploreScale(currentExploreScale + ZOOM_STEP, undefined, undefined, true);
+    });
+    zoomOutButton.addEventListener("click", () => {
+      setExploreScale(currentExploreScale - ZOOM_STEP, undefined, undefined, true);
+    });
+    zoomResetButton.addEventListener("click", resetExploreView);
+
+    exploreViewport.addEventListener("pointerdown", beginExploreDrag);
+    exploreViewport.addEventListener("pointermove", moveExploreDrag);
+    exploreViewport.addEventListener("pointerup", endExploreDrag);
+    exploreViewport.addEventListener("pointercancel", endExploreDrag);
+    exploreViewport.addEventListener("dragstart", (event) => {
+      event.preventDefault();
+    });
+    exploreViewport.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      const rect = exploreViewport.getBoundingClientRect();
+      const focusX = event.clientX - rect.left;
+      const focusY = event.clientY - rect.top;
+      const direction = event.deltaY < 0 ? 1 : -1;
+      setExploreScale(currentExploreScale + direction * ZOOM_STEP * 0.5, focusX, focusY, false);
+    }, { passive: false });
+
+    exploreCanvas.addEventListener("click", (event) => {
+      const hotspotButton = event.target.closest(".hotspot");
+      if (!hotspotButton) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      activateHotspotById(hotspotButton.dataset.hotspotId);
+    });
+
+    storyCloseButton.addEventListener("click", closeStoryModal);
+    storyModal.addEventListener("click", (event) => {
+      if (event.target === storyModal) {
+        closeStoryModal();
+      }
+    });
+    exploreCompletionModal.addEventListener("click", (event) => {
+      if (event.target === exploreCompletionModal) {
+        closeExploreCompletionModal();
+      }
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (!narrativeScreen.classList.contains("hidden") && !document.body.classList.contains("modal-active")) {
+        if (event.key === "ArrowRight") {
+          event.preventDefault();
+          moveNarrativeSlide(1);
+          return;
+        }
+
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          moveNarrativeSlide(-1);
+          return;
+        }
+      }
+
+      if (event.key === "Escape") {
+        closeModal();
+        closeStoryModal();
+        closeExploreCompletionModal();
+        closeSalesDetail();
+        closeSalesOrderModal();
+      }
+    });
+
+    if (colorImage.complete && isExperienceVisible()) {
+      fitCanvasToImage();
+    }
+
+    if (exploreImage.complete && isExploreVisible()) {
+      fitExploreView();
+    }
+
+    renderSalesCatalog();
+    renderNarrativeSlide();
+    updateExploreProgressUI();
+  </script>
+</body>
+</html>

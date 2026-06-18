@@ -1,0 +1,3396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Возвращение цвета</title>
+  <style>
+    :root {
+      --bg-top: #080b08;
+      --bg-mid: #111811;
+      --bg-bottom: #050604;
+      --paper: rgba(16, 22, 15, 0.74);
+      --paper-strong: rgba(20, 26, 18, 0.9);
+      --paper-soft: rgba(214, 228, 182, 0.05);
+      --ink: #d8e0be;
+      --ink-soft: rgba(216, 224, 190, 0.72);
+      --accent: #8f3226;
+      --accent-deep: #602018;
+      --accent-alt: #6b7e3a;
+      --accent-violet: #3f2d23;
+      --accent-gold: #b48a56;
+      --accent-soft: rgba(143, 50, 38, 0.18);
+      --line: rgba(177, 197, 138, 0.12);
+      --line-strong: rgba(177, 197, 138, 0.24);
+      --shadow: 0 30px 100px rgba(0, 0, 0, 0.56);
+      --shadow-soft: 0 18px 44px rgba(0, 0, 0, 0.4);
+      --glow-coral: 0 0 70px rgba(143, 50, 38, 0.24);
+      --glow-cyan: 0 0 64px rgba(107, 126, 58, 0.22);
+      --font-display: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+      --font-ui: Verdana, "Trebuchet MS", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-display);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18% 16%, rgba(107, 126, 58, 0.14), transparent 0 24%),
+        radial-gradient(circle at 82% 14%, rgba(143, 50, 38, 0.16), transparent 0 22%),
+        radial-gradient(circle at 54% 72%, rgba(180, 138, 86, 0.08), transparent 0 28%),
+        linear-gradient(180deg, var(--bg-top), var(--bg-mid) 46%, var(--bg-bottom));
+      overflow-x: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    body::before {
+      background:
+        radial-gradient(circle at 30% 20%, rgba(177, 197, 138, 0.06), transparent 0 26%),
+        radial-gradient(circle at 70% 80%, rgba(143, 50, 38, 0.08), transparent 0 22%),
+        repeating-linear-gradient(135deg, rgba(177, 197, 138, 0.016) 0 2px, transparent 2px 38px);
+      mix-blend-mode: screen;
+      opacity: 0.42;
+    }
+
+    body::after {
+      background:
+        radial-gradient(circle at 50% 18%, rgba(216, 224, 190, 0.05), transparent 0 18%),
+        radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.62) 78%);
+    }
+
+    ::selection {
+      background: rgba(255, 123, 95, 0.35);
+      color: #fff7f0;
+    }
+
+    body.modal-active {
+      overflow: hidden;
+    }
+
+    .page {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 24px 0 40px;
+      position: relative;
+    }
+
+    .screen {
+      display: block;
+      position: relative;
+    }
+
+    .screen.hidden {
+      display: none;
+    }
+
+    .hero-panel,
+    .workspace,
+    .launch-card,
+    .fact-card {
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px) saturate(110%);
+    }
+
+    .landing-layout {
+      display: grid;
+      gap: 24px;
+      position: relative;
+    }
+
+    .landing-layout::before {
+      content: "";
+      position: absolute;
+      inset: -32px -24px auto;
+      height: 320px;
+      background:
+        radial-gradient(circle at 18% 44%, rgba(255, 123, 95, 0.22), transparent 0 26%),
+        radial-gradient(circle at 74% 18%, rgba(107, 214, 209, 0.14), transparent 0 24%);
+      filter: blur(20px);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .hero-panel {
+      position: relative;
+      overflow: hidden;
+      border-radius: 34px 26px 42px 28px;
+      padding: clamp(28px, 5vw, 52px);
+      background:
+        linear-gradient(145deg, rgba(24, 33, 20, 0.94), rgba(11, 15, 10, 0.9)),
+        var(--paper);
+      box-shadow: var(--shadow), var(--glow-coral);
+    }
+
+    .hero-panel::before,
+    .hero-panel::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      pointer-events: none;
+    }
+
+    .hero-panel::before {
+      width: 360px;
+      height: 360px;
+      top: -140px;
+      right: -70px;
+      background: radial-gradient(circle, rgba(143, 50, 38, 0.28), transparent 68%);
+      filter: blur(8px);
+    }
+
+    .hero-panel::after {
+      width: 280px;
+      height: 280px;
+      left: -90px;
+      bottom: -120px;
+      background: radial-gradient(circle, rgba(107, 126, 58, 0.22), transparent 72%);
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+      gap: 28px;
+      align-items: center;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 20px;
+    }
+
+    .hero-orbit {
+      position: absolute;
+      right: clamp(18px, 3vw, 38px);
+      top: clamp(24px, 4vw, 48px);
+      width: clamp(110px, 14vw, 180px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background:
+        radial-gradient(circle at center, rgba(255, 123, 95, 0.28), transparent 0 34%),
+        radial-gradient(circle at 72% 30%, rgba(107, 214, 209, 0.3), transparent 0 18%);
+      box-shadow:
+        inset 0 0 30px rgba(255, 255, 255, 0.06),
+        0 0 40px rgba(255, 123, 95, 0.18);
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    .hero-orbit::before,
+    .hero-orbit::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      inset: 12%;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .hero-orbit::after {
+      inset: auto;
+      width: 16px;
+      height: 16px;
+      top: 18%;
+      right: 12%;
+      background: linear-gradient(135deg, var(--accent-alt), #d3fff7);
+      box-shadow: 0 0 18px rgba(107, 214, 209, 0.45);
+      border: 0;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 8px 15px;
+      border-radius: 999px;
+      border: 1px solid rgba(177, 197, 138, 0.16);
+      background: rgba(123, 139, 94, 0.08);
+      box-shadow: inset 0 1px 0 rgba(177, 197, 138, 0.08), 0 0 26px rgba(107, 126, 58, 0.12);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-family: var(--font-ui);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 16px;
+      font-size: clamp(38px, 6vw, 70px);
+      line-height: 0.95;
+      font-weight: 600;
+      max-width: 11ch;
+      text-shadow: 0 10px 28px rgba(0, 0, 0, 0.24);
+    }
+
+    .lead {
+      max-width: 650px;
+      margin-bottom: 0;
+      font-size: clamp(18px, 2.2vw, 22px);
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+
+    .hero-side {
+      display: grid;
+      gap: 14px;
+      align-self: stretch;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .hero-stat {
+      padding: 16px 14px;
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)),
+        rgba(10, 9, 20, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      min-height: 100%;
+    }
+
+    .hero-stat strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: clamp(24px, 3vw, 34px);
+      line-height: 1;
+      color: #fff5e9;
+    }
+
+    .hero-stat span {
+      display: block;
+      color: rgba(246, 236, 223, 0.7);
+      font-size: 13px;
+      line-height: 1.45;
+      font-family: var(--font-ui);
+    }
+
+    .quote-card,
+    .fact-card {
+      padding: 20px 22px;
+      border-radius: 26px 20px 28px 22px;
+      background:
+        linear-gradient(180deg, rgba(216, 224, 190, 0.06), rgba(216, 224, 190, 0.02)),
+        var(--paper);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .quote-card {
+      background:
+        linear-gradient(180deg, rgba(216, 224, 190, 0.08), rgba(216, 224, 190, 0.02)),
+        linear-gradient(135deg, rgba(143, 50, 38, 0.08), rgba(107, 126, 58, 0.06)),
+        var(--paper);
+      border: 1px solid var(--line);
+    }
+
+    .quote-card p {
+      margin-bottom: 0;
+      font-size: 17px;
+      line-height: 1.6;
+      color: rgba(246, 236, 223, 0.88);
+    }
+
+    .fact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .fact-card {
+      min-height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .fact-card::before {
+      content: "";
+      position: absolute;
+      inset: auto -16% -30% auto;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(107, 214, 209, 0.14), transparent 72%);
+      pointer-events: none;
+    }
+
+    .fact-card strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.58);
+      font-family: var(--font-ui);
+    }
+
+    .fact-card p {
+      margin-bottom: 0;
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .launch-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+      align-content: start;
+      padding: 24px;
+      border-radius: 34px 24px 38px 20px;
+      background:
+        linear-gradient(180deg, rgba(216, 224, 190, 0.08), rgba(216, 224, 190, 0.02)),
+        linear-gradient(145deg, rgba(22, 30, 19, 0.94), rgba(10, 12, 9, 0.9));
+      color: inherit;
+      transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease, background 0.24s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .launch-card::before {
+      content: "";
+      position: absolute;
+      inset: -10% 30% auto -10%;
+      height: 180px;
+      background: radial-gradient(circle, rgba(143, 50, 38, 0.18), transparent 72%);
+      pointer-events: none;
+    }
+
+    .launch-card:hover,
+    .launch-card:focus-visible {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: var(--shadow), var(--glow-cyan);
+      border-color: rgba(177, 197, 138, 0.24);
+      outline: none;
+    }
+
+    .launch-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .launch-card:nth-child(1) {
+      transform-origin: 20% 50%;
+    }
+
+    .launch-card:nth-child(1)::after,
+    .launch-card:nth-child(2)::after {
+      content: "";
+      position: absolute;
+      inset: auto auto 18px 18px;
+      width: 74px;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.45), transparent);
+      pointer-events: none;
+    }
+
+    .launch-card:nth-child(2) {
+      background:
+        linear-gradient(180deg, rgba(216, 224, 190, 0.06), rgba(216, 224, 190, 0.02)),
+        linear-gradient(145deg, rgba(30, 20, 16, 0.94), rgba(11, 10, 8, 0.92));
+      clip-path: polygon(0 0, 100% 0, 100% 90%, 96% 100%, 6% 98%, 0 92%);
+    }
+
+    .launch-card:nth-child(2)::before {
+      background: radial-gradient(circle, rgba(107, 126, 58, 0.22), transparent 72%);
+    }
+
+    .launch-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 0;
+      align-items: flex-start;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      font-family: var(--font-ui);
+    }
+
+    .launch-copy {
+      display: grid;
+      gap: 16px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .launch-copy h2 {
+      margin-bottom: 0;
+      max-width: 12ch;
+      font-size: clamp(32px, 4vw, 46px);
+      line-height: 0.98;
+    }
+
+    .launch-copy p {
+      margin-bottom: 0;
+      max-width: 34ch;
+      font-size: 18px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+
+    .launch-field {
+      display: grid;
+      gap: 8px;
+      width: min(100%, 420px);
+      padding: 16px 18px;
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(216, 224, 190, 0.06), rgba(216, 224, 190, 0.02)),
+        rgba(11, 15, 10, 0.7);
+      border: 1px solid rgba(177, 197, 138, 0.1);
+    }
+
+    .launch-field strong {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.54);
+      font-family: var(--font-ui);
+    }
+
+    .launch-field span {
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .launch-preview {
+      position: relative;
+      width: min(100%, 380px);
+      margin: 0 auto;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow-soft);
+      background: #1b1830;
+      min-height: 260px;
+      aspect-ratio: 1.08 / 1;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .launch-preview img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(0.98) contrast(1.08) brightness(0.94);
+      transform: scale(1.04);
+    }
+
+    .launch-preview::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(8, 6, 18, 0.02), rgba(8, 6, 18, 0.54)),
+        linear-gradient(120deg, rgba(255, 255, 255, 0.2), transparent 42%),
+        radial-gradient(circle at 80% 20%, rgba(107, 214, 209, 0.14), transparent 0 24%);
+    }
+
+    .launch-caption {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      z-index: 1;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(10, 9, 20, 0.7);
+      color: #fff4e8;
+      font-size: 15px;
+      line-height: 1.45;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(14px);
+    }
+
+    .experience-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .experience-topbar::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 -14px;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.18), transparent 72%);
+      pointer-events: none;
+    }
+
+    .experience-title {
+      display: grid;
+      gap: 6px;
+    }
+
+    .experience-title p {
+      margin-bottom: 0;
+      color: var(--ink-soft);
+      font-size: 16px;
+    }
+
+    .workspace {
+      position: relative;
+      padding: clamp(12px, 2vw, 22px);
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, rgba(216, 224, 190, 0.06), rgba(216, 224, 190, 0.015)),
+        linear-gradient(160deg, rgba(18, 25, 16, 0.9), rgba(8, 10, 8, 0.96));
+      box-shadow: var(--shadow), var(--glow-cyan);
+    }
+
+    .workspace::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        radial-gradient(circle at 14% 18%, rgba(255, 123, 95, 0.12), transparent 0 18%),
+        radial-gradient(circle at 82% 24%, rgba(107, 214, 209, 0.12), transparent 0 18%);
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    .stage {
+      position: relative;
+      border-radius: 22px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 12%, rgba(255, 244, 222, 0.2), transparent 0 30%),
+        linear-gradient(180deg, rgba(22, 19, 36, 0.82), rgba(8, 8, 18, 0.96));
+      user-select: none;
+      touch-action: none;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -30px 80px rgba(0, 0, 0, 0.28),
+        0 30px 60px rgba(2, 3, 10, 0.38);
+      isolation: isolate;
+      border-radius: 28px 18px 34px 16px;
+    }
+
+    .stage::before,
+    .stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .stage::before {
+      background:
+        radial-gradient(circle at 50% 2%, rgba(255, 220, 176, 0.28), transparent 0 26%),
+        linear-gradient(90deg, transparent 0 8%, rgba(255, 255, 255, 0.02) 8% 9%, transparent 9% 91%, rgba(255, 255, 255, 0.02) 91% 92%, transparent 92% 100%);
+    }
+
+    .stage::after {
+      background:
+        radial-gradient(circle at 20% 84%, rgba(143, 50, 38, 0.16), transparent 0 20%),
+        radial-gradient(circle at 80% 82%, rgba(107, 126, 58, 0.12), transparent 0 22%);
+      mix-blend-mode: screen;
+    }
+
+    .painting-base,
+    .reveal-layer {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .painting-base {
+      position: relative;
+      z-index: 1;
+      background: #1a1626;
+      filter: saturate(1.02) contrast(1.05);
+    }
+
+    .reveal-layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 2;
+      cursor: none;
+    }
+
+    .brush {
+      position: absolute;
+      width: 92px;
+      height: 92px;
+      margin-left: -46px;
+      margin-top: -46px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.18s ease;
+      background:
+        radial-gradient(circle, rgba(255, 249, 239, 0.2) 0 20%, rgba(255, 123, 95, 0.22) 21% 44%, rgba(255, 200, 124, 0.24) 45% 58%, rgba(6, 8, 18, 0.7) 59% 62%, transparent 63%);
+      mix-blend-mode: screen;
+      filter: drop-shadow(0 0 18px rgba(143, 50, 38, 0.25)) drop-shadow(0 0 24px rgba(107, 126, 58, 0.16));
+    }
+
+    .brush::before,
+    .brush::after {
+      content: "";
+      position: absolute;
+      inset: 50%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .brush::before {
+      width: 28px;
+      height: 28px;
+      background: radial-gradient(circle, rgba(255, 249, 239, 0.25), rgba(255, 123, 95, 0.08) 60%, transparent 72%);
+    }
+
+    .brush::after {
+      width: 100%;
+      height: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 0 24px rgba(255, 255, 255, 0.05);
+    }
+
+    .stage-atmosphere {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .stage-atmosphere span {
+      position: absolute;
+      display: block;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 248, 236, 0.38), rgba(255, 248, 236, 0));
+      opacity: 0.55;
+      filter: blur(1px);
+      animation: moteFloat 9s linear infinite;
+    }
+
+    .stage-atmosphere span:nth-child(1) {
+      width: 14px;
+      height: 14px;
+      left: 10%;
+      top: 72%;
+      animation-duration: 10s;
+      animation-delay: -1.2s;
+    }
+
+    .stage-atmosphere span:nth-child(2) {
+      width: 10px;
+      height: 10px;
+      left: 22%;
+      top: 58%;
+      animation-duration: 8.2s;
+      animation-delay: -3.4s;
+    }
+
+    .stage-atmosphere span:nth-child(3) {
+      width: 12px;
+      height: 12px;
+      left: 44%;
+      top: 68%;
+      animation-duration: 9.6s;
+      animation-delay: -2.1s;
+    }
+
+    .stage-atmosphere span:nth-child(4) {
+      width: 18px;
+      height: 18px;
+      left: 64%;
+      top: 74%;
+      animation-duration: 11s;
+      animation-delay: -4.8s;
+    }
+
+    .stage-atmosphere span:nth-child(5) {
+      width: 9px;
+      height: 9px;
+      left: 78%;
+      top: 60%;
+      animation-duration: 7.6s;
+      animation-delay: -0.8s;
+    }
+
+    .stage-atmosphere span:nth-child(6) {
+      width: 15px;
+      height: 15px;
+      left: 88%;
+      top: 78%;
+      animation-duration: 10.8s;
+      animation-delay: -5.1s;
+    }
+
+    .hud {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
+        rgba(8, 8, 20, 0.78);
+      color: #fff7ec;
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 18px 30px rgba(3, 4, 10, 0.26);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hud::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 180px;
+      background: linear-gradient(90deg, rgba(255, 123, 95, 0.16), transparent);
+      pointer-events: none;
+    }
+
+    .hud-copy {
+      min-width: 170px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hud-title {
+      margin: 0 0 4px;
+      font-size: 15px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      font-family: var(--font-ui);
+    }
+
+    .hud-text {
+      margin: 0;
+      font-size: 14px;
+      color: rgba(255, 247, 236, 0.8);
+    }
+
+    .progress-wrap {
+      flex: 1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 7px;
+      font-size: 14px;
+      font-family: var(--font-ui);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-gold), var(--accent-alt));
+      box-shadow: 0 0 20px rgba(107, 214, 209, 0.35);
+      transition: width 0.18s ease-out;
+    }
+
+    .hint {
+      margin-top: 14px;
+      padding: 0 6px;
+      text-align: center;
+      font-size: 14px;
+      color: rgba(246, 236, 223, 0.72);
+      letter-spacing: 0.02em;
+      font-family: var(--font-ui);
+    }
+
+    @media (min-width: 721px) {
+      #experienceScreen {
+        min-height: calc(100dvh - 64px);
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      #experienceScreen.hidden {
+        display: none;
+      }
+
+      #experienceScreen .experience-topbar {
+        margin-bottom: 0;
+      }
+
+      #experienceScreen .workspace {
+        min-height: 0;
+        height: 100%;
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto auto;
+        padding: 16px;
+      }
+
+      #experienceScreen .stage {
+        min-height: 0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #experienceScreen .hud {
+        margin-top: 12px;
+      }
+
+      #experienceScreen .hint {
+        margin-top: 10px;
+      }
+    }
+
+    .explore-shell {
+      display: grid;
+      gap: 18px;
+    }
+
+    .explore-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 0;
+      position: relative;
+    }
+
+    .explore-topbar::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 -14px;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(107, 214, 209, 0.22), transparent 72%);
+      pointer-events: none;
+    }
+
+    .explore-title {
+      display: grid;
+      gap: 6px;
+    }
+
+    .explore-title p {
+      margin-bottom: 0;
+      max-width: 760px;
+      color: var(--ink-soft);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .explore-workspace {
+      position: relative;
+      padding: clamp(14px, 2.3vw, 24px);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 14% 18%, rgba(107, 214, 209, 0.12), transparent 0 22%),
+        radial-gradient(circle at 84% 16%, rgba(255, 123, 95, 0.14), transparent 0 20%),
+        linear-gradient(180deg, rgba(20, 18, 38, 0.82), rgba(10, 10, 22, 0.94));
+    }
+
+    .explore-stage {
+      position: relative;
+      min-height: 70vh;
+      padding: clamp(16px, 2vw, 26px);
+      border-radius: 30px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 10%, rgba(255, 241, 214, 0.18), transparent 0 28%),
+        linear-gradient(145deg, #141327, #0d1224 42%, #090911 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 28px 50px rgba(6, 7, 16, 0.34);
+      border-radius: 34px 22px 38px 18px;
+    }
+
+    .explore-stage::before {
+      content: "";
+      position: absolute;
+      inset: clamp(8px, 1.2vw, 14px);
+      border-radius: 22px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(107, 214, 209, 0.05) 34%, rgba(8, 10, 18, 0.24) 100%);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+        inset 0 0 0 10px rgba(255, 255, 255, 0.03);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .explore-stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 16% 80%, rgba(143, 50, 38, 0.14), transparent 0 18%),
+        radial-gradient(circle at 84% 22%, rgba(107, 126, 58, 0.12), transparent 0 18%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .explore-viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 70vh;
+      overflow: hidden;
+      cursor: grab;
+      touch-action: none;
+      border-radius: 14px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 30%),
+        linear-gradient(180deg, rgba(25, 23, 42, 0.98), rgba(12, 11, 22, 1));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        inset 0 18px 32px rgba(255, 255, 255, 0.04);
+      z-index: 1;
+    }
+
+    .explore-viewport.dragging {
+      cursor: grabbing;
+    }
+
+    .explore-canvas {
+      position: absolute;
+      left: 0;
+      top: 0;
+      overflow: hidden;
+      transform-origin: 0 0;
+      will-change: transform;
+      border-radius: 10px;
+    }
+
+    .explore-canvas img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+      filter: saturate(1.02) contrast(1.08) brightness(0.94);
+    }
+
+    .hotspot {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      margin-left: -16px;
+      margin-top: -16px;
+      border-radius: 50%;
+      border: 0;
+      padding: 0;
+      background:
+        radial-gradient(circle at 35% 35%, rgba(255, 248, 228, 0.96), rgba(180, 138, 86, 0.88) 46%, rgba(107, 126, 58, 0.92) 72%, rgba(22, 28, 12, 0.98));
+      box-shadow:
+        0 0 0 1px rgba(216, 224, 190, 0.4),
+        0 0 0 10px rgba(107, 126, 58, 0.12),
+        0 0 34px rgba(107, 126, 58, 0.18),
+        0 12px 24px rgba(6, 8, 16, 0.3);
+      z-index: 2;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+    }
+
+    .hotspot::before,
+    .hotspot::after {
+      content: "";
+      position: absolute;
+      inset: 50%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .hotspot::before {
+      width: 12px;
+      height: 12px;
+      background: rgba(5, 28, 34, 0.88);
+    }
+
+    .hotspot::after {
+      width: 100%;
+      height: 100%;
+      border: 1px solid rgba(216, 224, 190, 0.48);
+      animation: hotspotPulse 2.4s ease-out infinite;
+    }
+
+    .hotspot .hotspot-label {
+      pointer-events: none;
+    }
+
+    .hotspot-label {
+      position: absolute;
+      left: 50%;
+      top: calc(100% + 10px);
+      transform: translateX(-50%);
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(12, 16, 9, 0.84);
+      color: rgba(216, 224, 190, 0.84);
+      border: 1px solid rgba(177, 197, 138, 0.12);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+      font-family: var(--font-ui);
+      backdrop-filter: blur(10px);
+    }
+
+    .hotspot.label-above .hotspot-label {
+      top: auto;
+      bottom: calc(100% + 10px);
+    }
+
+    .hotspot:hover,
+    .hotspot:focus-visible,
+    .hotspot.active {
+      transform: scale(1.16);
+      box-shadow:
+        0 0 0 1px rgba(216, 224, 190, 0.52),
+        0 0 0 14px rgba(107, 126, 58, 0.18),
+        0 0 46px rgba(107, 126, 58, 0.24),
+        0 18px 30px rgba(6, 8, 16, 0.35);
+      outline: none;
+    }
+
+    .hotspot:hover .hotspot-label,
+    .hotspot:focus-visible .hotspot-label {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    .hotspot.label-above:hover .hotspot-label,
+    .hotspot.label-above:focus-visible .hotspot-label {
+      transform: translateX(-50%) translateY(2px);
+    }
+
+    .explore-hud {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 16px;
+      align-items: center;
+    }
+
+    .zoom-panel {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
+        rgba(8, 11, 22, 0.78);
+      color: #fff7ec;
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 18px 30px rgba(5, 7, 14, 0.24);
+    }
+
+    .zoom-panel strong {
+      min-width: 58px;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-family: var(--font-ui);
+    }
+
+    .zoom-panel button {
+      min-width: 42px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.08);
+      color: inherit;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .zoom-panel button:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .zoom-meter {
+      min-width: 64px;
+      text-align: center;
+      font-size: 18px;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 0 20px rgba(107, 214, 209, 0.24);
+    }
+
+    .explore-note {
+      padding: 10px 14px;
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
+        rgba(8, 11, 22, 0.74);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: rgba(246, 236, 223, 0.82);
+      font-size: 14px;
+      line-height: 1.5;
+      box-shadow: 0 18px 30px rgba(5, 7, 14, 0.2);
+    }
+
+    .narrative-shell {
+      min-height: calc(100dvh - 64px);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 18px;
+      position: relative;
+    }
+
+    .narrative-shell::before {
+      content: "";
+      position: absolute;
+      inset: -24px 0 auto;
+      height: 280px;
+      background:
+        radial-gradient(circle at 18% 30%, rgba(255, 123, 95, 0.16), transparent 0 20%),
+        radial-gradient(circle at 82% 18%, rgba(167, 139, 250, 0.14), transparent 0 22%);
+      pointer-events: none;
+      filter: blur(14px);
+    }
+
+    .narrative-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      position: relative;
+    }
+
+    .narrative-topbar::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 -14px;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(255, 123, 95, 0.22), transparent 72%);
+      pointer-events: none;
+    }
+
+    .narrative-title {
+      display: grid;
+      gap: 6px;
+    }
+
+    .narrative-title p {
+      margin-bottom: 0;
+      max-width: 720px;
+      color: var(--ink-soft);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .narrative-workspace {
+      display: grid;
+      place-items: center;
+      padding: clamp(14px, 2vw, 24px);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 16% 18%, rgba(255, 123, 95, 0.12), transparent 0 20%),
+        radial-gradient(circle at 86% 22%, rgba(107, 214, 209, 0.12), transparent 0 18%),
+        linear-gradient(180deg, rgba(19, 18, 39, 0.84), rgba(10, 10, 22, 0.95));
+    }
+
+    .narrative-card {
+      width: min(100%, 820px);
+      cursor: default;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)),
+        linear-gradient(145deg, rgba(24, 20, 44, 0.96), rgba(9, 10, 22, 0.92));
+      box-shadow: var(--shadow), var(--glow-coral);
+      border-radius: 38px 26px 42px 20px;
+    }
+
+    .narrative-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 180px;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(255, 123, 95, 0.18), transparent 0 36%),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04), transparent 54%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .narrative-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -10% -14% auto;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(107, 214, 209, 0.12), transparent 72%);
+      pointer-events: none;
+    }
+
+    .narrative-card.is-animating {
+      animation: narrativeCardIn 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .narrative-card:hover,
+    .narrative-card:focus-visible {
+      transform: none;
+      box-shadow: var(--shadow);
+      border-color: var(--line);
+    }
+
+    .narrative-card .launch-copy {
+      justify-items: stretch;
+      text-align: left;
+      position: relative;
+      z-index: 1;
+    }
+
+    .narrative-card .launch-copy h2,
+    .narrative-card .launch-copy p {
+      max-width: none;
+    }
+
+    .narrative-progress {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
+        rgba(8, 11, 22, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: rgba(246, 236, 223, 0.8);
+      font-size: 14px;
+      line-height: 1.5;
+      box-shadow: 0 16px 28px rgba(5, 7, 14, 0.18);
+    }
+
+    .narrative-progress[hidden] {
+      display: none;
+    }
+
+    .narrative-step {
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.54);
+      font-family: var(--font-ui);
+    }
+
+    .narrative-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .screen-transition-enter {
+      animation: screenFadeIn 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .hero-panel,
+    .launch-card,
+    .fact-card,
+    .workspace,
+    .modal-card {
+      will-change: transform, opacity;
+    }
+
+    @keyframes screenFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.99);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes narrativeCardIn {
+      0% {
+        opacity: 0;
+        transform: translateY(28px) scale(0.97) rotate(-0.4deg);
+      }
+
+      58% {
+        opacity: 1;
+        transform: translateY(-4px) scale(1.008) rotate(0.12deg);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0deg);
+      }
+    }
+
+    .explore-note {
+      display: grid;
+      gap: 10px;
+    }
+
+    .explore-note strong {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.54);
+      font-family: var(--font-ui);
+    }
+
+    .explore-note p {
+      margin: 0;
+    }
+
+    @media (min-width: 721px) {
+      #narrativeScreen {
+        min-height: calc(100dvh - 64px);
+        display: grid;
+      }
+
+      #narrativeScreen.hidden {
+        display: none;
+      }
+
+      #narrativeScreen .narrative-shell {
+        min-height: 0;
+        height: 100%;
+      }
+
+      #narrativeScreen .narrative-workspace {
+        min-height: 0;
+        height: 100%;
+        align-items: stretch;
+        padding: 16px;
+      }
+
+      #narrativeScreen .narrative-card {
+        min-height: 0;
+        height: 100%;
+        max-height: 100%;
+        padding: 18px;
+      }
+
+      #narrativeScreen .narrative-card .launch-copy {
+        height: 100%;
+        align-content: stretch;
+        grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+        gap: 12px;
+      }
+
+      #narrativeScreen .launch-preview {
+        width: min(100%, 300px);
+        min-height: 0;
+        aspect-ratio: 1.18 / 1;
+      }
+
+      #narrativeScreen .launch-copy h2 {
+        font-size: clamp(28px, 3vw, 38px);
+      }
+
+      #narrativeScreen .launch-copy p {
+        font-size: 17px;
+        line-height: 1.42;
+      }
+
+      #narrativeScreen .launch-field {
+        padding: 14px 16px;
+      }
+
+      #narrativeScreen .narrative-actions {
+        margin-top: 0;
+      }
+    }
+
+    .story-modal .modal-card {
+      overflow: hidden;
+      transform-origin: 50% 100%;
+    }
+
+    .story-modal .modal-card::before {
+      content: "";
+      position: absolute;
+      inset: -20% -10% auto;
+      height: 180px;
+      background:
+        radial-gradient(circle at center, rgba(107, 214, 209, 0.24), transparent 60%),
+        radial-gradient(circle at 24% 20%, rgba(255, 123, 95, 0.22), transparent 58%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .story-modal.open .modal-card {
+      animation: storyModalIn 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    @keyframes hotspotPulse {
+      0% {
+        transform: translate(-50%, -50%) scale(0.82);
+        opacity: 0.8;
+      }
+
+      70% {
+        transform: translate(-50%, -50%) scale(1.8);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(1.8);
+        opacity: 0;
+      }
+    }
+
+    @keyframes moteFloat {
+      0% {
+        transform: translate3d(0, 0, 0) scale(0.85);
+        opacity: 0;
+      }
+
+      18% {
+        opacity: 0.5;
+      }
+
+      50% {
+        transform: translate3d(18px, -120px, 0) scale(1);
+        opacity: 0.42;
+      }
+
+      100% {
+        transform: translate3d(-8px, -240px, 0) scale(1.08);
+        opacity: 0;
+      }
+    }
+
+    @keyframes storyModalIn {
+      0% {
+        opacity: 0;
+        transform: translateY(42px) scale(0.78) rotate(-4deg);
+      }
+
+      55% {
+        opacity: 1;
+        transform: translateY(-8px) scale(1.03) rotate(1deg);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0deg);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+
+      .stage-atmosphere span,
+      .hotspot::after,
+      .narrative-card.is-animating,
+      .story-modal.open .modal-card,
+      .screen-transition-enter {
+        animation: none !important;
+      }
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font: inherit;
+      font-family: var(--font-ui);
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      box-shadow: 0 8px 22px rgba(4, 4, 12, 0.22);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button:focus-visible {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.34);
+      box-shadow: 0 0 0 4px rgba(107, 214, 209, 0.18), 0 10px 28px rgba(4, 4, 12, 0.32);
+    }
+
+    .primary {
+      background: linear-gradient(135deg, #7b261d, var(--accent), #a54b30 70%, var(--accent-gold));
+      color: #f6e7cb;
+      border-color: rgba(180, 138, 86, 0.24);
+      box-shadow: 0 14px 30px rgba(96, 32, 24, 0.34);
+      text-shadow: none;
+    }
+
+    .primary:hover {
+      background: linear-gradient(135deg, var(--accent-deep), var(--accent), #a54b30, var(--accent-gold));
+    }
+
+    .secondary {
+      background: linear-gradient(135deg, rgba(107, 126, 58, 0.24), rgba(107, 126, 58, 0.1));
+      color: var(--ink);
+      border-color: rgba(107, 126, 58, 0.28);
+    }
+
+    .ghost {
+      background: rgba(123, 139, 94, 0.06);
+      color: var(--ink);
+      border: 1px solid rgba(177, 197, 138, 0.12);
+      backdrop-filter: blur(12px);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(255, 123, 95, 0.16), transparent 0 20%),
+        rgba(5, 5, 12, 0.64);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      z-index: 1000;
+    }
+
+    .modal.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      width: min(680px, 100%);
+      padding: clamp(22px, 4vw, 34px);
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)),
+        linear-gradient(145deg, rgba(24, 20, 44, 0.96), rgba(9, 10, 22, 0.94));
+      box-shadow: var(--shadow), var(--glow-coral);
+      border: 1px solid rgba(177, 197, 138, 0.12);
+      transform: translateY(18px) scale(0.98);
+      transition: transform 0.35s ease;
+      position: relative;
+      z-index: 1001;
+      overflow: hidden;
+      border-radius: 34px 24px 38px 18px;
+    }
+
+    .modal-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -12% -18% auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(167, 139, 250, 0.14), transparent 72%);
+      pointer-events: none;
+    }
+
+    .modal.open .modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-label {
+      margin: 0 0 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.58);
+      font-family: var(--font-ui);
+      position: relative;
+      z-index: 1;
+    }
+
+    .modal h2 {
+      margin: 0 0 14px;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1;
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
+    }
+
+    .modal p {
+      margin: 0 0 12px;
+      font-size: 18px;
+      line-height: 1.55;
+      color: rgba(246, 236, 223, 0.84);
+      position: relative;
+      z-index: 1;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width: 960px) {
+      .hero-grid,
+      .launch-card,
+      .launch-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .fact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(100vw - 20px, 1200px);
+        padding-top: 18px;
+      }
+
+      .experience-topbar,
+      .hud,
+      .explore-topbar,
+      .explore-hud {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .hud-copy {
+        min-width: 0;
+      }
+
+      .explore-viewport,
+      .explore-stage {
+        min-height: 62vh;
+      }
+
+      .brush {
+        width: 72px;
+        height: 72px;
+        margin-left: -36px;
+        margin-top: -36px;
+      }
+
+      .launch-card,
+      .hero-panel {
+        border-radius: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="screen" id="landingScreen">
+      <div class="landing-layout">
+        <section class="hero-panel">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <div class="hero-orbit" aria-hidden="true"></div>
+              <div class="eyebrow">Прототип музея Кугача</div>
+              <h1>Войти в картину и вернуть ей цвет</h1>
+              <p class="lead">
+                Стартовая страница теперь подводит пользователя к интерактиву: коротко рассказывает
+                о живописи Кугача, задаёт музейное настроение и даёт понятную точку входа в опыт.
+              </p>
+            </div>
+            <div class="hero-side">
+              <div class="quote-card">
+                <p>
+                  Мир Кугача держится на тепле повседневности: в его работах важны свет, человеческое
+                  присутствие и ощущение живой, узнаваемой среды.
+                </p>
+              </div>
+              <div class="button-row">
+                <button class="primary" id="heroStartButton" type="button">Перейти к интерактиву</button>
+                <button class="ghost" id="heroScrollButton" type="button">Посмотреть карточку</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="launch-grid">
+          <button class="launch-card" id="launchCard" type="button" aria-label="Открыть интерактив раскрашивания">
+            <div class="launch-copy">
+              <div class="launch-meta">
+                <span class="meta-pill">Интерактив</span>
+                <span class="meta-pill">1 картина</span>
+                <span class="meta-pill">1-2 минуты</span>
+              </div>
+              <h2>Возвращение цвета</h2>
+              <div class="launch-preview" aria-hidden="true">
+                <img src="../src/Kugach_picture_1.png" alt="">
+                <div class="launch-caption">
+                  Миниатюра картины и быстрый переход в экран раскрашивания.
+                </div>
+              </div>
+              <p>
+                Проведите по картине, чтобы проявить живопись из монохромного слоя. Механика мягкая:
+                прогресс идёт быстро, а финальное раскрытие завершает композицию автоматически.
+              </p>
+              <div class="launch-field">
+                <strong>Описание интерактива</strong>
+                <span>
+                  Поле для текста внутри карточки: короткая подводка к сценарию и обещание того, что
+                  пользователь увидит после входа.
+                </span>
+              </div>
+            </div>
+          </button>
+
+          <button class="launch-card" id="launchExploreCard" type="button" aria-label="Открыть интерактив исследования картины">
+            <div class="launch-copy">
+              <div class="launch-meta">
+                <span class="meta-pill">Новый сценарий</span>
+                <span class="meta-pill">Зум и точки</span>
+                <span class="meta-pill">Свободный просмотр</span>
+              </div>
+              <h2>Приблизить детали</h2>
+              <div class="launch-preview" aria-hidden="true">
+                <img src="../src/Kugach_picture_2.png" alt="">
+                <div class="launch-caption">
+                  Отдельный переход в экран исследования с приближением и всплывающими историями.
+                </div>
+              </div>
+              <p>
+                Исследуйте вторую картину в режиме просмотра: приближайте полотно, нажимайте на точки
+                интереса и читайте небольшие пояснения к заметным фрагментам.
+              </p>
+              <div class="launch-field">
+                <strong>Описание интерактива</strong>
+                <span>
+                  При выборе точки вид плавно подлетает к детали, а текст появляется во всплывающем
+                  окне с более выразительной анимацией.
+                </span>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <section class="fact-grid" aria-label="Краткое описание">
+          <article class="fact-card">
+            <strong>О художнике</strong>
+            <p>
+              Иван Кугач известен вниманием к тихим сюжетам, человеческому масштабу и мягкой
+              живописной атмосфере.
+            </p>
+          </article>
+          <article class="fact-card">
+            <strong>О прототипе</strong>
+            <p>
+              Пользователь не просто смотрит на произведение, а постепенно раскрывает его цвет,
+              словно участвуя в деликатной реставрации.
+            </p>
+          </article>
+          <article class="fact-card">
+            <strong>О входе</strong>
+            <p>
+              Основной переход оформлен как карточка с текстовым полем и миниатюрой картины, чтобы
+              сразу было ясно, что ждёт внутри.
+            </p>
+          </article>
+        </section>
+      </div>
+    </section>
+
+    <section class="screen hidden" id="experienceScreen">
+      <div class="experience-topbar">
+        <div class="experience-title">
+          <div class="eyebrow">Интерактивный прототип</div>
+          <p>Проведите по полотну, чтобы вернуть цвет и открыть историю картины.</p>
+        </div>
+        <div class="button-row">
+          <button class="ghost" id="backToLandingButton" type="button">На главную</button>
+        </div>
+      </div>
+
+      <section class="workspace">
+        <div class="stage" id="stage">
+          <div class="stage-atmosphere" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <canvas class="painting-base" id="baseCanvas"></canvas>
+          <img id="colorImage" src="../src/Kugach_picture_1.png" alt="Картина" hidden>
+          <canvas class="reveal-layer" id="revealCanvas"></canvas>
+          <div class="brush" id="brush"></div>
+        </div>
+        <div class="hud">
+          <div class="hud-copy">
+            <p class="hud-title">Возвращение цвета</p>
+            <p class="hud-text">Большая мягкая кисть и ускоренное раскрытие рядом с мазком.</p>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-row">
+              <span>Прогресс</span>
+              <strong id="progressValue">0%</strong>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+          </div>
+        </div>
+        <p class="hint">Зажмите и ведите курсором или пальцем по картине.</p>
+      </section>
+    </section>
+
+    <section class="screen hidden" id="narrativeScreen">
+      <div class="narrative-shell">
+        <div class="narrative-topbar">
+          <div class="narrative-title">
+            <div class="eyebrow" id="narrativeSequenceEyebrow">Сюжетная линия</div>
+            <p id="narrativeSequenceLead">
+              Здесь появятся сюжетные вставки, которые будут связывать интерактивы в единое прохождение.
+            </p>
+          </div>
+          <div class="button-row">
+            <button class="ghost" id="narrativeExitButton" type="button">На главную</button>
+          </div>
+        </div>
+
+        <section class="workspace narrative-workspace">
+          <article class="launch-card narrative-card" aria-live="polite">
+            <div class="launch-copy">
+              <h2 id="narrativeTitle">Сюжетное окно</h2>
+              <div class="launch-preview">
+                <img id="narrativeImage" src="../src/Kugach_picture_1.png" alt="Иллюстрация сюжетной вставки">
+                <div class="launch-caption" id="narrativeCaption">
+                  Временная подпись для изображения внутри сюжетной карточки.
+                </div>
+              </div>
+              <p id="narrativeText">
+                Здесь будет основной текст сюжетной вставки: ввод в контекст, кураторская подводка
+                или связка между интерактивами.
+              </p>
+              <div class="launch-field">
+                <strong>Что происходит сейчас</strong>
+                <span id="narrativeSecondaryText">
+                  Временная подводка для дополнительного текста. На этом этапе она нужна как
+                  структурный слот под будущий narrative-контент.
+                </span>
+              </div>
+              <div class="narrative-progress" hidden>
+                <span class="narrative-step" id="narrativeStep">Окно 1 из 3</span>
+                <span id="narrativeProgressText">Подготовка первого сюжетного блока.</span>
+              </div>
+              <div class="narrative-actions">
+                <button class="ghost" id="narrativePrevButton" type="button">Назад</button>
+                <div class="button-row">
+                  <button class="secondary" id="narrativeSkipButton" type="button">Пропустить блок</button>
+                  <button class="primary" id="narrativeNextButton" type="button">Далее</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+      </div>
+    </section>
+
+    <section class="screen hidden" id="exploreScreen">
+      <div class="explore-shell">
+        <div class="explore-topbar">
+          <div class="explore-title">
+            <div class="eyebrow">Интерактив исследования</div>
+            <p>
+              Приближайте изображение, перемещайтесь по полотну и открывайте точки взаимодействия.
+              При выборе точки сцена автоматически фокусируется на нужной детали.
+            </p>
+          </div>
+          <div class="button-row">
+            <button class="ghost" id="backFromExploreButton" type="button">На главную</button>
+          </div>
+        </div>
+
+        <section class="workspace explore-workspace">
+          <div class="explore-stage">
+            <div class="explore-viewport" id="exploreViewport" aria-label="Область просмотра картины">
+              <div class="explore-canvas" id="exploreCanvas">
+                <img id="exploreImage" src="../src/Kugach_picture_2.png" alt="Картина с точками взаимодействия" draggable="false">
+              </div>
+            </div>
+          </div>
+
+          <div class="explore-hud">
+            <div class="zoom-panel" aria-label="Управление масштабом">
+              <strong>Масштаб</strong>
+              <button class="secondary" id="zoomOutButton" type="button" aria-label="Уменьшить масштаб">−</button>
+              <div class="zoom-meter" id="zoomValue">100%</div>
+              <button class="secondary" id="zoomInButton" type="button" aria-label="Увеличить масштаб">+</button>
+              <button class="ghost" id="zoomResetButton" type="button">Сбросить</button>
+            </div>
+
+            <div class="explore-note">
+              <strong>Прогресс исследования</strong>
+              <p id="exploreProgressText">
+                Перетаскивайте картину мышью или пальцем. Откройте все точки, чтобы разблокировать финальную сюжетную вставку.
+              </p>
+              <button class="primary" id="openFinaleButton" type="button" hidden>Открыть финальную вставку</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="infoModal" aria-hidden="true">
+    <div class="modal-card">
+      <p class="modal-label">Картина раскрыта</p>
+      <h2>Краткая история полотна</h2>
+      <p>
+        Здесь можно показать информацию о картине: автора, название, год создания и короткий
+        рассказ о сюжете или месте этой работы в творчестве художника.
+      </p>
+      <p>
+        В прототипе текст универсальный, но блок уже готов для замены на реальные музейные данные.
+      </p>
+      <div class="modal-actions">
+        <button class="primary" id="continueJourneyButton" type="button">Продолжить историю</button>
+        <button class="primary" id="restartButton" type="button">Раскрасить ещё раз</button>
+        <button class="secondary" id="closeButton" type="button">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal story-modal" id="storyModal" aria-hidden="true">
+    <div class="modal-card">
+      <p class="modal-label" id="storyModalLabel">Точка исследования</p>
+      <h2 id="storyModalTitle">Деталь картины</h2>
+      <p id="storyModalText">
+        Здесь будет текст о выбранной зоне картины: краткий визуальный комментарий, историческая
+        справка или кураторская подводка.
+      </p>
+      <div class="modal-actions">
+        <button class="primary" id="storyCloseButton" type="button">Продолжить просмотр</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="exploreCompletionModal" aria-hidden="true">
+    <div class="modal-card">
+      <p class="modal-label">Исследование завершено</p>
+      <h2>Все точки уже открыты</h2>
+      <p>
+        Вы можете остаться в этом экране и дальше рассматривать картину в свободном режиме
+        или перейти к последнему блоку истории.
+      </p>
+      <div class="modal-actions">
+        <button class="secondary" id="stayInExploreButton" type="button">Остаться у картины</button>
+        <button class="primary" id="goToFinaleButton" type="button">К финальному блоку</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ART_BOUNDS = {
+      x: 0,
+      y: 0,
+      width: 579,
+      height: 480
+    };
+
+    const landingScreen = document.getElementById("landingScreen");
+    const experienceScreen = document.getElementById("experienceScreen");
+    const narrativeScreen = document.getElementById("narrativeScreen");
+    const exploreScreen = document.getElementById("exploreScreen");
+    const launchCard = document.getElementById("launchCard");
+    const launchExploreCard = document.getElementById("launchExploreCard");
+    const heroStartButton = document.getElementById("heroStartButton");
+    const heroScrollButton = document.getElementById("heroScrollButton");
+    const backToLandingButton = document.getElementById("backToLandingButton");
+    const backFromExploreButton = document.getElementById("backFromExploreButton");
+    const colorImage = document.getElementById("colorImage");
+    const baseCanvas = document.getElementById("baseCanvas");
+    const revealCanvas = document.getElementById("revealCanvas");
+    const stage = document.getElementById("stage");
+    const brush = document.getElementById("brush");
+    const progressFill = document.getElementById("progressFill");
+    const progressValue = document.getElementById("progressValue");
+    const infoModal = document.getElementById("infoModal");
+    const continueJourneyButton = document.getElementById("continueJourneyButton");
+    const restartButton = document.getElementById("restartButton");
+    const closeButton = document.getElementById("closeButton");
+    const exploreViewport = document.getElementById("exploreViewport");
+    const exploreCanvas = document.getElementById("exploreCanvas");
+    const exploreImage = document.getElementById("exploreImage");
+    const zoomOutButton = document.getElementById("zoomOutButton");
+    const zoomInButton = document.getElementById("zoomInButton");
+    const zoomResetButton = document.getElementById("zoomResetButton");
+    const zoomValue = document.getElementById("zoomValue");
+    const exploreProgressText = document.getElementById("exploreProgressText");
+    const openFinaleButton = document.getElementById("openFinaleButton");
+    const narrativeSequenceEyebrow = document.getElementById("narrativeSequenceEyebrow");
+    const narrativeSequenceLead = document.getElementById("narrativeSequenceLead");
+    const narrativeCard = document.querySelector(".narrative-card");
+    const narrativeTitle = document.getElementById("narrativeTitle");
+    const narrativeImage = document.getElementById("narrativeImage");
+    const narrativeCaption = document.getElementById("narrativeCaption");
+    const narrativeText = document.getElementById("narrativeText");
+    const narrativeSecondaryText = document.getElementById("narrativeSecondaryText");
+    const narrativeStep = document.getElementById("narrativeStep");
+    const narrativeProgressText = document.getElementById("narrativeProgressText");
+    const narrativePrevButton = document.getElementById("narrativePrevButton");
+    const narrativeNextButton = document.getElementById("narrativeNextButton");
+    const narrativeSkipButton = document.getElementById("narrativeSkipButton");
+    const narrativeExitButton = document.getElementById("narrativeExitButton");
+    const storyModal = document.getElementById("storyModal");
+    const storyModalLabel = document.getElementById("storyModalLabel");
+    const storyModalTitle = document.getElementById("storyModalTitle");
+    const storyModalText = document.getElementById("storyModalText");
+    const storyCloseButton = document.getElementById("storyCloseButton");
+    const exploreCompletionModal = document.getElementById("exploreCompletionModal");
+    const stayInExploreButton = document.getElementById("stayInExploreButton");
+    const goToFinaleButton = document.getElementById("goToFinaleButton");
+
+    const baseCtx = baseCanvas.getContext("2d");
+    const colorCtx = revealCanvas.getContext("2d", { willReadFrequently: true });
+    const offscreenCanvas = document.createElement("canvas");
+    const offscreenCtx = offscreenCanvas.getContext("2d", { willReadFrequently: true });
+
+    const BRUSH_RADIUS = 64;
+    const SPLASH_RADIUS = 110;
+    const COMPLETION_TARGET = 82;
+    const AUTO_REVEAL_DURATION = 2100;
+    const ZOOM_STEP = 0.14;
+    const NARRATIVE_SEQUENCES = {
+      intro: {
+        eyebrow: "Сюжетная линия",
+        lead: "Первый блок вводит в историю и готовит пользователя к мягкому раскрытию живописи.",
+        completionLabel: "Перейти к интерактиву",
+        skipLabel: "Пропустить вступление",
+        completionAction: "experience",
+        slides: [
+          {
+            id: "intro-1",
+            meta: ["Пролог", "Окно 1", "Заглушка"],
+            title: "В музейном зале становится тише",
+            image: "../src/Kugach_picture_1.png",
+            caption: "Временная иллюстрация вступления: здесь позже может появиться отдельный narrative-кадр.",
+            text: "Посетитель входит в зал и сначала видит не механику, а настроение. Это окно задаёт тон будущей истории и объясняет, что интерактивы будут частью одного маршрута, а не двумя отдельными упражнениями.",
+            secondaryText: "Здесь позже можно разместить короткую кураторскую ремарку о том, почему история начинается именно с возвращения цвета."
+          },
+          {
+            id: "intro-2",
+            meta: ["Пролог", "Окно 2", "Маршрут"],
+            title: "Перед нами картина, будто приглушённая временем",
+            image: "../src/Kugach_picture_1.png",
+            caption: "Заглушка для второго сюжетного окна с опорой на первое произведение.",
+            text: "Во втором окне narrative может подвести пользователя к мысли, что работа ещё не раскрылась полностью. В текущем патче здесь стоит временный текст, который просто держит структуру и ритм последовательности.",
+            secondaryText: "Дополнительный слот можно использовать для короткой инструкции, эмоциональной подводки или музейного комментария."
+          },
+          {
+            id: "intro-3",
+            meta: ["Пролог", "Окно 3", "Переход"],
+            title: "Следующий шаг — прикоснуться к поверхности",
+            image: "../src/Kugach_picture_1.png",
+            caption: "Финальное окно вступления должно подготовить вход в первый интерактив.",
+            text: "Третье окно завершает вводный блок и подводит к действию. Пока здесь заглушка, но позже именно это место станет смысловым мостом между историей и сценой 'Возвращение цвета'.",
+            secondaryText: "В следующем патче это окно будет связано с реальным переходом в экран раскрашивания."
+          }
+        ]
+      },
+      bridge: {
+        eyebrow: "Связка маршрутов",
+        lead: "Второй блок соединит завершение раскрашивания с переходом к исследованию другой картины.",
+        completionLabel: "Перейти к исследованию",
+        skipLabel: "Пропустить вставку",
+        completionAction: "explore",
+        slides: [
+          {
+            id: "bridge-1",
+            meta: ["Интерлюдия", "Окно 1", "После финала"],
+            title: "Цвет возвращается, но история ещё не закончена",
+            image: "../src/Kugach_picture_1.png",
+            caption: "Здесь позже можно показать кадр-переход после завершения первого интерактива.",
+            text: "Первое промежуточное окно должно объяснять, что восстановление живописного слоя было только первой частью путешествия. Сейчас это временный текст, который помогает собрать будущую структуру сценария.",
+            secondaryText: "Блок предназначен для плавного перехода от действия к созерцанию и дальнейшему исследованию."
+          },
+          {
+            id: "bridge-2",
+            meta: ["Интерлюдия", "Окно 2", "Подготовка"],
+            title: "Чтобы понять пространство глубже, надо приблизиться",
+            image: "../src/Kugach_picture_2.png",
+            caption: "Временный визуал для связки с исследовательским сценарием.",
+            text: "Во втором окне narrative может сместить фокус с общего впечатления на детали: следы времени, архитектуру, ритм фактур и малые элементы композиции.",
+            secondaryText: "Здесь удобно заложить будущую мотивацию для точек взаимодействия и режима свободного просмотра."
+          },
+          {
+            id: "bridge-3",
+            meta: ["Интерлюдия", "Окно 3", "Вход"],
+            title: "Теперь картина открывается как пространство для исследования",
+            image: "../src/Kugach_picture_2.png",
+            caption: "Последнее окно второго блока позже поведёт пользователя в режим зума и точек.",
+            text: "Финал промежуточной вставки готовит вход во второй интерактив. На этом этапе текст работает как заглушка, но структура карточки и место под будущий переход уже заложены.",
+            secondaryText: "В следующем патче этот слайд станет отправной точкой для экрана исследования."
+          }
+        ]
+      },
+      finale: {
+        eyebrow: "Финальная вставка",
+        lead: "Последний блок завершит маршрут после просмотра всех точек на второй картине.",
+        completionLabel: "Завершить блок",
+        skipLabel: "Пропустить блок",
+        completionAction: "landing",
+        slides: [
+          {
+            id: "finale-1",
+            meta: ["Эпилог", "Окно 1", "После исследования"],
+            title: "Собранные детали начинают складываться в целое",
+            image: "../src/Kugach_picture_2.png",
+            caption: "Заглушка для первой финальной narrative-карточки.",
+            text: "После просмотра всех точек здесь может появиться первый итоговый смысловой акцент. Пока это техническая заглушка, но экран уже рассчитан на финальную подачу истории.",
+            secondaryText: "Дополнительный текстовый слот можно использовать для вывода, цитаты или короткого музейного комментария."
+          },
+          {
+            id: "finale-2",
+            meta: ["Эпилог", "Окно 2", "Смысл"],
+            title: "Маршрут соединяет жест, взгляд и память о месте",
+            image: "../src/Kugach_picture_2.png",
+            caption: "Второе окно эпилога может закрепить смысловую рамку всего прохождения.",
+            text: "Здесь narrative уже не ведёт к новой механике, а собирает опыт пользователя в завершённую историю. Сейчас текст заполнительный, но логика финальной трёхоконной вставки уже подготовлена.",
+            secondaryText: "В будущем сюда можно поместить вывод о живописной среде, авторском взгляде или ощущении времени."
+          },
+          {
+            id: "finale-3",
+            meta: ["Эпилог", "Окно 3", "Возврат"],
+            title: "История завершена, и можно вернуться к выбору маршрута",
+            image: "../src/Kugach_picture_1.png",
+            caption: "Последнее окно эпилога станет точкой выхода обратно на главную страницу.",
+            text: "Это финальное окно должно замыкать весь путь и возвращать пользователя на посадочную страницу. Пока оно остаётся заглушкой, но уже занимает своё место в общей narrative-системе.",
+            secondaryText: "В одном из следующих патчей здесь появится реальный завершающий переход на главный экран."
+          }
+        ]
+      }
+    };
+    const HOTSPOTS = [
+      {
+        id: "sign",
+        x: 0.172,
+        y: 0.195,
+        targetScale: 0.94,
+        label: "Точка 1",
+        title: "Вывеска на стене",
+        text: "В этой версии прототипа вывеска работает как тестовая точка внимания. Здесь позже можно рассказать, как текст на фасаде вводит зрителя в сюжет, связывает бытовую сцену с конкретным местом и помогает считывать эпоху."
+      },
+      {
+        id: "crack",
+        x: 0.12,
+        y: 0.105,
+        targetScale: 0.9,
+        label: "Точка 2",
+        title: "Трещина и след времени",
+        text: "Эта зона может стать поводом для короткой музейной ремарки о материальности старого дома. Пока здесь заглушка: в финальной версии можно говорить о фактуре штукатурки, следах старения и том, как художник работает с ощущением прожитого пространства."
+      },
+      {
+        id: "window",
+        x: 0.575,
+        y: 0.425,
+        targetScale: 1,
+        label: "Точка 3",
+        title: "Окно как центр взгляда",
+        text: "Оконный проём удобно использовать как главный смысловой фокус. Внутри этой карточки потом можно разместить текст о композиции, ритме наличников и о том, как тёмное стекло собирает вокруг себя соседние детали."
+      },
+      {
+        id: "brick",
+        x: 0.59,
+        y: 0.91,
+        targetScale: 0.88,
+        label: "Точка 4",
+        title: "Кирпичная кладка внизу",
+        text: "Нижний фрагмент с кирпичом хорошо подходит для разговора о слоях поверхности и ручной фактуре письма. Сейчас это временный текст-заполнитель, который можно заменить на описание колорита, ритма кладки или состояния архитектурной среды."
+      }
+    ];
+    let isPainting = false;
+    let isPointerInside = false;
+    let isAutoCompleting = false;
+    let progress = 0;
+    let modalShown = false;
+    let coverageCellSize = 24;
+    let coverageCols = 0;
+    let coverageRows = 0;
+    let revealedCells = 0;
+    let totalCells = 0;
+    let coverageMap = [];
+    let autoRevealFrame = null;
+    let lastPaintPoint = null;
+    let imageNaturalWidth = 0;
+    let imageNaturalHeight = 0;
+    let maxExploreScale = 1;
+    let minExploreScale = 1;
+    let currentExploreScale = 1;
+    let currentExploreX = 0;
+    let currentExploreY = 0;
+    let explorePointerId = null;
+    let isDraggingExplore = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let dragOriginX = 0;
+    let dragOriginY = 0;
+    let activeHotspotId = null;
+    let viewedHotspotIds = new Set();
+    let hasShownExploreCompletionModal = false;
+    let activeNarrativeSequenceId = "intro";
+    let activeNarrativeSlideIndex = 0;
+
+    function syncModalState() {
+      const hasOpenModal =
+        infoModal.classList.contains("open") ||
+        storyModal.classList.contains("open") ||
+        exploreCompletionModal.classList.contains("open");
+      document.body.classList.toggle("modal-active", hasOpenModal);
+    }
+
+    function isExperienceVisible() {
+      return !experienceScreen.classList.contains("hidden");
+    }
+
+    function isExploreVisible() {
+      return !exploreScreen.classList.contains("hidden");
+    }
+
+    function getActiveNarrativeSequence() {
+      return NARRATIVE_SEQUENCES[activeNarrativeSequenceId] || NARRATIVE_SEQUENCES.intro;
+    }
+
+    function updateNarrativeControls() {
+      const sequence = getActiveNarrativeSequence();
+      const isFirstSlide = activeNarrativeSlideIndex === 0;
+      const isLastSlide = activeNarrativeSlideIndex >= sequence.slides.length - 1;
+      narrativePrevButton.disabled = isFirstSlide;
+      narrativeNextButton.textContent = isLastSlide ? (sequence.completionLabel || "Завершить блок") : "Далее";
+      narrativeSkipButton.textContent = sequence.skipLabel || "Пропустить блок";
+    }
+
+    function animateNarrativeCard() {
+      if (!narrativeCard) {
+        return;
+      }
+
+      narrativeCard.classList.remove("is-animating");
+      void narrativeCard.offsetWidth;
+      narrativeCard.classList.add("is-animating");
+      window.setTimeout(() => {
+        narrativeCard.classList.remove("is-animating");
+      }, 460);
+    }
+
+    function renderNarrativeSlide() {
+      const sequence = getActiveNarrativeSequence();
+      const slide = sequence.slides[activeNarrativeSlideIndex];
+      if (!slide) {
+        return;
+      }
+
+      narrativeSequenceEyebrow.textContent = sequence.eyebrow;
+      narrativeSequenceLead.textContent = sequence.lead;
+      narrativeTitle.textContent = slide.title;
+      narrativeImage.src = slide.image;
+      narrativeImage.alt = slide.title;
+      narrativeCaption.textContent = slide.caption;
+      narrativeText.textContent = slide.text;
+      narrativeSecondaryText.textContent = slide.secondaryText;
+      narrativeStep.textContent = `Окно ${activeNarrativeSlideIndex + 1} из ${sequence.slides.length}`;
+      narrativeProgressText.textContent = `Блок: ${sequence.eyebrow.toLowerCase()}.`;
+      updateNarrativeControls();
+      animateNarrativeCard();
+    }
+
+    function showScreen(screen) {
+      [landingScreen, experienceScreen, narrativeScreen, exploreScreen].forEach((item) => {
+        item.classList.toggle("hidden", item !== screen);
+        item.classList.remove("screen-transition-enter");
+      });
+      screen.classList.add("screen-transition-enter");
+      window.setTimeout(() => {
+        screen.classList.remove("screen-transition-enter");
+      }, 520);
+    }
+
+    function openNarrativeSequence(sequenceId, startIndex = 0) {
+      const sequence = NARRATIVE_SEQUENCES[sequenceId];
+      if (!sequence) {
+        return;
+      }
+
+      activeNarrativeSequenceId = sequenceId;
+      activeNarrativeSlideIndex = Math.max(0, Math.min(sequence.slides.length - 1, startIndex));
+      closeModal();
+      closeStoryModal();
+      showScreen(narrativeScreen);
+      renderNarrativeSlide();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.setTimeout(() => narrativeNextButton.focus({ preventScroll: true }), 40);
+    }
+
+    function completeNarrativeSequence() {
+      const sequence = getActiveNarrativeSequence();
+
+      if (sequence.completionAction === "experience") {
+        goToExperience();
+        return;
+      }
+
+      if (sequence.completionAction === "explore") {
+        goToExplore();
+        return;
+      }
+
+      goToLanding();
+    }
+
+    function moveNarrativeSlide(direction) {
+      const sequence = getActiveNarrativeSequence();
+      const nextIndex = activeNarrativeSlideIndex + direction;
+      if (direction > 0 && activeNarrativeSlideIndex >= sequence.slides.length - 1) {
+        completeNarrativeSequence();
+        return;
+      }
+
+      activeNarrativeSlideIndex = Math.max(0, Math.min(sequence.slides.length - 1, nextIndex));
+      renderNarrativeSlide();
+    }
+
+    function goToExperience() {
+      showScreen(experienceScreen);
+      closeExploreCompletionModal();
+      closeStoryModal();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.requestAnimationFrame(() => {
+        fitCanvasToImage();
+      });
+    }
+
+    function goToExplore() {
+      resetExploreNarrativeProgress();
+      showScreen(exploreScreen);
+      closeExploreCompletionModal();
+      closeModal();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.requestAnimationFrame(() => {
+        fitExploreView();
+      });
+    }
+
+    function goToLanding() {
+      resetExperience();
+      resetExploreNarrativeProgress();
+      closeModal();
+      closeExploreCompletionModal();
+      closeStoryModal();
+      showScreen(landingScreen);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function ensureExploreHotspots() {
+      if (!exploreViewport || exploreViewport.querySelector(".hotspot")) {
+        return;
+      }
+
+      HOTSPOTS.forEach((hotspot) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "hotspot";
+        button.dataset.hotspotId = hotspot.id;
+        button.setAttribute("aria-label", hotspot.title);
+        button.style.left = (hotspot.x * 100) + "%";
+        button.style.top = (hotspot.y * 100) + "%";
+        if (hotspot.y > 0.8) {
+          button.classList.add("label-above");
+        }
+        const label = document.createElement("span");
+        label.className = "hotspot-label";
+        label.textContent = hotspot.label;
+        button.appendChild(label);
+        exploreCanvas.appendChild(button);
+      });
+    }
+
+    function getExploreBounds(scale = currentExploreScale) {
+      const viewportRect = exploreViewport.getBoundingClientRect();
+      const scaledWidth = imageNaturalWidth * scale;
+      const scaledHeight = imageNaturalHeight * scale;
+      const minX = scaledWidth <= viewportRect.width ? (viewportRect.width - scaledWidth) / 2 : viewportRect.width - scaledWidth;
+      const maxX = scaledWidth <= viewportRect.width ? minX : 0;
+      const minY = scaledHeight <= viewportRect.height ? (viewportRect.height - scaledHeight) / 2 : viewportRect.height - scaledHeight;
+      const maxY = scaledHeight <= viewportRect.height ? minY : 0;
+
+      return { minX, maxX, minY, maxY, viewportRect };
+    }
+
+    function clampExplorePosition(scale = currentExploreScale, x = currentExploreX, y = currentExploreY) {
+      const bounds = getExploreBounds(scale);
+      return {
+        x: Math.min(bounds.maxX, Math.max(bounds.minX, x)),
+        y: Math.min(bounds.maxY, Math.max(bounds.minY, y))
+      };
+    }
+
+    function updateZoomValue() {
+      const percent = maxExploreScale > 0 ? Math.round((currentExploreScale / maxExploreScale) * 100) : 100;
+      zoomValue.textContent = percent + "%";
+    }
+
+    function updateHotspotState() {
+      const buttons = exploreCanvas.querySelectorAll(".hotspot");
+      buttons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.hotspotId === activeHotspotId);
+      });
+    }
+
+    function hasViewedAllHotspots() {
+      return viewedHotspotIds.size >= HOTSPOTS.length;
+    }
+
+    function updateExploreProgressUI() {
+      if (!exploreProgressText || !openFinaleButton) {
+        return;
+      }
+
+      const viewedCount = viewedHotspotIds.size;
+      if (hasViewedAllHotspots()) {
+        exploreProgressText.textContent = "Все точки открыты. Можно остаться в режиме свободного просмотра или перейти к финальной сюжетной вставке.";
+        openFinaleButton.hidden = false;
+        return;
+      }
+
+      exploreProgressText.textContent = `Открыто точек: ${viewedCount} из ${HOTSPOTS.length}. Перетаскивайте картину мышью или пальцем и исследуйте оставшиеся детали.`;
+      openFinaleButton.hidden = true;
+    }
+
+    function resetExploreNarrativeProgress() {
+      viewedHotspotIds = new Set();
+      hasShownExploreCompletionModal = false;
+      updateExploreProgressUI();
+    }
+
+    function openExploreCompletionModal() {
+      closeStoryModal();
+      exploreCompletionModal.classList.add("open");
+      exploreCompletionModal.setAttribute("aria-hidden", "false");
+      syncModalState();
+      window.setTimeout(() => goToFinaleButton.focus({ preventScroll: true }), 40);
+    }
+
+    function closeExploreCompletionModal() {
+      exploreCompletionModal.classList.remove("open");
+      exploreCompletionModal.setAttribute("aria-hidden", "true");
+      syncModalState();
+    }
+
+    function applyExploreTransform(useTransition = false) {
+      if (!exploreCanvas) {
+        return;
+      }
+
+      exploreCanvas.style.width = imageNaturalWidth + "px";
+      exploreCanvas.style.height = imageNaturalHeight + "px";
+      exploreCanvas.style.transition = useTransition ? "transform 0.72s cubic-bezier(0.22, 1, 0.36, 1)" : "none";
+      exploreCanvas.style.transform = `translate(${currentExploreX}px, ${currentExploreY}px) scale(${currentExploreScale})`;
+      updateZoomValue();
+      updateHotspotState();
+    }
+
+    function fitExploreView() {
+      if (!isExploreVisible() || !exploreImage.complete) {
+        return;
+      }
+
+      imageNaturalWidth = exploreImage.naturalWidth || 1;
+      imageNaturalHeight = exploreImage.naturalHeight || 1;
+      ensureExploreHotspots();
+
+      const viewportRect = exploreViewport.getBoundingClientRect();
+      if (!viewportRect.width || !viewportRect.height) {
+        return;
+      }
+
+      const fitScale = Math.min(viewportRect.width / imageNaturalWidth, viewportRect.height / imageNaturalHeight);
+      maxExploreScale = fitScale * 1.9;
+      minExploreScale = fitScale * 0.72;
+      currentExploreScale = minExploreScale;
+      const centered = clampExplorePosition(minExploreScale, (viewportRect.width - imageNaturalWidth * minExploreScale) / 2, (viewportRect.height - imageNaturalHeight * minExploreScale) / 2);
+      currentExploreX = centered.x;
+      currentExploreY = centered.y;
+      activeHotspotId = null;
+      applyExploreTransform(false);
+      updateExploreProgressUI();
+    }
+
+    function setExploreScale(nextScale, focusX, focusY, useTransition = false) {
+      if (!imageNaturalWidth || !imageNaturalHeight) {
+        return;
+      }
+
+      const clampedScale = Math.max(minExploreScale, Math.min(maxExploreScale, nextScale));
+      const viewportRect = exploreViewport.getBoundingClientRect();
+      const localFocusX = typeof focusX === "number" ? focusX : viewportRect.width / 2;
+      const localFocusY = typeof focusY === "number" ? focusY : viewportRect.height / 2;
+
+      const imagePointX = (localFocusX - currentExploreX) / currentExploreScale;
+      const imagePointY = (localFocusY - currentExploreY) / currentExploreScale;
+      const proposedX = localFocusX - imagePointX * clampedScale;
+      const proposedY = localFocusY - imagePointY * clampedScale;
+      const clamped = clampExplorePosition(clampedScale, proposedX, proposedY);
+
+      currentExploreScale = clampedScale;
+      currentExploreX = clamped.x;
+      currentExploreY = clamped.y;
+      applyExploreTransform(useTransition);
+    }
+
+    function centerExploreOn(hotspot, useTransition = true) {
+      if (!hotspot) {
+        return;
+      }
+
+      const viewportRect = exploreViewport.getBoundingClientRect();
+      const targetScale = Math.max(minExploreScale, Math.min(maxExploreScale, maxExploreScale * (hotspot.targetScale || 1)));
+      const proposedX = viewportRect.width / 2 - hotspot.x * imageNaturalWidth * targetScale;
+      const proposedY = viewportRect.height / 2 - hotspot.y * imageNaturalHeight * targetScale;
+      const clamped = clampExplorePosition(targetScale, proposedX, proposedY);
+
+      currentExploreScale = targetScale;
+      currentExploreX = clamped.x;
+      currentExploreY = clamped.y;
+      applyExploreTransform(useTransition);
+    }
+
+    function openStoryModal(hotspot) {
+      if (!hotspot) {
+        return;
+      }
+
+      storyModalLabel.textContent = hotspot.label;
+      storyModalTitle.textContent = hotspot.title;
+      storyModalText.textContent = hotspot.text;
+      storyModal.classList.add("open");
+      storyModal.setAttribute("aria-hidden", "false");
+      syncModalState();
+      window.setTimeout(() => storyCloseButton.focus({ preventScroll: true }), 60);
+    }
+
+    function closeStoryModal() {
+      storyModal.classList.remove("open");
+      storyModal.setAttribute("aria-hidden", "true");
+      syncModalState();
+    }
+
+    function activateHotspotById(hotspotId) {
+      const hotspot = HOTSPOTS.find((item) => item.id === hotspotId);
+      if (!hotspot) {
+        return;
+      }
+
+      activeHotspotId = hotspot.id;
+      viewedHotspotIds.add(hotspot.id);
+      updateExploreProgressUI();
+      centerExploreOn(hotspot, true);
+      window.setTimeout(() => {
+        if (activeHotspotId === hotspot.id) {
+          openStoryModal(hotspot);
+        }
+      }, 460);
+
+      if (hasViewedAllHotspots() && !hasShownExploreCompletionModal) {
+        hasShownExploreCompletionModal = true;
+        window.setTimeout(openExploreCompletionModal, 620);
+      }
+    }
+
+    function resetExploreView() {
+      activeHotspotId = null;
+      closeStoryModal();
+      fitExploreView();
+    }
+
+    function beginExploreDrag(event) {
+      if (!isExploreVisible() || event.button !== 0 || event.target.closest(".hotspot")) {
+        return;
+      }
+
+      event.preventDefault();
+
+      isDraggingExplore = true;
+      explorePointerId = event.pointerId;
+      dragStartX = event.clientX;
+      dragStartY = event.clientY;
+      dragOriginX = currentExploreX;
+      dragOriginY = currentExploreY;
+      activeHotspotId = null;
+      updateHotspotState();
+      closeStoryModal();
+      exploreViewport.classList.add("dragging");
+      exploreCanvas.style.transition = "none";
+
+      if (typeof exploreViewport.setPointerCapture === "function") {
+        exploreViewport.setPointerCapture(event.pointerId);
+      }
+    }
+
+    function moveExploreDrag(event) {
+      if (!isDraggingExplore || event.pointerId !== explorePointerId) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const deltaX = event.clientX - dragStartX;
+      const deltaY = event.clientY - dragStartY;
+      const clamped = clampExplorePosition(currentExploreScale, dragOriginX + deltaX, dragOriginY + deltaY);
+      currentExploreX = clamped.x;
+      currentExploreY = clamped.y;
+      applyExploreTransform(false);
+    }
+
+    function endExploreDrag(event) {
+      if (!isDraggingExplore || (event && event.pointerId !== explorePointerId)) {
+        return;
+      }
+
+      if (event && typeof exploreViewport.releasePointerCapture === "function" && exploreViewport.hasPointerCapture(event.pointerId)) {
+        exploreViewport.releasePointerCapture(event.pointerId);
+      }
+
+      isDraggingExplore = false;
+      explorePointerId = null;
+      exploreViewport.classList.remove("dragging");
+    }
+
+    function fitCanvasToImage() {
+      if (!isExperienceVisible()) {
+        return;
+      }
+
+      const stageRect = stage.getBoundingClientRect();
+      const stageWidth = Math.round(stage.clientWidth || stageRect.width || ART_BOUNDS.width);
+      const stageHeight = Math.round(stage.clientHeight || stageRect.height || 0);
+      if (!stageWidth) {
+        return;
+      }
+
+      const artAspect = ART_BOUNDS.width / ART_BOUNDS.height;
+      let renderWidth = Math.max(1, stageWidth);
+      let renderHeight = Math.round(renderWidth / artAspect);
+
+      if (stageHeight && renderHeight > stageHeight) {
+        renderHeight = Math.max(1, stageHeight);
+        renderWidth = Math.round(renderHeight * artAspect);
+      }
+
+      const offsetX = Math.max(0, Math.round((stageWidth - renderWidth) / 2));
+      const offsetY = Math.max(0, Math.round((stageHeight - renderHeight) / 2));
+
+      baseCanvas.width = renderWidth;
+      baseCanvas.height = renderHeight;
+      baseCanvas.style.width = renderWidth + "px";
+      baseCanvas.style.height = renderHeight + "px";
+      baseCanvas.style.display = "block";
+      revealCanvas.width = renderWidth;
+      revealCanvas.height = renderHeight;
+      revealCanvas.style.width = renderWidth + "px";
+      revealCanvas.style.height = renderHeight + "px";
+      revealCanvas.style.left = offsetX + "px";
+      revealCanvas.style.top = offsetY + "px";
+      offscreenCanvas.width = revealCanvas.width;
+      offscreenCanvas.height = revealCanvas.height;
+      stage.style.aspectRatio = "auto";
+      initializeCoverageMap();
+      drawBasePainting();
+      drawGrayOverlay();
+      updateProgress();
+    }
+
+    function initializeCoverageMap() {
+      coverageCols = Math.max(1, Math.ceil(revealCanvas.width / coverageCellSize));
+      coverageRows = Math.max(1, Math.ceil(revealCanvas.height / coverageCellSize));
+      totalCells = coverageCols * coverageRows;
+      revealedCells = 0;
+      coverageMap = new Array(totalCells).fill(0);
+    }
+
+    function drawBasePainting() {
+      baseCtx.clearRect(0, 0, baseCanvas.width, baseCanvas.height);
+      baseCtx.drawImage(
+        colorImage,
+        ART_BOUNDS.x,
+        ART_BOUNDS.y,
+        ART_BOUNDS.width,
+        ART_BOUNDS.height,
+        0,
+        0,
+        baseCanvas.width,
+        baseCanvas.height
+      );
+    }
+
+    function drawGrayOverlay() {
+      offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+      offscreenCtx.filter = "grayscale(1) contrast(1.08) brightness(0.94)";
+      offscreenCtx.drawImage(
+        colorImage,
+        ART_BOUNDS.x,
+        ART_BOUNDS.y,
+        ART_BOUNDS.width,
+        ART_BOUNDS.height,
+        0,
+        0,
+        offscreenCanvas.width,
+        offscreenCanvas.height
+      );
+      offscreenCtx.filter = "none";
+
+      colorCtx.clearRect(0, 0, revealCanvas.width, revealCanvas.height);
+      colorCtx.globalCompositeOperation = "source-over";
+      colorCtx.drawImage(offscreenCanvas, 0, 0);
+    }
+
+    function eraseAt(x, y, radius, softness) {
+      const gradient = colorCtx.createRadialGradient(x, y, radius * 0.18, x, y, radius);
+      gradient.addColorStop(0, `rgba(0, 0, 0, ${softness})`);
+      gradient.addColorStop(0.65, `rgba(0, 0, 0, ${softness * 0.85})`);
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+
+      colorCtx.save();
+      colorCtx.globalCompositeOperation = "destination-out";
+      colorCtx.fillStyle = gradient;
+      colorCtx.beginPath();
+      colorCtx.arc(x, y, radius, 0, Math.PI * 2);
+      colorCtx.fill();
+      colorCtx.restore();
+    }
+
+    function eraseEverywhere(strength) {
+      colorCtx.save();
+      colorCtx.globalCompositeOperation = "destination-out";
+      colorCtx.fillStyle = `rgba(0, 0, 0, ${strength})`;
+      colorCtx.fillRect(0, 0, revealCanvas.width, revealCanvas.height);
+      colorCtx.restore();
+    }
+
+    function eraseRestorationSwab(x, y, radius, opacity, stretchX = 1, stretchY = 1) {
+      colorCtx.save();
+      colorCtx.globalCompositeOperation = "destination-out";
+      colorCtx.translate(x, y);
+      colorCtx.scale(stretchX, stretchY);
+
+      const gradient = colorCtx.createRadialGradient(0, 0, radius * 0.12, 0, 0, radius);
+      gradient.addColorStop(0, `rgba(0, 0, 0, ${opacity})`);
+      gradient.addColorStop(0.58, `rgba(0, 0, 0, ${opacity * 0.55})`);
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+      colorCtx.fillStyle = gradient;
+      colorCtx.beginPath();
+      colorCtx.arc(0, 0, radius, 0, Math.PI * 2);
+      colorCtx.fill();
+      colorCtx.restore();
+    }
+
+    function eraseRestorationTrail(fromX, fromY, toX, toY, width, opacity) {
+      const length = Math.hypot(toX - fromX, toY - fromY);
+      const angle = Math.atan2(toY - fromY, toX - fromX);
+      const steps = Math.max(8, Math.ceil(length / Math.max(14, width * 0.22)));
+
+      colorCtx.save();
+      colorCtx.globalCompositeOperation = "destination-out";
+      colorCtx.translate(fromX, fromY);
+      colorCtx.rotate(angle);
+
+      for (let step = 0; step <= steps; step += 1) {
+        const t = step / steps;
+        const x = t * length;
+        const y = Math.sin(t * Math.PI) * (Math.random() - 0.5) * width * 0.08;
+        const radius = width * (0.18 + Math.sin(t * Math.PI) * 0.16 + Math.random() * 0.06);
+        const gradient = colorCtx.createRadialGradient(x, y, radius * 0.12, x, y, radius);
+        gradient.addColorStop(0, `rgba(0, 0, 0, ${opacity * 0.42})`);
+        gradient.addColorStop(0.7, `rgba(0, 0, 0, ${opacity * 0.18})`);
+        gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+        colorCtx.fillStyle = gradient;
+        colorCtx.beginPath();
+        colorCtx.ellipse(x, y, radius * 1.4, radius * 0.82, 0, 0, Math.PI * 2);
+        colorCtx.fill();
+      }
+
+      colorCtx.restore();
+    }
+    function createRestorationZone(x, y, radiusScale, delay, opacity = 0.3, stretchX = 1.3, stretchY = 0.9) {
+      const radius = Math.max(revealCanvas.width, revealCanvas.height) * radiusScale;
+      return {
+        x,
+        y,
+        radius,
+        delay,
+        opacity: opacity + Math.random() * 0.05,
+        stretchX,
+        stretchY
+      };
+    }
+
+    function createRestorationPass(startX, startY, controlX, controlY, endX, endY, widthScale, delay, opacity = 0.22) {
+      const width = Math.max(revealCanvas.width, revealCanvas.height) * widthScale;
+      return {
+        startX,
+        startY,
+        controlX,
+        controlY,
+        endX,
+        endY,
+        width,
+        delay,
+        opacity: opacity + Math.random() * 0.04
+      };
+    }
+
+    function getQuadraticPoint(t, startX, startY, controlX, controlY, endX, endY) {
+      const oneMinusT = 1 - t;
+      return {
+        x: oneMinusT * oneMinusT * startX + 2 * oneMinusT * t * controlX + t * t * endX,
+        y: oneMinusT * oneMinusT * startY + 2 * oneMinusT * t * controlY + t * t * endY
+      };
+    }
+
+    function splashReveal(x, y) {
+      eraseAt(x, y, BRUSH_RADIUS, 0.92);
+
+      for (let i = 0; i < 3; i += 1) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 20 + Math.random() * 52;
+        const size = 26 + Math.random() * 34;
+        eraseAt(
+          x + Math.cos(angle) * distance,
+          y + Math.sin(angle) * distance,
+          size,
+          0.34
+        );
+      }
+
+      eraseAt(x, y, SPLASH_RADIUS, 0.14);
+      stampCoverage(x, y, SPLASH_RADIUS * 1.15);
+    }
+
+    function stampCoverage(x, y, radius) {
+      const minCol = Math.max(0, Math.floor((x - radius) / coverageCellSize));
+      const maxCol = Math.min(coverageCols - 1, Math.floor((x + radius) / coverageCellSize));
+      const minRow = Math.max(0, Math.floor((y - radius) / coverageCellSize));
+      const maxRow = Math.min(coverageRows - 1, Math.floor((y + radius) / coverageCellSize));
+
+      for (let row = minRow; row <= maxRow; row += 1) {
+        for (let col = minCol; col <= maxCol; col += 1) {
+          const cellCenterX = col * coverageCellSize + coverageCellSize / 2;
+          const cellCenterY = row * coverageCellSize + coverageCellSize / 2;
+          const distance = Math.hypot(cellCenterX - x, cellCenterY - y);
+
+          if (distance <= radius) {
+            const index = row * coverageCols + col;
+            if (!coverageMap[index]) {
+              coverageMap[index] = 1;
+              revealedCells += 1;
+            }
+          }
+        }
+      }
+    }
+
+    function getPoint(event) {
+      const rect = revealCanvas.getBoundingClientRect();
+      const scaleX = revealCanvas.width / rect.width;
+      const scaleY = revealCanvas.height / rect.height;
+      return {
+        x: (event.clientX - rect.left) * scaleX,
+        y: (event.clientY - rect.top) * scaleY
+      };
+    }
+
+    function moveBrush(event) {
+      const stageRect = stage.getBoundingClientRect();
+      brush.style.left = event.clientX - stageRect.left + "px";
+      brush.style.top = event.clientY - stageRect.top + "px";
+    }
+
+    function sampleProgress() {
+      if (!totalCells) {
+        return 0;
+      }
+      return (revealedCells / totalCells) * 100;
+    }
+
+    function updateProgress() {
+      progress = Math.min(100, sampleProgress());
+      const displayProgress = Math.min(100, Math.round((progress / COMPLETION_TARGET) * 100));
+      progressFill.style.width = displayProgress + "%";
+      progressValue.textContent = displayProgress + "%";
+
+      if (!modalShown && !isAutoCompleting && progress >= COMPLETION_TARGET) {
+        modalShown = true;
+        progressFill.style.width = "100%";
+        progressValue.textContent = "100%";
+        autoCompletePainting();
+      }
+    }
+
+    function autoCompletePainting() {
+      if (isAutoCompleting) {
+        return;
+      }
+
+      isAutoCompleting = true;
+      isPainting = false;
+      revealedCells = totalCells;
+      coverageMap.fill(1);
+      progress = 100;
+      progressFill.style.width = "100%";
+      progressValue.textContent = "100%";
+      brush.style.opacity = isPointerInside ? "0.9" : "0";
+
+      const anchor = lastPaintPoint || {
+        x: revealCanvas.width / 2,
+        y: revealCanvas.height / 2
+      };
+      const width = revealCanvas.width;
+      const height = revealCanvas.height;
+      const restorationZones = [
+        createRestorationZone(width * 0.22, height * 0.72, 0.16, 0, 0.34, 1.5, 0.9),
+        createRestorationZone(width * 0.52, height * 0.56, 0.18, 180, 0.3, 1.35, 1),
+        createRestorationZone(width * 0.72, height * 0.34, 0.15, 360, 0.27, 1.4, 0.88),
+        createRestorationZone(anchor.x, anchor.y, 0.14, 560, 0.25, 1.2, 1.05),
+        createRestorationZone(width * 0.4, height * 0.28, 0.12, 790, 0.22, 1.25, 0.92),
+        createRestorationZone(width * 0.68, height * 0.72, 0.11, 980, 0.2, 1.3, 0.9)
+      ];
+      const restorationPasses = [
+        createRestorationPass(width * 0.1, height * 0.82, width * 0.28, height * 0.62, width * 0.54, height * 0.36, 0.05, 260, 0.2),
+        createRestorationPass(width * 0.58, height * 0.18, width * 0.68, height * 0.28, width * 0.82, height * 0.48, 0.045, 640, 0.19),
+        createRestorationPass(width * 0.22, height * 0.44, width * 0.42, height * 0.46, width * 0.72, height * 0.4, 0.04, 1040, 0.18)
+      ];
+
+      let startTime = null;
+
+      const animateReveal = (timestamp) => {
+        if (startTime === null) {
+          startTime = timestamp;
+        }
+
+        const elapsed = timestamp - startTime;
+        const zoneWindow = 380;
+        const passWindow = 430;
+
+        for (const zone of restorationZones) {
+          const local = Math.min(1, Math.max(0, (elapsed - zone.delay) / zoneWindow));
+          if (local <= 0 || zone.done) {
+            continue;
+          }
+
+          const eased = 1 - Math.pow(1 - local, 2.3);
+          eraseRestorationSwab(
+            zone.x,
+            zone.y,
+            zone.radius * (0.58 + eased * 0.5),
+            zone.opacity * (0.32 + eased * 0.42),
+            zone.stretchX,
+            zone.stretchY
+          );
+
+          if (local > 0.28) {
+            for (let mote = 0; mote < 3; mote += 1) {
+              const angle = Math.random() * Math.PI * 2;
+              const distance = zone.radius * (0.15 + Math.random() * 0.6);
+              eraseAt(
+                zone.x + Math.cos(angle) * distance,
+                zone.y + Math.sin(angle) * distance,
+                zone.radius * (0.08 + Math.random() * 0.08),
+                zone.opacity * 0.18
+              );
+            }
+          }
+
+          if (local >= 1) {
+            zone.done = true;
+          }
+        }
+
+        for (const pass of restorationPasses) {
+          const local = Math.min(1, Math.max(0, (elapsed - pass.delay) / passWindow));
+          if (local <= 0 || pass.done) {
+            continue;
+          }
+
+          const eased = 1 - Math.pow(1 - local, 2);
+          const previousPoint = getQuadraticPoint(
+            Math.max(0, eased - 0.16),
+            pass.startX,
+            pass.startY,
+            pass.controlX,
+            pass.controlY,
+            pass.endX,
+            pass.endY
+          );
+          const currentPoint = getQuadraticPoint(
+            eased,
+            pass.startX,
+            pass.startY,
+            pass.controlX,
+            pass.controlY,
+            pass.endX,
+            pass.endY
+          );
+          eraseRestorationTrail(
+            previousPoint.x,
+            previousPoint.y,
+            currentPoint.x,
+            currentPoint.y,
+            pass.width * (0.92 + eased * 0.12),
+            pass.opacity
+          );
+
+          if (local >= 1) {
+            pass.done = true;
+          }
+        }
+
+        const completion = Math.min(1, elapsed / AUTO_REVEAL_DURATION);
+        if (completion > 0.6) {
+          eraseEverywhere(0.004 + (completion - 0.6) * 0.03);
+        }
+
+        if (elapsed < AUTO_REVEAL_DURATION) {
+          autoRevealFrame = window.requestAnimationFrame(animateReveal);
+          return;
+        }
+
+        colorCtx.clearRect(0, 0, revealCanvas.width, revealCanvas.height);
+        isAutoCompleting = false;
+        autoRevealFrame = null;
+        window.setTimeout(openModal, 160);
+      };
+
+      autoRevealFrame = window.requestAnimationFrame(animateReveal);
+    }
+
+    function paint(event) {
+      if (!isPainting || isAutoCompleting) {
+        return;
+      }
+
+      event.preventDefault();
+      const point = getPoint(event);
+      lastPaintPoint = { x: point.x, y: point.y };
+      moveBrush(event);
+      splashReveal(point.x, point.y);
+      updateProgress();
+    }
+
+    function beginPainting(event) {
+      if (isAutoCompleting || !isExperienceVisible()) {
+        return;
+      }
+
+      event.preventDefault();
+      isPainting = true;
+      isPointerInside = true;
+      if (typeof revealCanvas.setPointerCapture === "function") {
+        revealCanvas.setPointerCapture(event.pointerId);
+      }
+      brush.style.opacity = "1";
+      moveBrush(event);
+      paint(event);
+    }
+
+    function endPainting(event) {
+      if (event && typeof revealCanvas.releasePointerCapture === "function" && revealCanvas.hasPointerCapture(event.pointerId)) {
+        revealCanvas.releasePointerCapture(event.pointerId);
+      }
+      isPainting = false;
+      brush.style.opacity = isPointerInside ? "0.9" : "0";
+    }
+
+    function openModal() {
+      infoModal.classList.add("open");
+      infoModal.setAttribute("aria-hidden", "false");
+      syncModalState();
+      window.setTimeout(() => continueJourneyButton.focus({ preventScroll: true }), 30);
+    }
+
+    function closeModal() {
+      infoModal.classList.remove("open");
+      infoModal.setAttribute("aria-hidden", "true");
+      syncModalState();
+    }
+
+    function resetExperience() {
+      if (autoRevealFrame !== null) {
+        window.cancelAnimationFrame(autoRevealFrame);
+        autoRevealFrame = null;
+      }
+
+      closeModal();
+      isAutoCompleting = false;
+      isPainting = false;
+      isPointerInside = false;
+      modalShown = false;
+      progress = 0;
+      lastPaintPoint = null;
+      brush.style.opacity = "0";
+
+      if (revealCanvas.width && revealCanvas.height) {
+        initializeCoverageMap();
+        drawGrayOverlay();
+        updateProgress();
+      } else {
+        progressFill.style.width = "0%";
+        progressValue.textContent = "0%";
+      }
+    }
+
+    heroStartButton.addEventListener("click", () => openNarrativeSequence("intro"));
+    launchCard.addEventListener("click", goToExperience);
+    launchExploreCard.addEventListener("click", goToExplore);
+    narrativePrevButton.addEventListener("click", () => moveNarrativeSlide(-1));
+    narrativeNextButton.addEventListener("click", () => moveNarrativeSlide(1));
+    narrativeSkipButton.addEventListener("click", completeNarrativeSequence);
+    narrativeExitButton.addEventListener("click", goToLanding);
+    openFinaleButton.addEventListener("click", () => {
+      closeExploreCompletionModal();
+      openNarrativeSequence("finale");
+    });
+    stayInExploreButton.addEventListener("click", closeExploreCompletionModal);
+    goToFinaleButton.addEventListener("click", () => {
+      closeExploreCompletionModal();
+      openNarrativeSequence("finale");
+    });
+    backToLandingButton.addEventListener("click", goToLanding);
+    backFromExploreButton.addEventListener("click", goToLanding);
+    heroScrollButton.addEventListener("click", () => {
+      launchCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    colorImage.addEventListener("load", () => {
+      if (isExperienceVisible()) {
+        fitCanvasToImage();
+      }
+    });
+
+    exploreImage.addEventListener("load", () => {
+      if (isExploreVisible()) {
+        fitExploreView();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (isExperienceVisible()) {
+        fitCanvasToImage();
+      }
+
+      if (isExploreVisible()) {
+        if (activeHotspotId) {
+          const hotspot = HOTSPOTS.find((item) => item.id === activeHotspotId);
+          fitExploreView();
+          activeHotspotId = hotspot ? hotspot.id : null;
+          if (hotspot) {
+            centerExploreOn(hotspot, false);
+          }
+        } else {
+          fitExploreView();
+        }
+      }
+    });
+
+    revealCanvas.addEventListener("pointerdown", beginPainting);
+    window.addEventListener("pointerup", endPainting);
+    window.addEventListener("pointercancel", endPainting);
+    revealCanvas.addEventListener("pointermove", (event) => {
+      moveBrush(event);
+      paint(event);
+    });
+    revealCanvas.addEventListener("pointerenter", () => {
+      isPointerInside = true;
+      brush.style.opacity = isPainting ? "1" : "0.9";
+    });
+    revealCanvas.addEventListener("pointerleave", () => {
+      isPointerInside = false;
+      if (!isPainting) {
+        brush.style.opacity = "0";
+      }
+    });
+
+    restartButton.addEventListener("click", resetExperience);
+    continueJourneyButton.addEventListener("click", () => openNarrativeSequence("bridge"));
+    closeButton.addEventListener("click", closeModal);
+    infoModal.addEventListener("click", (event) => {
+      if (event.target === infoModal) {
+        closeModal();
+      }
+    });
+
+    zoomInButton.addEventListener("click", () => {
+      setExploreScale(currentExploreScale + ZOOM_STEP, undefined, undefined, true);
+    });
+    zoomOutButton.addEventListener("click", () => {
+      setExploreScale(currentExploreScale - ZOOM_STEP, undefined, undefined, true);
+    });
+    zoomResetButton.addEventListener("click", resetExploreView);
+
+    exploreViewport.addEventListener("pointerdown", beginExploreDrag);
+    exploreViewport.addEventListener("pointermove", moveExploreDrag);
+    exploreViewport.addEventListener("pointerup", endExploreDrag);
+    exploreViewport.addEventListener("pointercancel", endExploreDrag);
+    exploreViewport.addEventListener("dragstart", (event) => {
+      event.preventDefault();
+    });
+    exploreViewport.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      const rect = exploreViewport.getBoundingClientRect();
+      const focusX = event.clientX - rect.left;
+      const focusY = event.clientY - rect.top;
+      const direction = event.deltaY < 0 ? 1 : -1;
+      setExploreScale(currentExploreScale + direction * ZOOM_STEP * 0.5, focusX, focusY, false);
+    }, { passive: false });
+
+    exploreCanvas.addEventListener("click", (event) => {
+      const hotspotButton = event.target.closest(".hotspot");
+      if (!hotspotButton) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      activateHotspotById(hotspotButton.dataset.hotspotId);
+    });
+
+    storyCloseButton.addEventListener("click", closeStoryModal);
+    storyModal.addEventListener("click", (event) => {
+      if (event.target === storyModal) {
+        closeStoryModal();
+      }
+    });
+    exploreCompletionModal.addEventListener("click", (event) => {
+      if (event.target === exploreCompletionModal) {
+        closeExploreCompletionModal();
+      }
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (!narrativeScreen.classList.contains("hidden") && !document.body.classList.contains("modal-active")) {
+        if (event.key === "ArrowRight") {
+          event.preventDefault();
+          moveNarrativeSlide(1);
+          return;
+        }
+
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          moveNarrativeSlide(-1);
+          return;
+        }
+      }
+
+      if (event.key === "Escape") {
+        closeModal();
+        closeStoryModal();
+        closeExploreCompletionModal();
+      }
+    });
+
+    if (colorImage.complete && isExperienceVisible()) {
+      fitCanvasToImage();
+    }
+
+    if (exploreImage.complete && isExploreVisible()) {
+      fitExploreView();
+    }
+
+    renderNarrativeSlide();
+    updateExploreProgressUI();
+  </script>
+</body>
+</html>

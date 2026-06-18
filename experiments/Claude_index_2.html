@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Иван Кугач — Живое поле</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400;1,600&family=Martian+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper:   #EAE3D6;
+      --paper-2: #E0D8C8;
+      --ink:     #110F0A;
+      --green:   #1C3D22;
+      --green-2: #274E2D;
+      --green-hi:#3A7044;
+      --rust:    #C5431B;
+      --ochre:   #C4922A;
+      --cream:   #F5F0E8;
+      --muted:   rgba(17,15,10,0.48);
+      --line:    rgba(17,15,10,0.14);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    * { cursor: none; }
+    #cursor {
+      position: fixed; width: 20px; height: 20px;
+      border: 1.5px solid var(--green); border-radius: 50%;
+      pointer-events: none; z-index: 99999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
+      mix-blend-mode: multiply;
+    }
+    #cursor.big { width: 52px; height: 52px; background: rgba(28,61,34,0.12); }
+    body::after {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9998;
+      opacity: 0.055;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px;
+    }
+    body { background: var(--paper); color: var(--ink); font-family: 'Crimson Pro', Georgia, serif; overflow-x: hidden; min-height: 100vh; }
+    body.modal-active { overflow: hidden; }
+    .ticker-wrap { position: fixed; top: 0; left: 0; right: 0; z-index: 500; background: var(--green); color: var(--paper); height: 36px; overflow: hidden; display: flex; align-items: center; }
+    .ticker-track { display: flex; white-space: nowrap; animation: tickerScroll 28s linear infinite; }
+    .ticker-item { display: inline-flex; align-items: center; gap: 28px; padding: 0 28px; font-family: 'Martian Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .ticker-dot { display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--ochre); flex-shrink: 0; }
+    @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .page { padding-top: 36px; position: relative; z-index: 1; }
+    .screen { display: block; }
+    .screen.hidden { display: none; }
+    .nav { display: flex; justify-content: space-between; align-items: center; padding: 22px 40px; border-bottom: 1px solid var(--line); }
+    .nav-logo { font-family: 'Teko', sans-serif; font-size: 24px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); }
+    .nav-tag { font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+    .nav-tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--rust); display: inline-block; animation: pulse 2.2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; transform: scale(1); } 50% { opacity:0.4; transform: scale(0.7); } }
+    .nav-buttons { display: flex; gap: 10px; }
+    button { appearance: none; border: 0; font: inherit; cursor: none; }
+    .btn { font-family: 'Martian Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px 20px; border-radius: 0; border: 1.5px solid; transition: background 0.18s, color 0.18s, transform 0.12s; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(1px); }
+    .btn-fill { background: var(--green); color: var(--paper); border-color: var(--green); }
+    .btn-fill:hover { background: var(--green-2); }
+    .btn-rust { background: var(--rust); color: var(--cream); border-color: var(--rust); }
+    .btn-rust:hover { background: #A83618; }
+    .btn-outline { background: transparent; color: var(--green); border-color: var(--green); }
+    .btn-outline:hover { background: var(--green); color: var(--paper); }
+    .btn-ghost { background: transparent; color: var(--muted); border-color: var(--line); }
+    .btn-ghost:hover { color: var(--ink); border-color: rgba(17,15,10,0.35); }
+    .landing-wrap { padding: 0 40px 60px; }
+    .hero { display: grid; grid-template-columns: 1fr; position: relative; padding: 48px 0 0; overflow: hidden; }
+    .hero-number { font-family: 'Teko', sans-serif; font-weight: 700; font-size: clamp(160px, 28vw, 360px); line-height: 0.82; color: transparent; -webkit-text-stroke: 1.5px rgba(28,61,34,0.15); position: absolute; right: -0.02em; top: -0.05em; pointer-events: none; user-select: none; letter-spacing: -0.04em; }
+    .hero-top { display: grid; grid-template-columns: auto 1fr; gap: 40px; align-items: start; position: relative; z-index: 1; }
+    .hero-index { font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; writing-mode: vertical-lr; transform: rotate(180deg); white-space: nowrap; padding-bottom: 8px; }
+    .hero-text { display: flex; flex-direction: column; gap: 20px; }
+    h1 { font-family: 'Teko', sans-serif; font-weight: 500; font-size: clamp(56px, 9.5vw, 140px); line-height: 0.9; letter-spacing: -0.01em; text-transform: uppercase; color: var(--green); }
+    h1 .rust-word { color: var(--rust); font-style: italic; font-weight: 300; }
+    .hero-desc { max-width: 520px; font-size: clamp(18px, 2vw, 22px); font-weight: 300; line-height: 1.6; color: rgba(17,15,10,0.72); font-style: italic; }
+    .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .hero-divider { margin: 40px 0 0; height: 1px; background: var(--line); position: relative; }
+    .hero-divider::after { content: attr(data-label); position: absolute; right: 0; top: -10px; font-family: 'Martian Mono', monospace; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); background: var(--paper); padding-left: 12px; }
+    .cards-section { display: grid; grid-template-columns: 1.65fr 1fr; gap: 0; border: 1.5px solid var(--line); margin-top: 40px; }
+    .launch-card { position: relative; overflow: hidden; background: transparent; padding: 0; display: flex; flex-direction: column; border: 0; text-align: left; transition: background 0.22s; }
+    .launch-card:first-child { border-right: 1.5px solid var(--line); }
+    .launch-card:hover { background: rgba(28,61,34,0.03); }
+    .card-num { font-family: 'Teko', sans-serif; font-weight: 700; font-size: 96px; line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(17,15,10,0.1); position: absolute; top: 8px; right: 16px; pointer-events: none; user-select: none; letter-spacing: -0.04em; }
+    .card-img-wrap { position: relative; overflow: hidden; height: 280px; }
+    .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(0.8) contrast(1.05); transition: transform 0.55s ease, filter 0.4s ease; }
+    .launch-card:hover .card-img-wrap img { transform: scale(1.04); filter: saturate(1) contrast(1.02); }
+    .card-img-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(234,227,214,0) 30%, var(--paper) 100%); }
+    .launch-card:first-child .card-img-wrap { clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%); margin-bottom: -20px; }
+    .card-body { padding: 24px 28px 32px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+    .card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag { font-family: 'Martian Mono', monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; padding: 5px 9px; border: 1px solid var(--line); color: var(--muted); }
+    .tag.green { background: var(--green); color: var(--paper); border-color: var(--green); }
+    .tag.rust { background: var(--rust); color: var(--cream); border-color: var(--rust); }
+    .card-title { font-family: 'Teko', sans-serif; font-weight: 500; font-size: clamp(32px, 4vw, 52px); line-height: 0.92; letter-spacing: 0.01em; text-transform: uppercase; color: var(--green); }
+    .card-desc { font-size: 16px; font-style: italic; font-weight: 300; line-height: 1.6; color: rgba(17,15,10,0.7); }
+    .card-footer { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; padding-top: 14px; border-top: 1px solid var(--line); }
+    .card-duration { font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .card-arrow { font-family: 'Teko', sans-serif; font-size: 28px; font-weight: 400; color: var(--rust); line-height: 1; transition: transform 0.2s; }
+    .launch-card:hover .card-arrow { transform: translate(4px, -2px); }
+    .facts-strip { display: grid; grid-template-columns: repeat(3, 1fr); border: 1.5px solid var(--line); border-top: none; }
+    .fact { padding: 22px 26px; position: relative; }
+    .fact:not(:last-child) { border-right: 1px solid var(--line); }
+    .fact-n { font-family: 'Teko', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rust); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .fact-n::after { content: ""; flex: 1; height: 1px; background: var(--rust); opacity: 0.3; }
+    .fact p { font-size: 15px; font-weight: 300; font-style: italic; line-height: 1.58; color: rgba(17,15,10,0.72); }
+    .screen-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 40px; border-bottom: 1.5px solid var(--line); background: var(--paper); }
+    .screen-header-left { display: flex; flex-direction: column; gap: 4px; }
+    .screen-eyebrow { font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--rust); display: flex; align-items: center; gap: 8px; }
+    .screen-eyebrow::before { content: ""; width: 16px; height: 1.5px; background: var(--rust); }
+    .screen-subtitle { font-size: 17px; font-style: italic; font-weight: 300; color: var(--muted); }
+    .experience-body { padding: 28px 40px 40px; }
+    .stage-wrap { position: relative; border: 1.5px solid var(--line); }
+    .stage { position: relative; overflow: hidden; background: #0a0906; user-select: none; touch-action: none; }
+    .painting-base, .reveal-layer { display: block; width: 100%; height: auto; }
+    .painting-base { position: relative; z-index: 1; background: #0a0906; }
+    .reveal-layer { position: absolute; left: 0; top: 0; z-index: 2; cursor: none; }
+    .brush { position: absolute; width: 90px; height: 90px; margin-left: -45px; margin-top: -45px; border-radius: 50%; pointer-events: none; z-index: 3; opacity: 0; transition: opacity 0.18s; background: radial-gradient(circle, rgba(196,146,42,0.2) 0 22%, rgba(197,67,27,0.12) 23% 48%, rgba(17,15,10,0.4) 49% 52%, transparent 53%); }
+    .hud-row { display: flex; gap: 0; border-top: 1.5px solid var(--line); }
+    .hud-seg { padding: 14px 22px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
+    .hud-seg:last-child { border-right: 0; flex: 1; }
+    .hud-label { font-family: 'Martian Mono', monospace; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+    .hud-value { font-family: 'Teko', sans-serif; font-size: 22px; font-weight: 600; color: var(--green); letter-spacing: 0.04em; line-height: 1; }
+    .progress-bar { height: 3px; background: var(--line); position: relative; overflow: hidden; flex: 1; align-self: center; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--rust), var(--ochre)); transition: width 0.2s ease-out; }
+    .hint-bar { padding: 10px 22px; background: rgba(28,61,34,0.04); border-top: 1px solid var(--line); font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-align: center; }
+    .explore-body { padding: 28px 40px 40px; }
+    .explore-frame { position: relative; border: 1.5px solid var(--line); }
+    .explore-frame::before { content: ""; position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: var(--rust); z-index: 10; pointer-events: none; }
+    .explore-stage { position: relative; min-height: 65vh; overflow: hidden; background: #0e0c08; }
+    .explore-viewport { position: relative; width: 100%; height: 100%; min-height: 65vh; overflow: hidden; touch-action: none; background: #0e0c08; }
+    .explore-viewport.dragging { cursor: none; }
+    .explore-canvas { position: absolute; left: 0; top: 0; overflow: hidden; transform-origin: 0 0; will-change: transform; }
+    .explore-canvas img { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; pointer-events: none; filter: saturate(0.92) contrast(1.03); }
+    .hotspot { position: absolute; width: 30px; height: 30px; margin-left: -15px; margin-top: -15px; border-radius: 0; border: 0; padding: 0; background: var(--rust); transform: rotate(45deg); z-index: 2; cursor: none; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .hotspot::before { content: ""; position: absolute; inset: 6px; background: var(--cream); }
+    .hotspot::after { content: ""; position: absolute; inset: -6px; border: 1.5px solid var(--rust); opacity: 0; animation: diamondPulse 2.8s ease-out infinite; }
+    .hotspot:hover, .hotspot.active { transform: rotate(45deg) scale(1.25); box-shadow: 0 0 0 6px rgba(197,67,27,0.2); }
+    @keyframes diamondPulse { 0% { transform: scale(0.8); opacity: 0.8; } 70% { transform: scale(2.2); opacity: 0; } 100% { transform: scale(2.2); opacity: 0; } }
+    .explore-controls { display: flex; border-top: 1.5px solid var(--line); }
+    .ctrl-seg { display: flex; align-items: center; border-right: 1px solid var(--line); }
+    .ctrl-seg:last-child { border-right: 0; flex: 1; padding: 14px 20px; gap: 12px; }
+    .ctrl-seg button.btn { border: 0; border-radius: 0; border-right: 1px solid var(--line); padding: 12px 16px; font-size: 18px; color: var(--green); background: transparent; }
+    .ctrl-seg button.btn:hover { background: rgba(28,61,34,0.07); }
+    .zoom-label { font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); padding: 0 14px; border-right: 1px solid var(--line); min-width: 80px; text-align: center; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .explore-status { font-size: 15px; font-style: italic; color: var(--muted); flex: 1; }
+    #openFinaleButton { padding: 8px 16px; font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; background: var(--rust); color: var(--cream); border: 0; cursor: none; transition: background 0.18s; }
+    #openFinaleButton:hover { background: #A83618; }
+    .narrative-body { padding: 28px 40px 40px; display: flex; flex-direction: column; gap: 20px; }
+    .narrative-card { border: 1.5px solid var(--line); display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; position: relative; background: var(--cream); }
+    .narrative-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--green); }
+    .narrative-card.is-animating { animation: cardIn 0.42s cubic-bezier(0.22,1,0.36,1); }
+    @keyframes cardIn { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+    .narrative-visual { position: relative; overflow: hidden; min-height: 360px; background: #0a0906; }
+    .narrative-visual img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(0.75) brightness(0.7); }
+    .narrative-visual-bar { position: absolute; bottom: 0; left: 0; right: 0; padding: 14px 16px; background: var(--green); color: var(--paper); }
+    .narrative-visual-bar span { font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; }
+    .narrative-content { padding: 36px 40px 28px 40px; display: flex; flex-direction: column; gap: 20px; }
+    .narrative-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .narrative-content h2 { font-family: 'Teko', sans-serif; font-weight: 500; font-size: clamp(28px, 3.5vw, 52px); line-height: 0.92; text-transform: uppercase; color: var(--green); }
+    .narrative-text { font-size: 17px; font-weight: 300; font-style: italic; line-height: 1.68; color: rgba(17,15,10,0.74); flex: 1; }
+    .narrative-secondary { padding: 16px 18px; border-left: 3px solid var(--rust); background: rgba(197,67,27,0.05); font-size: 14px; font-style: italic; font-weight: 300; line-height: 1.6; color: var(--muted); }
+    .narrative-footer { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 16px 40px; border-top: 1.5px solid var(--line); background: var(--paper-2); flex-wrap: wrap; }
+    .narrative-step { font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+    .narrative-actions { display: flex; align-items: center; gap: 10px; }
+    .narrative-wrap { border: 1.5px solid var(--line); overflow: hidden; }
+    .modal { position: fixed; inset: 0; z-index: 2000; display: grid; place-items: center; padding: 20px; background: rgba(17,15,10,0.64); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.28s ease; backdrop-filter: blur(4px); }
+    .modal.open { opacity: 1; visibility: visible; pointer-events: auto; }
+    .modal-card { width: min(620px, 100%); background: var(--cream); border: 1.5px solid var(--line); padding: 0; transform: translateY(18px); transition: transform 0.35s cubic-bezier(0.22,1,0.36,1); overflow: hidden; }
+    .modal.open .modal-card { transform: translateY(0); }
+    .modal-top { padding: 28px 32px 24px; border-bottom: 1.5px solid var(--line); position: relative; }
+    .modal-top::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--rust); }
+    .modal-label { font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--rust); margin-bottom: 10px; }
+    .modal h2 { font-family: 'Teko', sans-serif; font-weight: 500; font-size: clamp(32px, 4vw, 52px); line-height: 0.92; text-transform: uppercase; color: var(--green); margin-bottom: 14px; }
+    .modal p { font-size: 17px; font-style: italic; font-weight: 300; line-height: 1.6; color: rgba(17,15,10,0.72); }
+    .modal-actions { display: flex; gap: 0; border-top: 1.5px solid var(--line); }
+    .modal-actions button { flex: 1; padding: 16px; font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; border-right: 1px solid var(--line); background: transparent; color: var(--ink); transition: background 0.16s; cursor: none; }
+    .modal-actions button:last-child { border-right: 0; }
+    .modal-actions button:hover { background: rgba(17,15,10,0.06); }
+    .modal-actions button.primary-action { background: var(--green); color: var(--paper); }
+    .modal-actions button.primary-action:hover { background: var(--green-2); }
+    .story-modal.open .modal-card { animation: storyIn 0.6s cubic-bezier(0.19,1,0.22,1); }
+    @keyframes storyIn { 0% { opacity: 0; transform: translateY(28px) scale(0.92); } 55% { opacity: 1; transform: translateY(-3px) scale(1.01); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+    .screen-enter { animation: screenIn 0.44s cubic-bezier(0.22,1,0.36,1); }
+    @keyframes screenIn { 0% { opacity: 0; transform: translateY(12px); } 100% { opacity: 1; transform: translateY(0); } }
+    @media (min-width:721px) {
+      #experienceScreen { min-height: calc(100dvh - 36px - 65px); display: grid; grid-template-rows: auto 1fr; }
+      #experienceScreen.hidden { display: none; }
+      #experienceScreen .experience-body { display: flex; flex-direction: column; min-height: 0; }
+      #experienceScreen .stage-wrap { flex: 1; display: grid; grid-template-rows: 1fr auto auto; min-height: 0; }
+      #experienceScreen .stage { min-height: 0; height: 100%; }
+      #narrativeScreen { display: grid; grid-template-rows: auto 1fr; min-height: calc(100dvh - 36px - 65px); }
+      #narrativeScreen.hidden { display: none; }
+      #narrativeScreen .narrative-body { flex: 1; min-height: 0; }
+      #narrativeScreen .narrative-wrap { min-height: 0; height: 100%; display: flex; flex-direction: column; }
+      #narrativeScreen .narrative-card { flex: 1; min-height: 0; }
+      #narrativeScreen .narrative-visual { min-height: 0; height: 100%; }
+    }
+    @media (max-width: 900px) {
+      .cards-section { grid-template-columns: 1fr; }
+      .launch-card:first-child { border-right: 0; border-bottom: 1.5px solid var(--line); }
+      .launch-card:first-child .card-img-wrap { clip-path: none; margin-bottom: 0; }
+      .facts-strip { grid-template-columns: 1fr; }
+      .fact:not(:last-child) { border-right: 0; border-bottom: 1px solid var(--line); }
+      .narrative-card { grid-template-columns: 1fr; }
+      .narrative-visual { min-height: 220px; }
+    }
+    @media (max-width: 640px) {
+      .landing-wrap, .experience-body, .explore-body, .narrative-body { padding-left: 20px; padding-right: 20px; }
+      .nav, .screen-header { padding-left: 20px; padding-right: 20px; }
+      .narrative-content { padding: 24px 20px 20px; }
+      .narrative-footer { padding: 14px 20px; }
+      h1 { font-size: clamp(52px,13vw,90px); }
+    }
+  </style>
+</head>
+<body>
+  <div id="cursor"></div>
+  <div class="ticker-wrap" aria-hidden="true">
+    <div class="ticker-track">
+      <span class="ticker-item">Иван Кугач <span class="ticker-dot"></span> Живопись с натуры <span class="ticker-dot"></span> Подмосковье <span class="ticker-dot"></span> Тишина и повседневность <span class="ticker-dot"></span> Иван Кугач <span class="ticker-dot"></span> Живопись с натуры <span class="ticker-dot"></span> Подмосковье <span class="ticker-dot"></span> Тишина и повседневность <span class="ticker-dot"></span></span>
+      <span class="ticker-item">Иван Кугач <span class="ticker-dot"></span> Живопись с натуры <span class="ticker-dot"></span> Подмосковье <span class="ticker-dot"></span> Тишина и повседневность <span class="ticker-dot"></span> Иван Кугач <span class="ticker-dot"></span> Живопись с натуры <span class="ticker-dot"></span> Подмосковье <span class="ticker-dot"></span> Тишина и повседневность <span class="ticker-dot"></span></span>
+    </div>
+  </div>
+  <div class="page">
+    <section class="screen" id="landingScreen">
+      <nav class="nav">
+        <div class="nav-logo">Кугач</div>
+        <div class="nav-tag">Живая галерея — 2025</div>
+        <div class="nav-buttons"><button class="btn btn-outline" id="heroStartButton" type="button">Начать маршрут</button></div>
+      </nav>
+      <div class="landing-wrap">
+        <div class="hero">
+          <div class="hero-number" aria-hidden="true">01</div>
+          <div class="hero-top">
+            <div class="hero-index" aria-hidden="true">Живопись — пространство — время</div>
+            <div class="hero-text">
+              <h1>Войти<br>в <span class="rust-word">Живое</span><br>поле</h1>
+              <p class="hero-desc">Иммерсивный опыт с живописью Ивана Кугача.<br>Тишина, свет, провинциальная Россия.</p>
+              <div class="hero-cta">
+                <button class="btn btn-fill" id="heroStartButton2" type="button">→ Начать маршрут</button>
+                <button class="btn btn-ghost" id="heroScrollButton" type="button">Посмотреть картины</button>
+              </div>
+            </div>
+          </div>
+          <div class="hero-divider" data-label="Интерактивы"></div>
+        </div>
+        <div class="cards-section">
+          <button class="launch-card" id="launchCard" type="button" aria-label="Интерактив раскрашивания">
+            <span class="card-num" aria-hidden="true">01</span>
+            <div class="card-img-wrap"><img src="../src/Kugach_picture_1.png" alt=""><div class="card-img-overlay"></div></div>
+            <div class="card-body">
+              <div class="card-tags"><span class="tag green">Интерактив</span><span class="tag">1–2 мин</span><span class="tag">Раскрытие</span></div>
+              <div class="card-title">Возвращение<br>цвета</div>
+              <p class="card-desc">Проведите по серому холсту — и живопись проступит из-под монохрома. Как деликатная реставрация.</p>
+              <div class="card-footer"><span class="card-duration">Первый интерактив</span><span class="card-arrow">↗</span></div>
+            </div>
+          </button>
+          <button class="launch-card" id="launchExploreCard" type="button" aria-label="Интерактив исследования">
+            <span class="card-num" aria-hidden="true">02</span>
+            <div class="card-img-wrap"><img src="../src/Kugach_picture_2.png" alt=""><div class="card-img-overlay"></div></div>
+            <div class="card-body">
+              <div class="card-tags"><span class="tag rust">Исследование</span><span class="tag">Зум</span><span class="tag">Точки</span></div>
+              <div class="card-title">Приблизить<br>детали</div>
+              <p class="card-desc">Свободный просмотр в режиме зума. Точки взаимодействия на деталях полотна.</p>
+              <div class="card-footer"><span class="card-duration">Второй интерактив</span><span class="card-arrow">↗</span></div>
+            </div>
+          </button>
+        </div>
+        <div class="facts-strip">
+          <div class="fact"><div class="fact-n">001</div><p>Иван Кугач — мастер тихих сюжетов. Свет, повседневность, провинциальная Россия и живая, узнаваемая среда.</p></div>
+          <div class="fact"><div class="fact-n">002</div><p>Пользователь не смотрит — он раскрывает. Постепенное проявление цвета как участие в деликатной реставрации.</p></div>
+          <div class="fact"><div class="fact-n">003</div><p>Два интерактива, три сюжетных блока, один маршрут. От первого касания холста — до финального возвращения.</p></div>
+        </div>
+      </div>
+    </section>
+    <section class="screen hidden" id="experienceScreen">
+      <header class="screen-header">
+        <div class="screen-header-left"><span class="screen-eyebrow">Интерактив 01</span><span class="screen-subtitle">Проведите по полотну — и серость уступит цвету.</span></div>
+        <button class="btn btn-ghost" id="backToLandingButton" type="button">← Галерея</button>
+      </header>
+      <div class="experience-body">
+        <div class="stage-wrap">
+          <div class="stage" id="stage">
+            <canvas class="painting-base" id="baseCanvas"></canvas>
+            <img id="colorImage" src="../src/Kugach_picture_1.png" alt="Картина" hidden>
+            <canvas class="reveal-layer" id="revealCanvas"></canvas>
+            <div class="brush" id="brush"></div>
+          </div>
+          <div class="hud-row">
+            <div class="hud-seg"><span class="hud-label">Работа</span><span class="hud-value" style="font-size:15px;color:var(--muted);font-family:'Crimson Pro',serif;font-style:italic;font-weight:300;">Возвращение цвета</span></div>
+            <div class="hud-seg"><span class="hud-label">Раскрыто</span><span class="hud-value" id="progressValue">0%</span></div>
+            <div class="hud-seg" style="flex:1;flex-direction:row;align-items:center;gap:14px;"><div class="progress-bar" style="flex:1;"><div class="progress-fill" id="progressFill"></div></div></div>
+          </div>
+          <div class="hint-bar">Зажмите и ведите курсором или пальцем по картине</div>
+        </div>
+      </div>
+    </section>
+    <section class="screen hidden" id="narrativeScreen">
+      <header class="screen-header">
+        <div class="screen-header-left"><span class="screen-eyebrow" id="narrativeSequenceEyebrow">Сюжетная линия</span><span class="screen-subtitle" id="narrativeSequenceLead">Введение в историю.</span></div>
+        <button class="btn btn-ghost" id="narrativeExitButton" type="button">← Галерея</button>
+      </header>
+      <div class="narrative-body">
+        <div class="narrative-wrap">
+          <article class="narrative-card" aria-live="polite">
+            <div class="narrative-visual"><img id="narrativeImage" src="../src/Kugach_picture_1.png" alt=""><div class="narrative-visual-bar"><span id="narrativeCaption">Иллюстрация</span></div></div>
+            <div class="narrative-content">
+              <div class="narrative-tags" id="narrativeMeta" hidden></div>
+              <h2 id="narrativeTitle">Сюжетное окно</h2>
+              <p class="narrative-text" id="narrativeText">Текст вставки.</p>
+              <p class="narrative-secondary" id="narrativeSecondaryText">Дополнение.</p>
+            </div>
+          </article>
+          <footer class="narrative-footer">
+            <span class="narrative-step" id="narrativeStep">Окно 1 из 3</span>
+            <div class="narrative-actions">
+              <button class="btn btn-ghost" id="narrativePrevButton" type="button">← Назад</button>
+              <button class="btn btn-ghost" id="narrativeSkipButton" type="button">Пропустить</button>
+              <button class="btn btn-fill" id="narrativeNextButton" type="button">Далее →</button>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </section>
+    <section class="screen hidden" id="exploreScreen">
+      <header class="screen-header">
+        <div class="screen-header-left"><span class="screen-eyebrow">Интерактив 02</span><span class="screen-subtitle">Приближайте фрагменты и открывайте точки.</span></div>
+        <button class="btn btn-ghost" id="backFromExploreButton" type="button">← Галерея</button>
+      </header>
+      <div class="explore-body">
+        <div class="explore-frame">
+          <div class="explore-stage">
+            <div class="explore-viewport" id="exploreViewport" aria-label="Область просмотра картины">
+              <div class="explore-canvas" id="exploreCanvas"><img id="exploreImage" src="../src/Kugach_picture_2.png" alt="Картина" draggable="false"></div>
+            </div>
+          </div>
+          <div class="explore-controls">
+            <div class="ctrl-seg">
+              <span class="zoom-label" id="zoomValue">100%</span>
+              <button class="btn" id="zoomOutButton" type="button" aria-label="−">−</button>
+              <button class="btn" id="zoomInButton" type="button" aria-label="+">+</button>
+              <button class="btn btn-ghost" style="border-radius:0;border:0;border-left:1px solid var(--line);padding:12px 14px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-family:'Martian Mono',monospace;" id="zoomResetButton" type="button">Сброс</button>
+            </div>
+            <div class="ctrl-seg" style="border-right:0;"><span class="explore-status" id="exploreProgressText">Открывайте точки на полотне.</span><button id="openFinaleButton" type="button" hidden>Финал →</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="modal" id="infoModal" aria-hidden="true"><div class="modal-card"><div class="modal-top"><p class="modal-label">Картина раскрыта</p><h2>Полотно<br>обрело цвет</h2><p>История картины, автор, год создания. Блок готов для замены на реальные музейные данные.</p></div><div class="modal-actions"><button class="primary-action" id="continueJourneyButton" type="button">Продолжить →</button><button id="restartButton" type="button">Повторить</button><button id="closeButton" type="button">Закрыть</button></div></div></div>
+  <div class="modal story-modal" id="storyModal" aria-hidden="true"><div class="modal-card"><div class="modal-top"><p class="modal-label" id="storyModalLabel">Точка</p><h2 id="storyModalTitle">Деталь</h2><p id="storyModalText">Текст о фрагменте.</p></div><div class="modal-actions"><button class="primary-action" id="storyCloseButton" type="button">Продолжить просмотр</button></div></div></div>
+  <div class="modal" id="exploreCompletionModal" aria-hidden="true"><div class="modal-card"><div class="modal-top"><p class="modal-label">Исследование завершено</p><h2>Все детали<br>открыты</h2><p>Можно остаться или перейти к финальному блоку истории.</p></div><div class="modal-actions"><button id="stayInExploreButton" type="button">Остаться</button><button class="primary-action" id="goToFinaleButton" type="button">К финалу →</button></div></div></div>
+  <script>
+    const cursor=document.getElementById('cursor');
+    document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';});
+    document.querySelectorAll('button,a').forEach(el=>{el.addEventListener('mouseenter',()=>cursor.classList.add('big'));el.addEventListener('mouseleave',()=>cursor.classList.remove('big'));});
+    const ART_BOUNDS={x:0,y:0,width:579,height:480};
+    const NARRATIVE_SEQUENCES={
+      intro:{eyebrow:"Вступление",lead:"Первый блок вводит в историю.",completionLabel:"Войти в картину →",skipLabel:"Пропустить",completionAction:"experience",slides:[{id:"i1",meta:["Пролог","01/03"],title:"В зале становится тише",image:"../src/Kugach_picture_1.png",caption:"Первая картина маршрута",text:"Посетитель входит в зал и сначала видит настроение. Это окно задаёт тон будущей истории и объясняет, что интерактивы — часть одного маршрута.",secondaryText:"Здесь позже появится кураторская ремарка о том, почему история начинается с возвращения цвета."},{id:"i2",meta:["Пролог","02/03"],title:"Картина будто приглушена временем",image:"../src/Kugach_picture_1.png",caption:"Временный визуал второго окна",text:"Во втором окне narrative подводит к мысли, что работа ещё не раскрылась. Серый слой — не отсутствие цвета, а его ожидание.",secondaryText:"Дополнительный слот для короткой инструкции или музейного комментария."},{id:"i3",meta:["Пролог","03/03"],title:"Следующий шаг — прикоснуться",image:"../src/Kugach_picture_1.png",caption:"Финальное окно вступления",text:"Третье окно завершает вводный блок и подводит к действию. Смысловой мост между историей и первым интерактивом.",secondaryText:"В финальной версии это место свяжется с переходом в экран раскрашивания."}]},
+      bridge:{eyebrow:"Связка",lead:"Переход между интерактивами.",completionLabel:"К следующей картине →",skipLabel:"Пропустить",completionAction:"explore",slides:[{id:"b1",meta:["Интерлюдия","01/03"],title:"Цвет вернулся, но история продолжается",image:"../src/Kugach_picture_1.png",caption:"Переход после первого интерактива",text:"Восстановление живописного слоя — только начало пути. Дальше — другое полотно и другой режим.",secondaryText:"Блок для плавного перехода от действия к созерцанию."},{id:"b2",meta:["Интерлюдия","02/03"],title:"Чтобы понять пространство — надо приблизиться",image:"../src/Kugach_picture_2.png",caption:"Вторая картина маршрута",text:"Narrative смещает фокус: от общего впечатления — к деталям. Следы времени, архитектура, ритм фактур.",secondaryText:"Мотивация для точек взаимодействия и режима свободного просмотра."},{id:"b3",meta:["Интерлюдия","03/03"],title:"Картина открывается как пространство",image:"../src/Kugach_picture_2.png",caption:"Последнее окно связки",text:"Финал вставки готовит вход во второй интерактив. Структура и место под переход уже заложены.",secondaryText:"Станет отправной точкой для экрана исследования."}]},
+      finale:{eyebrow:"Финал",lead:"Завершающий блок маршрута.",completionLabel:"Вернуться в галерею",skipLabel:"Пропустить",completionAction:"landing",slides:[{id:"f1",meta:["Эпилог","01/03"],title:"Детали складываются в целое",image:"../src/Kugach_picture_2.png",caption:"Первая финальная карточка",text:"После просмотра всех точек — первый итоговый смысловой акцент. Экран рассчитан на финальную подачу истории.",secondaryText:"Слот для вывода, цитаты или короткого музейного комментария."},{id:"f2",meta:["Эпилог","02/03"],title:"Маршрут соединяет жест, взгляд и память",image:"../src/Kugach_picture_2.png",caption:"Второе окно эпилога",text:"Narrative уже не ведёт к новой механике, а собирает опыт в завершённую историю.",secondaryText:"Вывод о живописной среде, авторском взгляде или ощущении времени."},{id:"f3",meta:["Эпилог","03/03"],title:"История завершена. Можно вернуться.",image:"../src/Kugach_picture_1.png",caption:"Точка выхода на главную",text:"Финальное окно замыкает весь путь и возвращает на посадочную страницу.",secondaryText:"Здесь появится реальный завершающий переход на главный экран."}]}
+    };
+    const HOTSPOTS=[{id:"sign",x:0.172,y:0.195,targetScale:0.94,label:"Точка 01",title:"Вывеска на стене",text:"Вывеска работает как тестовая точка внимания. Позже — рассказ о том, как текст на фасаде вводит в сюжет, связывает бытовую сцену с конкретным местом."},{id:"crack",x:0.12,y:0.105,targetScale:0.9,label:"Точка 02",title:"Трещина и след времени",text:"Зона для музейной ремарки о материальности старого дома. Фактура штукатурки, следы старения, ощущение прожитого пространства."},{id:"window",x:0.575,y:0.425,targetScale:1,label:"Точка 03",title:"Окно как центр взгляда",text:"Оконный проём — главный смысловой фокус. Текст о композиции, ритме наличников, как тёмное стекло собирает вокруг себя соседние детали."},{id:"brick",x:0.59,y:0.91,targetScale:0.88,label:"Точка 04",title:"Кирпичная кладка",text:"Нижний фрагмент с кирпичом — разговор о слоях поверхности и ручной фактуре письма. Колорит, ритм кладки, состояние архитектурной среды."}];
+    const $=id=>document.getElementById(id);
+    const landingScreen=$('landingScreen'),experienceScreen=$('experienceScreen'),narrativeScreen=$('narrativeScreen'),exploreScreen=$('exploreScreen');
+    const launchCard=$('launchCard'),launchExploreCard=$('launchExploreCard'),heroStartButton=$('heroStartButton'),heroStartButton2=$('heroStartButton2'),heroScrollButton=$('heroScrollButton');
+    const backToLandingButton=$('backToLandingButton'),backFromExploreButton=$('backFromExploreButton');
+    const colorImage=$('colorImage'),baseCanvas=$('baseCanvas'),revealCanvas=$('revealCanvas'),stage=$('stage'),brush=$('brush'),progressFill=$('progressFill'),progressValue=$('progressValue');
+    const infoModal=$('infoModal'),continueJourneyButton=$('continueJourneyButton'),restartButton=$('restartButton'),closeButton=$('closeButton');
+    const exploreViewport=$('exploreViewport'),exploreCanvas=$('exploreCanvas'),exploreImage=$('exploreImage');
+    const zoomOutButton=$('zoomOutButton'),zoomInButton=$('zoomInButton'),zoomResetButton=$('zoomResetButton'),zoomValue=$('zoomValue');
+    const exploreProgressText=$('exploreProgressText'),openFinaleButton=$('openFinaleButton');
+    const narrativeSequenceEyebrow=$('narrativeSequenceEyebrow'),narrativeSequenceLead=$('narrativeSequenceLead'),narrativeMeta=$('narrativeMeta');
+    const narrativeCard=document.querySelector('.narrative-card'),narrativeTitle=$('narrativeTitle'),narrativeImage=$('narrativeImage'),narrativeCaption=$('narrativeCaption');
+    const narrativeText=$('narrativeText'),narrativeSecondaryText=$('narrativeSecondaryText'),narrativeStep=$('narrativeStep');
+    const narrativePrevButton=$('narrativePrevButton'),narrativeNextButton=$('narrativeNextButton'),narrativeSkipButton=$('narrativeSkipButton'),narrativeExitButton=$('narrativeExitButton');
+    const storyModal=$('storyModal'),storyModalLabel=$('storyModalLabel'),storyModalTitle=$('storyModalTitle'),storyModalText=$('storyModalText'),storyCloseButton=$('storyCloseButton');
+    const exploreCompletionModal=$('exploreCompletionModal'),stayInExploreButton=$('stayInExploreButton'),goToFinaleButton=$('goToFinaleButton');
+    const baseCtx=baseCanvas.getContext('2d'),colorCtx=revealCanvas.getContext('2d',{willReadFrequently:true});
+    const offscreenCanvas=document.createElement('canvas'),offscreenCtx=offscreenCanvas.getContext('2d',{willReadFrequently:true});
+    const BRUSH_RADIUS=64,SPLASH_RADIUS=110,COMPLETION_TARGET=82,AUTO_REVEAL_DURATION=2100,ZOOM_STEP=0.14;
+    let isPainting=false,isPointerInside=false,isAutoCompleting=false,progress=0,modalShown=false;
+    let coverageCellSize=24,coverageCols=0,coverageRows=0,revealedCells=0,totalCells=0,coverageMap=[];
+    let autoRevealFrame=null,lastPaintPoint=null,imageNaturalWidth=0,imageNaturalHeight=0;
+    let maxExploreScale=1,minExploreScale=1,currentExploreScale=1,currentExploreX=0,currentExploreY=0;
+    let explorePointerId=null,isDraggingExplore=false,dragStartX=0,dragStartY=0,dragOriginX=0,dragOriginY=0;
+    let activeHotspotId=null,viewedHotspotIds=new Set(),hasShownExploreCompletionModal=false;
+    let activeNarrativeSequenceId='intro',activeNarrativeSlideIndex=0;
+    function syncModalState(){const o=infoModal.classList.contains('open')||storyModal.classList.contains('open')||exploreCompletionModal.classList.contains('open');document.body.classList.toggle('modal-active',o);}
+    function isExpVisible(){return!experienceScreen.classList.contains('hidden');}
+    function isExploreVisible(){return!exploreScreen.classList.contains('hidden');}
+    function getSeq(){return NARRATIVE_SEQUENCES[activeNarrativeSequenceId]||NARRATIVE_SEQUENCES.intro;}
+    function updateNarrativeControls(){const s=getSeq(),last=activeNarrativeSlideIndex>=s.slides.length-1;narrativePrevButton.disabled=activeNarrativeSlideIndex===0;narrativeNextButton.textContent=last?(s.completionLabel||'Завершить'):'Далее →';narrativeSkipButton.textContent=s.skipLabel||'Пропустить';}
+    function animateNarrativeCard(){if(!narrativeCard)return;narrativeCard.classList.remove('is-animating');void narrativeCard.offsetWidth;narrativeCard.classList.add('is-animating');setTimeout(()=>narrativeCard.classList.remove('is-animating'),480);}
+    function renderNarrativeSlide(){const s=getSeq(),sl=s.slides[activeNarrativeSlideIndex];if(!sl)return;narrativeSequenceEyebrow.textContent=s.eyebrow;narrativeSequenceLead.textContent=s.lead;narrativeMeta.innerHTML='';sl.meta.forEach(m=>{const p=document.createElement('span');p.className='tag';p.textContent=m;narrativeMeta.appendChild(p);});narrativeTitle.textContent=sl.title;narrativeImage.src=sl.image;narrativeImage.alt=sl.title;narrativeCaption.textContent=sl.caption;narrativeText.textContent=sl.text;narrativeSecondaryText.textContent=sl.secondaryText;narrativeStep.textContent=`Окно ${activeNarrativeSlideIndex+1} из ${s.slides.length}`;updateNarrativeControls();animateNarrativeCard();}
+    function showScreen(screen){[landingScreen,experienceScreen,narrativeScreen,exploreScreen].forEach(s=>{s.classList.toggle('hidden',s!==screen);s.classList.remove('screen-enter');});screen.classList.add('screen-enter');setTimeout(()=>screen.classList.remove('screen-enter'),500);}
+    function openNarrativeSequence(id,start=0){const s=NARRATIVE_SEQUENCES[id];if(!s)return;activeNarrativeSequenceId=id;activeNarrativeSlideIndex=Math.max(0,Math.min(s.slides.length-1,start));closeModal();closeStoryModal();showScreen(narrativeScreen);renderNarrativeSlide();window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>narrativeNextButton.focus({preventScroll:true}),40);}
+    function completeNarrative(){const s=getSeq();if(s.completionAction==='experience'){goToExperience();return;}if(s.completionAction==='explore'){goToExplore();return;}goToLanding();}
+    function moveSlide(dir){const s=getSeq();if(dir>0&&activeNarrativeSlideIndex>=s.slides.length-1){completeNarrative();return;}activeNarrativeSlideIndex=Math.max(0,Math.min(s.slides.length-1,activeNarrativeSlideIndex+dir));renderNarrativeSlide();}
+    function goToExperience(){showScreen(experienceScreen);closeExploreCompletionModal();closeStoryModal();window.scrollTo({top:0,behavior:'smooth'});requestAnimationFrame(fitCanvasToImage);}
+    function goToExplore(){resetExploreProgress();showScreen(exploreScreen);closeExploreCompletionModal();closeModal();window.scrollTo({top:0,behavior:'smooth'});requestAnimationFrame(fitExploreView);}
+    function goToLanding(){resetExperience();resetExploreProgress();closeModal();closeExploreCompletionModal();closeStoryModal();showScreen(landingScreen);window.scrollTo({top:0,behavior:'smooth'});}
+    function ensureHotspots(){if(!exploreViewport||exploreViewport.querySelector('.hotspot'))return;HOTSPOTS.forEach(h=>{const b=document.createElement('button');b.type='button';b.className='hotspot';b.dataset.hotspotId=h.id;b.setAttribute('aria-label',h.title);b.style.left=(h.x*100)+'%';b.style.top=(h.y*100)+'%';exploreCanvas.appendChild(b);});}
+    function getExploreBounds(sc=currentExploreScale){const vr=exploreViewport.getBoundingClientRect(),sw=imageNaturalWidth*sc,sh=imageNaturalHeight*sc;return{minX:sw<=vr.width?(vr.width-sw)/2:vr.width-sw,maxX:sw<=vr.width?(vr.width-sw)/2:0,minY:sh<=vr.height?(vr.height-sh)/2:vr.height-sh,maxY:sh<=vr.height?(vr.height-sh)/2:0,vr};}
+    function clampExplore(sc=currentExploreScale,x=currentExploreX,y=currentExploreY){const b=getExploreBounds(sc);return{x:Math.min(b.maxX,Math.max(b.minX,x)),y:Math.min(b.maxY,Math.max(b.minY,y))};}
+    function updateZoom(){zoomValue.textContent=maxExploreScale>0?Math.round((currentExploreScale/maxExploreScale)*100)+'%':'100%';}
+    function updateHotspotState(){exploreCanvas.querySelectorAll('.hotspot').forEach(b=>b.classList.toggle('active',b.dataset.hotspotId===activeHotspotId));}
+    function hasViewedAll(){return viewedHotspotIds.size>=HOTSPOTS.length;}
+    function updateExploreUI(){if(!exploreProgressText||!openFinaleButton)return;if(hasViewedAll()){exploreProgressText.textContent='Все точки открыты. Можно перейти к финальному блоку.';openFinaleButton.hidden=false;return;}exploreProgressText.textContent=`Открыто ${viewedHotspotIds.size} из ${HOTSPOTS.length} точек.`;openFinaleButton.hidden=true;}
+    function resetExploreProgress(){viewedHotspotIds=new Set();hasShownExploreCompletionModal=false;updateExploreUI();}
+    function openExploreCompletionModal(){closeStoryModal();exploreCompletionModal.classList.add('open');exploreCompletionModal.setAttribute('aria-hidden','false');syncModalState();setTimeout(()=>goToFinaleButton.focus({preventScroll:true}),40);}
+    function closeExploreCompletionModal(){exploreCompletionModal.classList.remove('open');exploreCompletionModal.setAttribute('aria-hidden','true');syncModalState();}
+    function applyExploreTransform(t=false){if(!exploreCanvas)return;exploreCanvas.style.width=imageNaturalWidth+'px';exploreCanvas.style.height=imageNaturalHeight+'px';exploreCanvas.style.transition=t?'transform 0.72s cubic-bezier(0.22,1,0.36,1)':'none';exploreCanvas.style.transform=`translate(${currentExploreX}px,${currentExploreY}px) scale(${currentExploreScale})`;updateZoom();updateHotspotState();}
+    function fitExploreView(){if(!isExploreVisible()||!exploreImage.complete)return;imageNaturalWidth=exploreImage.naturalWidth||1;imageNaturalHeight=exploreImage.naturalHeight||1;ensureHotspots();const vr=exploreViewport.getBoundingClientRect();if(!vr.width||!vr.height)return;const fit=Math.min(vr.width/imageNaturalWidth,vr.height/imageNaturalHeight);maxExploreScale=fit*1.9;minExploreScale=fit*0.72;currentExploreScale=minExploreScale;const c=clampExplore(minExploreScale,(vr.width-imageNaturalWidth*minExploreScale)/2,(vr.height-imageNaturalHeight*minExploreScale)/2);currentExploreX=c.x;currentExploreY=c.y;activeHotspotId=null;applyExploreTransform(false);updateExploreUI();}
+    function setExploreScale(ns,fx,fy,t=false){if(!imageNaturalWidth||!imageNaturalHeight)return;const cl=Math.max(minExploreScale,Math.min(maxExploreScale,ns));const vr=exploreViewport.getBoundingClientRect();const lx=typeof fx==='number'?fx:vr.width/2,ly=typeof fy==='number'?fy:vr.height/2;const ix=(lx-currentExploreX)/currentExploreScale,iy=(ly-currentExploreY)/currentExploreScale;const c=clampExplore(cl,lx-ix*cl,ly-iy*cl);currentExploreScale=cl;currentExploreX=c.x;currentExploreY=c.y;applyExploreTransform(t);}
+    function centerExploreOn(h,t=true){if(!h)return;const vr=exploreViewport.getBoundingClientRect();const ts=Math.max(minExploreScale,Math.min(maxExploreScale,maxExploreScale*(h.targetScale||1)));const c=clampExplore(ts,vr.width/2-h.x*imageNaturalWidth*ts,vr.height/2-h.y*imageNaturalHeight*ts);currentExploreScale=ts;currentExploreX=c.x;currentExploreY=c.y;applyExploreTransform(t);}
+    function openStoryModal(h){if(!h)return;storyModalLabel.textContent=h.label;storyModalTitle.textContent=h.title;storyModalText.textContent=h.text;storyModal.classList.add('open');storyModal.setAttribute('aria-hidden','false');syncModalState();setTimeout(()=>storyCloseButton.focus({preventScroll:true}),60);}
+    function closeStoryModal(){storyModal.classList.remove('open');storyModal.setAttribute('aria-hidden','true');syncModalState();}
+    function activateHotspot(id){const h=HOTSPOTS.find(x=>x.id===id);if(!h)return;activeHotspotId=h.id;viewedHotspotIds.add(h.id);updateExploreUI();centerExploreOn(h,true);setTimeout(()=>{if(activeHotspotId===h.id)openStoryModal(h);},460);if(hasViewedAll()&&!hasShownExploreCompletionModal){hasShownExploreCompletionModal=true;setTimeout(openExploreCompletionModal,620);}}
+    function beginDrag(e){if(!isExploreVisible()||e.button!==0||e.target.closest('.hotspot'))return;e.preventDefault();isDraggingExplore=true;explorePointerId=e.pointerId;dragStartX=e.clientX;dragStartY=e.clientY;dragOriginX=currentExploreX;dragOriginY=currentExploreY;activeHotspotId=null;updateHotspotState();closeStoryModal();exploreViewport.classList.add('dragging');exploreCanvas.style.transition='none';if(exploreViewport.setPointerCapture)exploreViewport.setPointerCapture(e.pointerId);}
+    function moveDrag(e){if(!isDraggingExplore||e.pointerId!==explorePointerId)return;e.preventDefault();const c=clampExplore(currentExploreScale,dragOriginX+e.clientX-dragStartX,dragOriginY+e.clientY-dragStartY);currentExploreX=c.x;currentExploreY=c.y;applyExploreTransform(false);}
+    function endDrag(e){if(!isDraggingExplore||(e&&e.pointerId!==explorePointerId))return;if(e&&exploreViewport.hasPointerCapture&&exploreViewport.hasPointerCapture(e.pointerId))exploreViewport.releasePointerCapture(e.pointerId);isDraggingExplore=false;explorePointerId=null;exploreViewport.classList.remove('dragging');}
+    function fitCanvasToImage(){if(!isExpVisible())return;const sr=stage.getBoundingClientRect(),sw=Math.round(stage.clientWidth||sr.width||ART_BOUNDS.width),sh=Math.round(stage.clientHeight||sr.height||0);if(!sw)return;const aa=ART_BOUNDS.width/ART_BOUNDS.height;let rw=Math.max(1,sw),rh=Math.round(rw/aa);if(sh&&rh>sh){rh=Math.max(1,sh);rw=Math.round(rh*aa);}const ox=Math.max(0,Math.round((sw-rw)/2)),oy=Math.max(0,Math.round((sh-rh)/2));baseCanvas.width=rw;baseCanvas.height=rh;baseCanvas.style.cssText=`width:${rw}px;height:${rh}px;display:block;margin-left:${ox}px;margin-top:${oy}px;`;revealCanvas.width=rw;revealCanvas.height=rh;revealCanvas.style.cssText=`width:${rw}px;height:${rh}px;left:${ox}px;top:${oy}px;`;offscreenCanvas.width=rw;offscreenCanvas.height=rh;stage.style.aspectRatio='auto';initCoverage();drawBase();drawGray();updateProgress();}
+    function initCoverage(){coverageCols=Math.max(1,Math.ceil(revealCanvas.width/coverageCellSize));coverageRows=Math.max(1,Math.ceil(revealCanvas.height/coverageCellSize));totalCells=coverageCols*coverageRows;revealedCells=0;coverageMap=new Array(totalCells).fill(0);}
+    function drawBase(){baseCtx.clearRect(0,0,baseCanvas.width,baseCanvas.height);baseCtx.drawImage(colorImage,ART_BOUNDS.x,ART_BOUNDS.y,ART_BOUNDS.width,ART_BOUNDS.height,0,0,baseCanvas.width,baseCanvas.height);}
+    function drawGray(){offscreenCtx.clearRect(0,0,offscreenCanvas.width,offscreenCanvas.height);offscreenCtx.filter='grayscale(1) contrast(1.08) brightness(0.94)';offscreenCtx.drawImage(colorImage,ART_BOUNDS.x,ART_BOUNDS.y,ART_BOUNDS.width,ART_BOUNDS.height,0,0,offscreenCanvas.width,offscreenCanvas.height);offscreenCtx.filter='none';colorCtx.clearRect(0,0,revealCanvas.width,revealCanvas.height);colorCtx.globalCompositeOperation='source-over';colorCtx.drawImage(offscreenCanvas,0,0);}
+    function eraseAt(x,y,r,s){const g=colorCtx.createRadialGradient(x,y,r*0.18,x,y,r);g.addColorStop(0,`rgba(0,0,0,${s})`);g.addColorStop(0.65,`rgba(0,0,0,${s*0.85})`);g.addColorStop(1,'rgba(0,0,0,0)');colorCtx.save();colorCtx.globalCompositeOperation='destination-out';colorCtx.fillStyle=g;colorCtx.beginPath();colorCtx.arc(x,y,r,0,Math.PI*2);colorCtx.fill();colorCtx.restore();}
+    function eraseEverywhere(s){colorCtx.save();colorCtx.globalCompositeOperation='destination-out';colorCtx.fillStyle=`rgba(0,0,0,${s})`;colorCtx.fillRect(0,0,revealCanvas.width,revealCanvas.height);colorCtx.restore();}
+    function eraseSwab(x,y,r,op,sx=1,sy=1){colorCtx.save();colorCtx.globalCompositeOperation='destination-out';colorCtx.translate(x,y);colorCtx.scale(sx,sy);const g=colorCtx.createRadialGradient(0,0,r*0.12,0,0,r);g.addColorStop(0,`rgba(0,0,0,${op})`);g.addColorStop(0.58,`rgba(0,0,0,${op*0.55})`);g.addColorStop(1,'rgba(0,0,0,0)');colorCtx.fillStyle=g;colorCtx.beginPath();colorCtx.arc(0,0,r,0,Math.PI*2);colorCtx.fill();colorCtx.restore();}
+    function eraseTrail(fx,fy,tx,ty,w,op){const len=Math.hypot(tx-fx,ty-fy),ang=Math.atan2(ty-fy,tx-fx),steps=Math.max(8,Math.ceil(len/Math.max(14,w*0.22)));colorCtx.save();colorCtx.globalCompositeOperation='destination-out';colorCtx.translate(fx,fy);colorCtx.rotate(ang);for(let i=0;i<=steps;i++){const t=i/steps,ex=t*len,ey=Math.sin(t*Math.PI)*(Math.random()-0.5)*w*0.08,r=w*(0.18+Math.sin(t*Math.PI)*0.16+Math.random()*0.06);const g=colorCtx.createRadialGradient(ex,ey,r*0.12,ex,ey,r);g.addColorStop(0,`rgba(0,0,0,${op*0.42})`);g.addColorStop(0.7,`rgba(0,0,0,${op*0.18})`);g.addColorStop(1,'rgba(0,0,0,0)');colorCtx.fillStyle=g;colorCtx.beginPath();colorCtx.ellipse(ex,ey,r*1.4,r*0.82,0,0,Math.PI*2);colorCtx.fill();}colorCtx.restore();}
+    function splashReveal(x,y){eraseAt(x,y,BRUSH_RADIUS,0.92);for(let i=0;i<3;i++){const a=Math.random()*Math.PI*2,d=20+Math.random()*52,s=26+Math.random()*34;eraseAt(x+Math.cos(a)*d,y+Math.sin(a)*d,s,0.34);}eraseAt(x,y,SPLASH_RADIUS,0.14);stampCoverage(x,y,SPLASH_RADIUS*1.15);}
+    function stampCoverage(x,y,r){const mc=Math.max(0,Math.floor((x-r)/coverageCellSize)),xc=Math.min(coverageCols-1,Math.floor((x+r)/coverageCellSize)),mr=Math.max(0,Math.floor((y-r)/coverageCellSize)),xr=Math.min(coverageRows-1,Math.floor((y+r)/coverageCellSize));for(let row=mr;row<=xr;row++)for(let col=mc;col<=xc;col++){const cx=col*coverageCellSize+coverageCellSize/2,cy=row*coverageCellSize+coverageCellSize/2;if(Math.hypot(cx-x,cy-y)<=r){const i=row*coverageCols+col;if(!coverageMap[i]){coverageMap[i]=1;revealedCells++;}}}}
+    function getPoint(e){const rc=revealCanvas.getBoundingClientRect();return{x:(e.clientX-rc.left)*(revealCanvas.width/rc.width),y:(e.clientY-rc.top)*(revealCanvas.height/rc.height)};}
+    function moveBrush(e){const sr=stage.getBoundingClientRect();brush.style.left=(e.clientX-sr.left)+'px';brush.style.top=(e.clientY-sr.top)+'px';}
+    function updateProgress(){progress=Math.min(100,totalCells?(revealedCells/totalCells)*100:0);const d=Math.min(100,Math.round((progress/COMPLETION_TARGET)*100));progressFill.style.width=d+'%';progressValue.textContent=d+'%';if(!modalShown&&!isAutoCompleting&&progress>=COMPLETION_TARGET){modalShown=true;progressFill.style.width='100%';progressValue.textContent='100%';autoComplete();}}
+    function autoComplete(){if(isAutoCompleting)return;isAutoCompleting=true;isPainting=false;revealedCells=totalCells;coverageMap.fill(1);progress=100;progressFill.style.width='100%';progressValue.textContent='100%';brush.style.opacity=isPointerInside?'0.9':'0';const anc=lastPaintPoint||{x:revealCanvas.width/2,y:revealCanvas.height/2},W=revealCanvas.width,H=revealCanvas.height;const mkZ=(x,y,rs,dl,op=0.3,sx=1.3,sy=0.9)=>({x,y,radius:Math.max(W,H)*rs,delay:dl,opacity:op+Math.random()*0.05,stretchX:sx,stretchY:sy});const mkP=(sx,sy,cx,cy,ex,ey,ws,dl,op=0.22)=>({startX:sx,startY:sy,controlX:cx,controlY:cy,endX:ex,endY:ey,width:Math.max(W,H)*ws,delay:dl,opacity:op+Math.random()*0.04});const zones=[mkZ(W*0.22,H*0.72,0.16,0,0.34,1.5,0.9),mkZ(W*0.52,H*0.56,0.18,180,0.3,1.35,1),mkZ(W*0.72,H*0.34,0.15,360,0.27,1.4,0.88),mkZ(anc.x,anc.y,0.14,560,0.25,1.2,1.05),mkZ(W*0.4,H*0.28,0.12,790,0.22,1.25,0.92),mkZ(W*0.68,H*0.72,0.11,980,0.2,1.3,0.9)];const passes=[mkP(W*0.1,H*0.82,W*0.28,H*0.62,W*0.54,H*0.36,0.05,260,0.2),mkP(W*0.58,H*0.18,W*0.68,H*0.28,W*0.82,H*0.48,0.045,640,0.19),mkP(W*0.22,H*0.44,W*0.42,H*0.46,W*0.72,H*0.4,0.04,1040,0.18)];const qp=(t,sx,sy,cx,cy,ex,ey)=>{const o=1-t;return{x:o*o*sx+2*o*t*cx+t*t*ex,y:o*o*sy+2*o*t*cy+t*t*ey};};let start=null;const animate=ts=>{if(!start)start=ts;const e=ts-start;for(const z of zones){const l=Math.min(1,Math.max(0,(e-z.delay)/380));if(l<=0||z.done)continue;const ea=1-Math.pow(1-l,2.3);eraseSwab(z.x,z.y,z.radius*(0.58+ea*0.5),z.opacity*(0.32+ea*0.42),z.stretchX,z.stretchY);if(l>0.28)for(let m=0;m<3;m++){const a=Math.random()*Math.PI*2,d=z.radius*(0.15+Math.random()*0.6);eraseAt(z.x+Math.cos(a)*d,z.y+Math.sin(a)*d,z.radius*(0.08+Math.random()*0.08),z.opacity*0.18);}if(l>=1)z.done=true;}for(const p of passes){const l=Math.min(1,Math.max(0,(e-p.delay)/430));if(l<=0||p.done)continue;const ea=1-Math.pow(1-l,2);const pv=qp(Math.max(0,ea-0.16),p.startX,p.startY,p.controlX,p.controlY,p.endX,p.endY);const cv=qp(ea,p.startX,p.startY,p.controlX,p.controlY,p.endX,p.endY);eraseTrail(pv.x,pv.y,cv.x,cv.y,p.width*(0.92+ea*0.12),p.opacity);if(l>=1)p.done=true;}const comp=Math.min(1,e/AUTO_REVEAL_DURATION);if(comp>0.6)eraseEverywhere(0.004+(comp-0.6)*0.03);if(e<AUTO_REVEAL_DURATION){autoRevealFrame=requestAnimationFrame(animate);return;}colorCtx.clearRect(0,0,revealCanvas.width,revealCanvas.height);isAutoCompleting=false;autoRevealFrame=null;setTimeout(openModal,160);};autoRevealFrame=requestAnimationFrame(animate);}
+    function paint(e){if(!isPainting||isAutoCompleting)return;e.preventDefault();const pt=getPoint(e);lastPaintPoint={x:pt.x,y:pt.y};moveBrush(e);splashReveal(pt.x,pt.y);updateProgress();}
+    function beginPainting(e){if(isAutoCompleting||!isExpVisible())return;e.preventDefault();isPainting=true;isPointerInside=true;if(revealCanvas.setPointerCapture)revealCanvas.setPointerCapture(e.pointerId);brush.style.opacity='1';moveBrush(e);paint(e);}
+    function endPainting(e){if(e&&revealCanvas.releasePointerCapture&&revealCanvas.hasPointerCapture(e.pointerId))revealCanvas.releasePointerCapture(e.pointerId);isPainting=false;brush.style.opacity=isPointerInside?'0.9':'0';}
+    function openModal(){infoModal.classList.add('open');infoModal.setAttribute('aria-hidden','false');syncModalState();setTimeout(()=>continueJourneyButton.focus({preventScroll:true}),30);}
+    function closeModal(){infoModal.classList.remove('open');infoModal.setAttribute('aria-hidden','true');syncModalState();}
+    function resetExperience(){if(autoRevealFrame!==null){cancelAnimationFrame(autoRevealFrame);autoRevealFrame=null;}closeModal();isAutoCompleting=false;isPainting=false;isPointerInside=false;modalShown=false;progress=0;lastPaintPoint=null;brush.style.opacity='0';if(revealCanvas.width&&revealCanvas.height){initCoverage();drawGray();updateProgress();}else{progressFill.style.width='0%';progressValue.textContent='0%';}}
+    heroStartButton.addEventListener('click',()=>openNarrativeSequence('intro'));
+    heroStartButton2.addEventListener('click',()=>openNarrativeSequence('intro'));
+    launchCard.addEventListener('click',goToExperience);
+    launchExploreCard.addEventListener('click',goToExplore);
+    narrativePrevButton.addEventListener('click',()=>moveSlide(-1));
+    narrativeNextButton.addEventListener('click',()=>moveSlide(1));
+    narrativeSkipButton.addEventListener('click',completeNarrative);
+    narrativeExitButton.addEventListener('click',goToLanding);
+    openFinaleButton.addEventListener('click',()=>{closeExploreCompletionModal();openNarrativeSequence('finale');});
+    stayInExploreButton.addEventListener('click',closeExploreCompletionModal);
+    goToFinaleButton.addEventListener('click',()=>{closeExploreCompletionModal();openNarrativeSequence('finale');});
+    backToLandingButton.addEventListener('click',goToLanding);
+    backFromExploreButton.addEventListener('click',goToLanding);
+    heroScrollButton.addEventListener('click',()=>launchCard.scrollIntoView({behavior:'smooth',block:'center'}));
+    colorImage.addEventListener('load',()=>{if(isExpVisible())fitCanvasToImage();});
+    exploreImage.addEventListener('load',()=>{if(isExploreVisible())fitExploreView();});
+    window.addEventListener('resize',()=>{if(isExpVisible())fitCanvasToImage();if(isExploreVisible()){const h=HOTSPOTS.find(x=>x.id===activeHotspotId);fitExploreView();if(h){activeHotspotId=h.id;centerExploreOn(h,false);}}});
+    revealCanvas.addEventListener('pointerdown',beginPainting);
+    window.addEventListener('pointerup',endPainting);
+    window.addEventListener('pointercancel',endPainting);
+    revealCanvas.addEventListener('pointermove',e=>{moveBrush(e);paint(e);});
+    revealCanvas.addEventListener('pointerenter',()=>{isPointerInside=true;brush.style.opacity=isPainting?'1':'0.9';});
+    revealCanvas.addEventListener('pointerleave',()=>{isPointerInside=false;if(!isPainting)brush.style.opacity='0';});
+    restartButton.addEventListener('click',resetExperience);
+    continueJourneyButton.addEventListener('click',()=>openNarrativeSequence('bridge'));
+    closeButton.addEventListener('click',closeModal);
+    infoModal.addEventListener('click',e=>{if(e.target===infoModal)closeModal();});
+    zoomInButton.addEventListener('click',()=>setExploreScale(currentExploreScale+ZOOM_STEP,undefined,undefined,true));
+    zoomOutButton.addEventListener('click',()=>setExploreScale(currentExploreScale-ZOOM_STEP,undefined,undefined,true));
+    zoomResetButton.addEventListener('click',()=>{activeHotspotId=null;closeStoryModal();fitExploreView();});
+    exploreViewport.addEventListener('pointerdown',beginDrag);
+    exploreViewport.addEventListener('pointermove',moveDrag);
+    exploreViewport.addEventListener('pointerup',endDrag);
+    exploreViewport.addEventListener('pointercancel',endDrag);
+    exploreViewport.addEventListener('dragstart',e=>e.preventDefault());
+    exploreViewport.addEventListener('wheel',e=>{e.preventDefault();const r=exploreViewport.getBoundingClientRect();setExploreScale(currentExploreScale+(e.deltaY<0?1:-1)*ZOOM_STEP*0.5,e.clientX-r.left,e.clientY-r.top,false);},{passive:false});
+    exploreCanvas.addEventListener('click',e=>{const b=e.target.closest('.hotspot');if(!b)return;e.preventDefault();e.stopPropagation();activateHotspot(b.dataset.hotspotId);});
+    storyCloseButton.addEventListener('click',closeStoryModal);
+    storyModal.addEventListener('click',e=>{if(e.target===storyModal)closeStoryModal();});
+    exploreCompletionModal.addEventListener('click',e=>{if(e.target===exploreCompletionModal)closeExploreCompletionModal();});
+    window.addEventListener('keydown',e=>{if(!narrativeScreen.classList.contains('hidden')&&!document.body.classList.contains('modal-active')){if(e.key==='ArrowRight'){e.preventDefault();moveSlide(1);return;}if(e.key==='ArrowLeft'){e.preventDefault();moveSlide(-1);return;}}if(e.key==='Escape'){closeModal();closeStoryModal();closeExploreCompletionModal();}});
+    if(colorImage.complete&&isExpVisible())fitCanvasToImage();
+    if(exploreImage.complete&&isExploreVisible())fitExploreView();
+    renderNarrativeSlide();
+    updateExploreUI();
+  </script>
+</body>
+</html>
