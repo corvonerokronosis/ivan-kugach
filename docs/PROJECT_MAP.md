@@ -20,7 +20,7 @@
 | Логика | Vanilla JavaScript, DOM API, Canvas API | TypeScript и изолированные клиентские модули |
 | Роутинг | Legacy без URL; Astro имеет только `/` | Файловые маршруты Astro |
 | Данные | Константы внутри `<script>` | Типизированные локальные данные с заменяемым CMS-адаптером |
-| Сборка | Astro dev-сервер; остальные команды ещё не настроены | Astro production build |
+| Сборка | Astro dev, build и production preview | Astro production build |
 | Тесты | Нет | Unit, content checks и browser smoke tests |
 | Backend/API | Нет | Вне текущего frontend-этапа |
 
@@ -40,7 +40,9 @@
 | `docs/Frontend_Rebuild_Backlog.md` | План миграции в Astro, задачи `FRT-001`–`FRT-062` | Работа над технической переработкой |
 | `docs/Prototype_Functional_Description.md` | Более подробное описание исторически реализованных сценариев | Когда нужно понять ожидаемое поведение прототипа; сверять с кодом |
 
-Запуск Astro-каркаса: `npm.cmd install`, затем `npm.cmd run dev`. Команды `build`, `check`, `lint` и `verify` будут добавлены в FRT-003.
+Запуск Astro-каркаса: `npm.cmd install`, затем `npm.cmd run dev`.
+
+Проверки и production-сборка: `npm.cmd run verify`. Отдельно доступны `check`, `lint`, `build` и `preview`. До FRT-004 команда `lint` использует строгую Astro/TypeScript-проверку.
 
 Запуск полнофункционального legacy-эталона: открыть `index_masterskaya.html` в браузере.
 

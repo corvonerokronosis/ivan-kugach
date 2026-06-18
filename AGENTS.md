@@ -90,12 +90,19 @@ rg -n "FRT-0XX" docs/Frontend_Rebuild_Backlog.md
 
 ## Текущие команды
 
-В проекте создан минимальный Astro-каркас. Пока настроена только команда dev:
+В проекте создан минимальный Astro-каркас. Доступные команды:
 
 ```powershell
 npm.cmd install
 npm.cmd run dev
+npm.cmd run check
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run preview
+npm.cmd run verify
 ```
+
+`lint` временно выполняет строгую Astro/TypeScript-проверку. Полноценные ESLint-правила добавляются в FRT-004.
 
 Для legacy-прототипа:
 
@@ -108,17 +115,7 @@ npm.cmd run dev
 node -e "const fs=require('fs');const s=fs.readFileSync('index_masterskaya.html','utf8');const m=s.match(/<script>([\s\S]*?)<\/script>/i);new Function(m[1]);console.log('Inline JS syntax OK')"
 ```
 
-Остальные команды будут добавлены в FRT-003. Планируемый минимум:
-
-```powershell
-npm.cmd run dev
-npm.cmd run check
-npm.cmd run lint
-npm.cmd run test
-npm.cmd run build
-npm.cmd run preview
-npm.cmd run verify
-```
+Команда `test` появится в отдельной задаче тестового контура.
 
 На Windows предпочитай `npm.cmd`, не меняя PowerShell execution policy.
 
@@ -146,7 +143,7 @@ npm.cmd run verify
 Для будущего Astro-кода:
 
 - выполнить профильные проверки из задачи;
-- выполнить `npm.cmd run verify`, когда команда появится;
+- выполнить `npm.cmd run verify`;
 - открыть production preview;
 - проверить прямой вход и обновление изменённых URL;
 - убедиться, что страница не загружает код чужих интерактивов.
