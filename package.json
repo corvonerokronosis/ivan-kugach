@@ -9,8 +9,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "lint": "eslint \"src/**/*.{astro,js,mjs,ts}\" \"*.{js,mjs}\" --max-warnings 0",
-    "format": "prettier --write \"src/**/*.{astro,js,mjs,ts,css,md}\" \"*.{json,js,mjs,md}\" \"docs/{Frontend_Rebuild_Backlog,PROJECT_MAP,LEGACY_MIGRATION_CHECKLIST,VISUAL_BASELINE}.md\"",
-    "format:check": "prettier --check \"src/**/*.{astro,js,mjs,ts,css,md}\" \"*.{json,js,mjs,md}\" \"docs/{Frontend_Rebuild_Backlog,PROJECT_MAP,LEGACY_MIGRATION_CHECKLIST,VISUAL_BASELINE}.md\"",
+    "format": "prettier --write \"src/**/*.{astro,js,mjs,ts,css,md}\" \"*.{json,js,mjs,md}\" \"docs/{Frontend_Rebuild_Backlog,PROJECT_MAP,LEGACY_MIGRATION_CHECKLIST,VISUAL_BASELINE,ENTRYPOINT_CUTOVER_PLAN}.md\"",
+    "format:check": "prettier --check \"src/**/*.{astro,js,mjs,ts,css,md}\" \"*.{json,js,mjs,md}\" \"docs/{Frontend_Rebuild_Backlog,PROJECT_MAP,LEGACY_MIGRATION_CHECKLIST,VISUAL_BASELINE,ENTRYPOINT_CUTOVER_PLAN}.md\"",
     "verify": "npm run check && npm run lint && npm run format:check && npm run build"
   },
   "dependencies": {
