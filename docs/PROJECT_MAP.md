@@ -40,6 +40,7 @@
 | `docs/PROJECT_MAP.md`                      | Навигация по проекту                                           | Всегда первой в новой сессии                                      |
 | `docs/Frontend_Rebuild_Backlog.md`         | План миграции в Astro, задачи `FRT-001`–`FRT-062`              | Работа над технической переработкой                               |
 | `docs/LEGACY_MIGRATION_CHECKLIST.md`       | Карта экранов, переходов, состояний и форм legacy-прототипа    | Перед переносом или проверкой любого работающего сценария         |
+| `docs/VISUAL_BASELINE.md`                  | Индекс desktop/mobile PNG и допустимых отличий Astro-версии    | Перед визуальным переносом и regression-сравнением                |
 | `docs/Prototype_Functional_Description.md` | Более подробное описание исторически реализованных сценариев   | Когда нужно понять ожидаемое поведение прототипа; сверять с кодом |
 
 Запуск Astro-каркаса: `npm.cmd install`, затем `npm.cmd run dev`.
@@ -69,6 +70,7 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 | `src/for_sales/`            | Legacy-изображения каталога работ                              | Временно сохраняет пути монолита                        |
 | `src/picture_light_shadow/` | Legacy-изображения интерактива света                           | Временно сохраняет пути монолита                        |
 | `docs/`                     | Требования, описание прототипа, дизайн-планы и frontend-бэклог | Читать выборочно по задаче                              |
+| `docs/visual-baseline/`     | Эталонные PNG актуального legacy-прототипа                     | Использовать для visual regression; не менять вручную   |
 | `experiments/`              | Самостоятельные HTML-эксперименты дизайна и механик            | Не production; только визуальные/исторические референсы |
 | `archive/`                  | Старые версии HTML, changelog и bug notes                      | История; не источник текущего поведения                 |
 | `scrns/`                    | Старые скриншоты                                               | Визуальный референс, не код                             |
@@ -140,6 +142,7 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 | Исправить mobile layout                   | Responsive rules в конце `<style>`                            | Главная, каталог и каждый интерактив отдельно                    |
 | Начать Astro-миграцию                     | `docs/Frontend_Rebuild_Backlog.md`, `FRT-001`                 | Не удалять legacy HTML до `FRT-062`                              |
 | Зафиксировать поведение перед переносом   | `docs/LEGACY_MIGRATION_CHECKLIST.md`                          | Точные ID, данные и обработчики в `index_masterskaya.html`       |
+| Сравнить визуальный результат             | `docs/VISUAL_BASELINE.md`                                     | PNG нужного экрана в desktop/mobile и modal/completion state     |
 | Понять ожидаемый пользовательский маршрут | `README.md`                                                   | Код `goTo*`, narrative completion и modal CTA                    |
 | Посмотреть альтернативный дизайн          | Только нужный файл в `experiments/`                           | Не переносить его как текущую реализацию без явного решения      |
 
