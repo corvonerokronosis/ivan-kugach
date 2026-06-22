@@ -1,0 +1,124 @@
+---
+interface Props {
+  id: string;
+  title: string;
+  description?: string;
+  open?: boolean;
+  preview?: boolean;
+}
+
+const { id, title, description, open = false, preview = false } = Astro.props;
+
+const titleId = `${id}-title`;
+const descriptionId = description ? `${id}-description` : undefined;
+---
+
+<dialog
+  id={id}
+  class:list={["dialog-shell", { "dialog-shell--preview": preview }]}
+  open={open}
+  aria-labelledby={titleId}
+  aria-describedby={descriptionId}
+>
+  <div class="dialog-shell__surface">
+    <header class="dialog-shell__header">
+      <p class="dialog-shell__label">Мастерская Ивана Кугача</p>
+      <h2 id={titleId}>{title}</h2>
+      {
+        description && (
+          <p id={descriptionId} class="dialog-shell__description">
+            {description}
+          </p>
+        )
+      }
+    </header>
+
+    <div class="dialog-shell__body">
+      <slot />
+    </div>
+
+    {
+      Astro.slots.has("actions") && (
+        <footer class="dialog-shell__actions">
+          <slot name="actions" />
+        </footer>
+      )
+    }
+  </div>
+</dialog>
+
+<style>
+  .dialog-shell {
+    width: min(42.5rem, calc(100% - 2 * var(--space-4)));
+    max-height: calc(100dvh - 2 * var(--space-6));
+    padding: 0;
+    border: 0;
+    color: var(--color-text);
+    background: transparent;
+  }
+
+  .dialog-shell::backdrop {
+    background: var(--color-overlay);
+    backdrop-filter: blur(0.25rem);
+  }
+
+  .dialog-shell--preview {
+    position: static;
+    width: 100%;
+    max-height: none;
+    margin: 0;
+  }
+
+  .dialog-shell__surface {
+    display: grid;
+    gap: var(--space-5);
+    padding: clamp(var(--space-5), 4vw, var(--space-8));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl);
+    background:
+      radial-gradient(circle at 85% 0, rgb(215 163 58 / 16%), transparent 34%),
+      var(--color-surface-strong);
+    box-shadow: var(--shadow-raised);
+  }
+
+  .dialog-shell__header {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .dialog-shell__label {
+    margin: 0;
+    color: var(--color-accent-strong);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  .dialog-shell h2 {
+    margin: 0;
+    font-size: var(--font-size-heading-md);
+  }
+
+  .dialog-shell__description,
+  .dialog-shell__body {
+    color: var(--color-text-muted);
+  }
+
+  .dialog-shell__description {
+    margin: 0;
+  }
+
+  .dialog-shell__body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .dialog-shell__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+</style>

@@ -1,0 +1,120 @@
+---
+interface Props {
+  href?: string;
+  variant?: "primary" | "secondary" | "quiet";
+  size?: "small" | "medium";
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
+  ariaLabel?: string;
+}
+
+const {
+  href,
+  variant = "primary",
+  size = "medium",
+  type = "button",
+  disabled = false,
+  ariaLabel,
+} = Astro.props;
+
+const className = `action action--${variant} action--${size}`;
+---
+
+{
+  href ? (
+    <a class={className} href={href} aria-label={ariaLabel}>
+      <slot />
+    </a>
+  ) : (
+    <button
+      class={className}
+      type={type}
+      disabled={disabled}
+      aria-label={ariaLabel}
+    >
+      <slot />
+    </button>
+  )
+}
+
+<style>
+  .action {
+    display: inline-flex;
+    width: fit-content;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-family-ui);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      color var(--motion-duration-fast) var(--motion-easing-standard),
+      background-color var(--motion-duration-fast) var(--motion-easing-standard),
+      border-color var(--motion-duration-fast) var(--motion-easing-standard),
+      opacity var(--motion-duration-fast) var(--motion-easing-standard),
+      transform var(--motion-duration-fast) var(--motion-easing-standard);
+  }
+
+  .action:hover {
+    transform: translateY(calc(-1 * var(--motion-distance-sm)));
+  }
+
+  .action:active {
+    transform: translateY(var(--motion-distance-sm));
+  }
+
+  .action:disabled {
+    opacity: 0.48;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .action--small {
+    min-height: 2.25rem;
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size-200);
+  }
+
+  .action--medium {
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--font-size-300);
+  }
+
+  .action--primary {
+    color: var(--color-text-on-accent);
+    background: var(--color-accent-strong);
+    box-shadow: 0 10px 24px rgb(94 39 23 / 20%);
+  }
+
+  .action--primary:hover {
+    color: var(--color-text-on-accent);
+    background: var(--color-accent);
+  }
+
+  .action--secondary {
+    border-color: var(--color-border);
+    color: var(--color-text);
+    background: var(--color-surface-strong);
+  }
+
+  .action--secondary:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent-strong);
+    background: var(--color-surface-muted);
+  }
+
+  .action--quiet {
+    color: var(--color-accent-strong);
+    background: transparent;
+  }
+
+  .action--quiet:hover {
+    color: var(--color-accent);
+    background: var(--color-accent-muted);
+  }
+</style>

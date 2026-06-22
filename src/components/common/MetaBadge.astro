@@ -1,0 +1,64 @@
+---
+interface Props {
+  tone?: "neutral" | "accent" | "success" | "warning" | "danger";
+}
+
+const { tone = "neutral" } = Astro.props;
+---
+
+<span class={`meta-badge meta-badge--${tone}`}>
+  <slot />
+</span>
+
+<style>
+  .meta-badge {
+    display: inline-flex;
+    min-height: 1.875rem;
+    align-items: center;
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    background: var(--color-surface-muted);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .meta-badge--accent {
+    border-color: rgb(142 63 36 / 28%);
+    color: var(--color-accent-strong);
+    background: var(--color-accent-muted);
+  }
+
+  .meta-badge--success {
+    border-color: color-mix(
+      in srgb,
+      var(--color-status-success) 32%,
+      transparent
+    );
+    color: var(--color-status-success);
+  }
+
+  .meta-badge--warning {
+    border-color: color-mix(
+      in srgb,
+      var(--color-status-warning) 36%,
+      transparent
+    );
+    color: var(--color-status-warning);
+  }
+
+  .meta-badge--danger {
+    border-color: color-mix(
+      in srgb,
+      var(--color-status-danger) 34%,
+      transparent
+    );
+    color: var(--color-status-danger);
+  }
+</style>

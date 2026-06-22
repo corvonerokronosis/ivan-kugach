@@ -58,11 +58,11 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 | --------------------------- | -------------------------------------------------------------- | ------------------------------------------------------- |
 | `src/`                      | Astro-код и изображения актуального прототипа                  | Новая исходная директория; правила в `src/README.md`    |
 | `src/assets/`               | Импортируемые Astro web-ассеты                                 | Пустой каркас; legacy-ассеты будут перенесены позже     |
-| `src/components/`           | Повторно используемые Astro-компоненты                         | Содержит общую `SiteNavigation.astro`                   |
+| `src/components/`           | Повторно используемые Astro-компоненты                         | Навигация и UI-примитивы в `components/common/`         |
 | `src/content/`              | Записи Astro Content Collections                               | Пустой каркас                                           |
 | `src/data/`                 | Типизированные локальные данные                                | Пустой каркас                                           |
 | `src/layouts/`              | Общие Astro-layouts                                            | `BaseLayout.astro`: metadata, skip-link и page slots    |
-| `src/pages/`                | Файловые маршруты Astro                                        | Технические `/`, `/artist/`, `/experience/`, `/works/`  |
+| `src/pages/`                | Файловые маршруты Astro                                        | Основные заглушки и технический `/ui-preview/`          |
 | `src/scripts/`              | Изолированные клиентские DOM/Canvas-модули                     | Пустой каркас                                           |
 | `src/styles/`               | Токены и общие CSS-слои                                        | `global.css` подключает reset, базу и `tokens.css`      |
 | `src/types/`                | Общие TypeScript-контракты                                     | Пустой каркас                                           |
@@ -110,22 +110,24 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 
 ## 7. Стили и дизайн-система
 
-| Зона                  | Где искать                                  | Примечание                                     |
-| --------------------- | ------------------------------------------- | ---------------------------------------------- |
-| Astro navigation      | `src/components/SiteNavigation.astro`       | Обычные ссылки, active state и mobile layout   |
-| Astro design tokens   | `src/styles/tokens.css`                     | Палитра, семантические цвета, шкалы и motion   |
-| Astro global styles   | `src/styles/global.css`                     | Reset, базовая типографика, skip-link и shell  |
-| Глобальные токены     | `:root` в начале `index_masterskaya.html`   | Цвета, тени, поверхности и акценты             |
-| Body и фон мастерской | Начало `<style>`                            | Многослойные gradients и fixed pseudo-elements |
-| Общие экраны          | `.screen`, `.screen.hidden`                 | Основа текущей псевдонавигации                 |
-| Декор мастерской      | `.studio-props`                             | `aria-hidden`; широкое влияние на композицию   |
-| Общие панели          | `.hero-panel`, `.workspace`                 | Используются несколькими экранами              |
-| Narrative             | `.narrative-*`                              | Карточка, progress и переходы                  |
-| Details explorer      | `.explore-*`, `.hotspot`                    | Viewport, transforms и hotspot animations      |
-| Light workshop        | `.light-*`                                  | Stage, control panel, layers и selectors       |
-| Каталог               | `.sales-*`, `.art-card`, `.price-label`     | Каталог, архив, detail и forms                 |
-| Модалки               | `.modal`, `.modal-card`                     | Общая основа всех modal-сценариев              |
-| Responsive            | `@media` около строк 639, 1279, 2331 и 2360 | Breakpoints `721px`, `960px`, `720px`          |
+| Зона                  | Где искать                                  | Примечание                                      |
+| --------------------- | ------------------------------------------- | ----------------------------------------------- |
+| Astro navigation      | `src/components/SiteNavigation.astro`       | Обычные ссылки, active state и mobile layout    |
+| Common Astro UI       | `src/components/common/`                    | Actions, headers, artwork, forms, dialog, state |
+| UI component preview  | `src/pages/ui-preview.astro`                | Техническая проверка; не продуктовый URL        |
+| Astro design tokens   | `src/styles/tokens.css`                     | Палитра, семантические цвета, шкалы и motion    |
+| Astro global styles   | `src/styles/global.css`                     | Reset, базовая типографика, skip-link и shell   |
+| Глобальные токены     | `:root` в начале `index_masterskaya.html`   | Цвета, тени, поверхности и акценты              |
+| Body и фон мастерской | Начало `<style>`                            | Многослойные gradients и fixed pseudo-elements  |
+| Общие экраны          | `.screen`, `.screen.hidden`                 | Основа текущей псевдонавигации                  |
+| Декор мастерской      | `.studio-props`                             | `aria-hidden`; широкое влияние на композицию    |
+| Общие панели          | `.hero-panel`, `.workspace`                 | Используются несколькими экранами               |
+| Narrative             | `.narrative-*`                              | Карточка, progress и переходы                   |
+| Details explorer      | `.explore-*`, `.hotspot`                    | Viewport, transforms и hotspot animations       |
+| Light workshop        | `.light-*`                                  | Stage, control panel, layers и selectors        |
+| Каталог               | `.sales-*`, `.art-card`, `.price-label`     | Каталог, архив, detail и forms                  |
+| Модалки               | `.modal`, `.modal-card`                     | Общая основа всех modal-сценариев               |
+| Responsive            | `@media` около строк 639, 1279, 2331 и 2360 | Breakpoints `721px`, `960px`, `720px`           |
 
 При переработке дизайн-системы начинать с `FRT-009`–`FRT-013`, а не механически копировать весь `<style>`.
 

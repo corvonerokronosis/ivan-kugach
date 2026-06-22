@@ -1,0 +1,80 @@
+---
+interface Props {
+  id?: string;
+  title: string;
+  eyebrow?: string;
+  description?: string;
+  level?: "h1" | "h2" | "h3";
+  align?: "start" | "center";
+}
+
+const {
+  id,
+  title,
+  eyebrow,
+  description,
+  level = "h2",
+  align = "start",
+} = Astro.props;
+
+const Heading = level;
+---
+
+<header class={`section-header section-header--${align}`}>
+  {eyebrow && <p class="section-header__eyebrow">{eyebrow}</p>}
+  <Heading id={id} class="section-header__title">{title}</Heading>
+  {description && <p class="section-header__description">{description}</p>}
+  {
+    Astro.slots.has("meta") && (
+      <div class="section-header__meta">
+        <slot name="meta" />
+      </div>
+    )
+  }
+</header>
+
+<style>
+  .section-header {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 48rem;
+  }
+
+  .section-header--center {
+    justify-items: center;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .section-header__eyebrow {
+    margin: 0;
+    color: var(--color-accent-strong);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  .section-header__title {
+    margin: 0;
+    font-size: var(--font-size-heading-md);
+  }
+
+  .section-header__description {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-400);
+  }
+
+  .section-header__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+  }
+
+  .section-header--center .section-header__meta {
+    justify-content: center;
+  }
+</style>

@@ -1,0 +1,66 @@
+---
+interface Props {
+  title: string;
+  tone?: "info" | "success" | "warning" | "error";
+  live?: "off" | "polite" | "assertive";
+}
+
+const { title, tone = "info", live = "off" } = Astro.props;
+const role = tone === "error" ? "alert" : live === "off" ? undefined : "status";
+---
+
+<aside
+  class={`message-state message-state--${tone}`}
+  role={role}
+  aria-live={live === "off" ? undefined : live}
+>
+  <strong class="message-state__title">{title}</strong>
+  <div class="message-state__body">
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .message-state {
+    display: grid;
+    gap: var(--space-1);
+    max-width: 44rem;
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--message-color);
+    border-left-width: 0.3rem;
+    border-radius: var(--radius-lg);
+    color: var(--color-text);
+    background: var(--color-surface-muted);
+  }
+
+  .message-state--info {
+    --message-color: var(--palette-paint-blue);
+  }
+
+  .message-state--success {
+    --message-color: var(--color-status-success);
+  }
+
+  .message-state--warning {
+    --message-color: var(--color-status-warning);
+  }
+
+  .message-state--error {
+    --message-color: var(--color-status-danger);
+  }
+
+  .message-state__title {
+    color: var(--message-color);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-200);
+  }
+
+  .message-state__body {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-200);
+  }
+
+  .message-state__body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

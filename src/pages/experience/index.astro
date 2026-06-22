@@ -1,4 +1,7 @@
 ---
+import Action from "../../components/common/Action.astro";
+import MessageState from "../../components/common/MessageState.astro";
+import SectionHeader from "../../components/common/SectionHeader.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
@@ -6,10 +9,14 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   title="Интерактивный маршрут — Иван Кугач"
   description="Техническая страница входа в будущий интерактивный маршрут по работам Ивана Кугача."
 >
-  <p class="page-kicker">Раздел готовится</p>
-  <h1>Интерактивный маршрут</h1>
-  <p>
-    Последовательность интерактивов будет перенесена сюда отдельной задачей.
-    Сейчас маршрут создан для проверки общей навигации.
-  </p>
+  <SectionHeader
+    level="h1"
+    eyebrow="Раздел готовится"
+    title="Интерактивный маршрут"
+    description="Последовательность интерактивов будет перенесена сюда отдельной задачей."
+  />
+  <MessageState title="Технический маршрут">
+    <p>Страница уже участвует в общей навигации и поддерживает прямой вход.</p>
+  </MessageState>
+  <Action href="/" variant="secondary">Вернуться на главную</Action>
 </BaseLayout>

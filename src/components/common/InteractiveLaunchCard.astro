@@ -1,0 +1,96 @@
+---
+import Action from "./Action.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  href: string;
+  actionLabel: string;
+  eyebrow?: string;
+}
+
+const { title, description, href, actionLabel, eyebrow } = Astro.props;
+---
+
+<article class="launch-card">
+  {
+    Astro.slots.has("media") && (
+      <div class="launch-card__media">
+        <slot name="media" />
+      </div>
+    )
+  }
+
+  <div class="launch-card__content">
+    {
+      Astro.slots.has("meta") && (
+        <div class="launch-card__meta">
+          <slot name="meta" />
+        </div>
+      )
+    }
+    {eyebrow && <p class="launch-card__eyebrow">{eyebrow}</p>}
+    <h3>{title}</h3>
+    <p class="launch-card__description">{description}</p>
+    <Action href={href}>{actionLabel}</Action>
+  </div>
+</article>
+
+<style>
+  .launch-card {
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl);
+    background:
+      linear-gradient(145deg, rgb(255 249 241 / 94%), rgb(239 223 194 / 88%)),
+      var(--color-surface);
+    box-shadow: var(--shadow-surface);
+  }
+
+  .launch-card__media {
+    min-width: 0;
+  }
+
+  .launch-card__content {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+  }
+
+  .launch-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .launch-card__eyebrow {
+    margin: 0;
+    color: var(--color-accent-strong);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  .launch-card h3 {
+    margin: 0;
+    font-size: var(--font-size-heading-sm);
+  }
+
+  .launch-card__description {
+    margin: 0 0 var(--space-2);
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 52rem) {
+    .launch-card:has(.launch-card__media) {
+      grid-template-columns: minmax(14rem, 0.85fr) minmax(0, 1fr);
+      align-items: center;
+      padding: var(--space-6);
+    }
+  }
+</style>

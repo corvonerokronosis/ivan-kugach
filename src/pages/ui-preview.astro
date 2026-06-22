@@ -1,0 +1,157 @@
+---
+import artworkImage from "../Kugach_picture_1.png";
+import Action from "../components/common/Action.astro";
+import DialogShell from "../components/common/DialogShell.astro";
+import FormField from "../components/common/FormField.astro";
+import FramedArtwork from "../components/common/FramedArtwork.astro";
+import InteractiveLaunchCard from "../components/common/InteractiveLaunchCard.astro";
+import MessageState from "../components/common/MessageState.astro";
+import MetaBadge from "../components/common/MetaBadge.astro";
+import ProgressIndicator from "../components/common/ProgressIndicator.astro";
+import SectionHeader from "../components/common/SectionHeader.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="UI preview — техническая страница"
+  description="Техническая проверка общих Astro-компонентов сайта Ивана Кугача."
+>
+  <SectionHeader
+    level="h1"
+    eyebrow="Техническая страница"
+    title="Общие UI-компоненты"
+    description="Маршрут нужен только для ручной проверки дизайн-системы до переноса продуктовых страниц."
+  >
+    <MetaBadge slot="meta" tone="accent">Astro</MetaBadge>
+    <MetaBadge slot="meta" tone="success">Доступно с клавиатуры</MetaBadge>
+  </SectionHeader>
+
+  <section class="preview-section" aria-labelledby="preview-actions-title">
+    <SectionHeader
+      id="preview-actions-title"
+      level="h2"
+      title="Действия и состояния"
+    />
+    <div class="preview-row">
+      <Action href="/experience/">Основное действие</Action>
+      <Action href="/works/" variant="secondary">Вторичное действие</Action>
+      <Action variant="quiet">Обычная кнопка</Action>
+    </div>
+    <MessageState title="Информационное состояние">
+      <p>
+        Компонент принимает тон и live-режим, не обращаясь к глобальному DOM.
+      </p>
+    </MessageState>
+    <ProgressIndicator
+      label="Просмотренные детали"
+      value={2}
+      max={5}
+      valueLabel="2 из 5"
+    />
+  </section>
+
+  <section class="preview-section">
+    <SectionHeader
+      level="h2"
+      title="Картина и карточка запуска"
+      description="Рама, метаданные и CTA собираются из независимых компонентов."
+    />
+    <InteractiveLaunchCard
+      eyebrow="Первый этап"
+      title="Возвращение цвета"
+      description="Раскройте живопись движением кисти и наблюдайте, как изображение возвращает насыщенность."
+      href="/experience/"
+      actionLabel="Открыть маршрут"
+    >
+      <FramedArtwork
+        slot="media"
+        src={artworkImage.src}
+        alt="Фрагмент картины для технической проверки компонента"
+        caption="Технический visual preview"
+        aspectRatio="4 / 3"
+      />
+      <MetaBadge slot="meta">Интерактив</MetaBadge>
+      <MetaBadge slot="meta" tone="accent">5–7 минут</MetaBadge>
+    </InteractiveLaunchCard>
+  </section>
+
+  <section class="preview-section preview-grid">
+    <div>
+      <SectionHeader level="h2" title="Поля формы" />
+      <form class="preview-form">
+        <FormField
+          id="preview-name"
+          label="Имя"
+          autocomplete="name"
+          placeholder="Как к вам обращаться"
+          required
+          hint="Используется только в текущем интерфейсе."
+        />
+        <FormField
+          id="preview-work"
+          label="Интересующая работа"
+          control="select"
+          placeholder="Выберите работу"
+          options={[
+            { label: "Работа № 1", value: "work-1" },
+            { label: "Работа № 2", value: "work-2" },
+          ]}
+        />
+        <FormField
+          id="preview-email"
+          label="Email"
+          type="email"
+          value="invalid-address"
+          error="Введите корректный адрес электронной почты."
+          required
+        />
+      </form>
+    </div>
+
+    <DialogShell
+      id="preview-dialog"
+      title="Интерактив завершён"
+      description="Нативная оболочка dialog. Управление открытием и фокусом будет добавлено в FRT-041."
+      open
+      preview
+    >
+      <p>Можно продолжить маршрут или остаться у картины.</p>
+      <div slot="actions" class="preview-row">
+        <Action href="/experience/">Продолжить</Action>
+        <Action variant="secondary">Остаться</Action>
+      </div>
+    </DialogShell>
+  </section>
+</BaseLayout>
+
+<style>
+  .preview-section {
+    display: grid;
+    gap: var(--space-5);
+    padding-block: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .preview-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .preview-grid {
+    gap: var(--space-8);
+  }
+
+  .preview-form {
+    display: grid;
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+  }
+
+  @media (min-width: 60rem) {
+    .preview-grid {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      align-items: start;
+    }
+  }
+</style>

@@ -1,0 +1,163 @@
+---
+interface FieldOption {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  id: string;
+  name?: string;
+  label: string;
+  control?: "input" | "textarea" | "select";
+  type?: "text" | "email" | "tel" | "number";
+  value?: string;
+  placeholder?: string;
+  autocomplete?: string;
+  hint?: string;
+  error?: string;
+  required?: boolean;
+  rows?: number;
+  options?: FieldOption[];
+}
+
+const {
+  id,
+  name = id,
+  label,
+  control = "input",
+  type = "text",
+  value,
+  placeholder,
+  autocomplete,
+  hint,
+  error,
+  required = false,
+  rows = 4,
+  options = [],
+} = Astro.props;
+
+const hintId = hint ? `${id}-hint` : undefined;
+const errorId = error ? `${id}-error` : undefined;
+const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
+---
+
+<div class:list={["form-field", { "form-field--error": error }]}>
+  <label for={id}>
+    {label}
+    {required && <span aria-hidden="true"> *</span>}
+  </label>
+
+  {
+    control === "textarea" ? (
+      <textarea
+        id={id}
+        name={name}
+        rows={rows}
+        placeholder={placeholder}
+        required={required}
+        aria-required={required ? "true" : undefined}
+        aria-invalid={error ? "true" : undefined}
+        aria-describedby={describedBy}
+      >
+        {value}
+      </textarea>
+    ) : control === "select" ? (
+      <select
+        id={id}
+        name={name}
+        required={required}
+        aria-required={required ? "true" : undefined}
+        aria-invalid={error ? "true" : undefined}
+        aria-describedby={describedBy}
+      >
+        {placeholder && <option value="">{placeholder}</option>}
+        {options.map((option) => (
+          <option value={option.value} selected={option.value === value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    ) : (
+      <input
+        id={id}
+        name={name}
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        autocomplete={autocomplete}
+        required={required}
+        aria-required={required ? "true" : undefined}
+        aria-invalid={error ? "true" : undefined}
+        aria-describedby={describedBy}
+      />
+    )
+  }
+
+  {
+    hint && (
+      <p id={hintId} class="form-field__hint">
+        {hint}
+      </p>
+    )
+  }
+  {
+    error && (
+      <p id={errorId} class="form-field__error">
+        {error}
+      </p>
+    )
+  }
+</div>
+
+<style>
+  .form-field {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .form-field label {
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .form-field input,
+  .form-field textarea,
+  .form-field select {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    background: var(--color-surface-strong);
+  }
+
+  .form-field textarea {
+    min-height: 7rem;
+    resize: vertical;
+  }
+
+  .form-field--error input,
+  .form-field--error textarea,
+  .form-field--error select {
+    border-color: var(--color-status-danger);
+  }
+
+  .form-field__hint,
+  .form-field__error {
+    margin: 0;
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    line-height: 1.4;
+  }
+
+  .form-field__hint {
+    color: var(--color-text-muted);
+  }
+
+  .form-field__error {
+    color: var(--color-status-danger);
+    font-weight: var(--font-weight-semibold);
+  }
+</style>
