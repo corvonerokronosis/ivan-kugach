@@ -61,10 +61,10 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 | `src/components/`           | Повторно используемые Astro-компоненты                         | Пустой каркас                                           |
 | `src/content/`              | Записи Astro Content Collections                               | Пустой каркас                                           |
 | `src/data/`                 | Типизированные локальные данные                                | Пустой каркас                                           |
-| `src/layouts/`              | Общие Astro-layouts                                            | Содержит минимальный `BaseLayout.astro`                 |
+| `src/layouts/`              | Общие Astro-layouts                                            | `BaseLayout.astro`: metadata, skip-link и page slots    |
 | `src/pages/`                | Файловые маршруты Astro                                        | Содержит технический `/`                                |
 | `src/scripts/`              | Изолированные клиентские DOM/Canvas-модули                     | Пустой каркас                                           |
-| `src/styles/`               | Токены и общие CSS-слои                                        | `tokens.css` подключён через общий Astro-layout         |
+| `src/styles/`               | Токены и общие CSS-слои                                        | `global.css` подключает reset, базу и `tokens.css`      |
 | `src/types/`                | Общие TypeScript-контракты                                     | Пустой каркас                                           |
 | `src/utils/`                | Чистые helpers и адаптеры                                      | Пустой каркас                                           |
 | `public/`                   | Статические файлы без обработки Astro                          | Пустой каркас                                           |
@@ -113,6 +113,7 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 | Зона                  | Где искать                                  | Примечание                                     |
 | --------------------- | ------------------------------------------- | ---------------------------------------------- |
 | Astro design tokens   | `src/styles/tokens.css`                     | Палитра, семантические цвета, шкалы и motion   |
+| Astro global styles   | `src/styles/global.css`                     | Reset, базовая типографика, skip-link и shell  |
 | Глобальные токены     | `:root` в начале `index_masterskaya.html`   | Цвета, тени, поверхности и акценты             |
 | Body и фон мастерской | Начало `<style>`                            | Многослойные gradients и fixed pseudo-elements |
 | Общие экраны          | `.screen`, `.screen.hidden`                 | Основа текущей псевдонавигации                 |

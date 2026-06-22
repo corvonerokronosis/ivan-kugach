@@ -1,5 +1,5 @@
 ---
-import "../styles/tokens.css";
+import "../styles/global.css";
 
 interface Props {
   title: string;
@@ -7,6 +7,8 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+const hasHeader = Astro.slots.has("header");
+const hasFooter = Astro.slots.has("footer");
 ---
 
 <!doctype html>
@@ -18,8 +20,28 @@ const { title, description } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <main>
-      <slot />
-    </main>
+    <a class="skip-link" href="#main-content">Перейти к содержанию</a>
+
+    <div class="site-shell">
+      {
+        hasHeader && (
+          <header class="site-header">
+            <slot name="header" />
+          </header>
+        )
+      }
+
+      <main id="main-content" class="site-main" tabindex="-1">
+        <slot />
+      </main>
+
+      {
+        hasFooter && (
+          <footer class="site-footer">
+            <slot name="footer" />
+          </footer>
+        )
+      }
+    </div>
   </body>
 </html>
