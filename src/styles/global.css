@@ -127,6 +127,10 @@ code {
   padding-block: var(--space-6);
 }
 
+.site-header__content {
+  margin-top: var(--space-6);
+}
+
 .site-main {
   padding-block: var(--space-8) var(--section-gap);
 }
@@ -136,6 +140,16 @@ code {
   border-top: 1px solid var(--color-border);
   color: var(--color-text-muted);
   font-size: var(--font-size-200);
+}
+
+.page-kicker {
+  margin-bottom: var(--space-3);
+  color: var(--color-accent-strong);
+  font-family: var(--font-family-ui);
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
 }
 
 @media (min-width: 48rem) {

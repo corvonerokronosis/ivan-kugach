@@ -1,4 +1,5 @@
 ---
+import SiteNavigation from "../components/SiteNavigation.astro";
 import "../styles/global.css";
 
 interface Props {
@@ -7,7 +8,7 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
-const hasHeader = Astro.slots.has("header");
+const hasHeaderContent = Astro.slots.has("header");
 const hasFooter = Astro.slots.has("footer");
 ---
 
@@ -23,13 +24,16 @@ const hasFooter = Astro.slots.has("footer");
     <a class="skip-link" href="#main-content">Перейти к содержанию</a>
 
     <div class="site-shell">
-      {
-        hasHeader && (
-          <header class="site-header">
-            <slot name="header" />
-          </header>
-        )
-      }
+      <header class="site-header">
+        <SiteNavigation currentPath={Astro.url.pathname} />
+        {
+          hasHeaderContent && (
+            <div class="site-header__content">
+              <slot name="header" />
+            </div>
+          )
+        }
+      </header>
 
       <main id="main-content" class="site-main" tabindex="-1">
         <slot />

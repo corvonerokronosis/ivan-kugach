@@ -1,0 +1,184 @@
+---
+interface Props {
+  currentPath: string;
+}
+
+interface NavigationItem {
+  href: string;
+  label: string;
+  section: "home" | "artist" | "experience" | "works";
+}
+
+const { currentPath } = Astro.props;
+
+const navigationItems: NavigationItem[] = [
+  { href: "/", label: "Главная", section: "home" },
+  { href: "/artist/", label: "Художник", section: "artist" },
+  {
+    href: "/experience/",
+    label: "Интерактивный маршрут",
+    section: "experience",
+  },
+  { href: "/works/", label: "Каталог", section: "works" },
+];
+
+const normalizedPath =
+  currentPath === "/" ? currentPath : `${currentPath.replace(/\/+$/, "")}/`;
+
+const isCurrentSection = (section: NavigationItem["section"]) => {
+  if (section === "home") {
+    return normalizedPath === "/";
+  }
+
+  if (section === "works") {
+    return ["/works/", "/series/", "/archive/"].some((path) =>
+      normalizedPath.startsWith(path),
+    );
+  }
+
+  return normalizedPath.startsWith(`/${section}/`);
+};
+---
+
+<nav class="site-navigation" aria-label="Основная навигация">
+  <a
+    class="site-navigation__identity"
+    href="/"
+    aria-label="Иван Кугач — на главную"
+  >
+    <span class="site-navigation__name">Иван Кугач</span>
+    <span class="site-navigation__caption">Мастерская художника</span>
+  </a>
+
+  <ul class="site-navigation__list">
+    {
+      navigationItems.map((item) => (
+        <li>
+          <a
+            class="site-navigation__link"
+            href={item.href}
+            aria-current={isCurrentSection(item.section) ? "page" : undefined}
+          >
+            {item.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .site-navigation {
+    display: grid;
+    gap: var(--space-5);
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background:
+      linear-gradient(110deg, rgb(255 253 248 / 86%), rgb(239 224 195 / 78%)),
+      var(--color-surface);
+    box-shadow: var(--shadow-surface);
+  }
+
+  .site-navigation__identity {
+    display: grid;
+    width: fit-content;
+    color: var(--color-text);
+    line-height: var(--line-height-tight);
+    text-decoration: none;
+  }
+
+  .site-navigation__identity:hover {
+    color: var(--color-accent-strong);
+  }
+
+  .site-navigation__name {
+    font-size: var(--font-size-500);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.015em;
+  }
+
+  .site-navigation__caption {
+    margin-top: var(--space-1);
+    color: var(--color-text-muted);
+    font-family: var(--font-family-ui);
+    font-size: 0.6875rem;
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  .site-navigation__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-navigation__link {
+    position: relative;
+    display: flex;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    color: var(--color-text-muted);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.25;
+    text-align: center;
+    text-decoration: none;
+    transition:
+      color var(--motion-duration-fast) var(--motion-easing-standard),
+      background-color var(--motion-duration-fast) var(--motion-easing-standard),
+      border-color var(--motion-duration-fast) var(--motion-easing-standard);
+  }
+
+  .site-navigation__link:hover {
+    border-color: var(--color-border-subtle);
+    color: var(--color-accent-strong);
+    background: var(--color-surface-muted);
+  }
+
+  .site-navigation__link[aria-current="page"] {
+    border-color: var(--color-border);
+    color: var(--color-text);
+    background: var(--color-surface-strong);
+  }
+
+  .site-navigation__link[aria-current="page"]::after {
+    position: absolute;
+    right: var(--space-3);
+    bottom: 0.35rem;
+    left: var(--space-3);
+    height: 0.18rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent);
+    content: "";
+    transform: rotate(-1deg);
+  }
+
+  @media (min-width: 48rem) {
+    .site-navigation {
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: var(--space-8);
+      padding-inline: var(--space-6);
+    }
+
+    .site-navigation__list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .site-navigation__link {
+      min-height: 2.5rem;
+      padding-inline: var(--space-4);
+    }
+  }
+</style>

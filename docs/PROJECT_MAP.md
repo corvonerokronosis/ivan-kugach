@@ -58,11 +58,11 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 | --------------------------- | -------------------------------------------------------------- | ------------------------------------------------------- |
 | `src/`                      | Astro-код и изображения актуального прототипа                  | Новая исходная директория; правила в `src/README.md`    |
 | `src/assets/`               | Импортируемые Astro web-ассеты                                 | Пустой каркас; legacy-ассеты будут перенесены позже     |
-| `src/components/`           | Повторно используемые Astro-компоненты                         | Пустой каркас                                           |
+| `src/components/`           | Повторно используемые Astro-компоненты                         | Содержит общую `SiteNavigation.astro`                   |
 | `src/content/`              | Записи Astro Content Collections                               | Пустой каркас                                           |
 | `src/data/`                 | Типизированные локальные данные                                | Пустой каркас                                           |
 | `src/layouts/`              | Общие Astro-layouts                                            | `BaseLayout.astro`: metadata, skip-link и page slots    |
-| `src/pages/`                | Файловые маршруты Astro                                        | Содержит технический `/`                                |
+| `src/pages/`                | Файловые маршруты Astro                                        | Технические `/`, `/artist/`, `/experience/`, `/works/`  |
 | `src/scripts/`              | Изолированные клиентские DOM/Canvas-модули                     | Пустой каркас                                           |
 | `src/styles/`               | Токены и общие CSS-слои                                        | `global.css` подключает reset, базу и `tokens.css`      |
 | `src/types/`                | Общие TypeScript-контракты                                     | Пустой каркас                                           |
@@ -112,6 +112,7 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 
 | Зона                  | Где искать                                  | Примечание                                     |
 | --------------------- | ------------------------------------------- | ---------------------------------------------- |
+| Astro navigation      | `src/components/SiteNavigation.astro`       | Обычные ссылки, active state и mobile layout   |
 | Astro design tokens   | `src/styles/tokens.css`                     | Палитра, семантические цвета, шкалы и motion   |
 | Astro global styles   | `src/styles/global.css`                     | Reset, базовая типографика, skip-link и shell  |
 | Глобальные токены     | `:root` в начале `index_masterskaya.html`   | Цвета, тени, поверхности и акценты             |
