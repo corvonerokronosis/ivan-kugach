@@ -15,18 +15,11 @@ body {
   min-height: 100vh;
   margin: 0;
   color: var(--color-text);
-  background:
-    radial-gradient(
-      ellipse at 52% -10%,
-      rgb(255 236 178 / 62%),
-      transparent 34%
-    ),
-    linear-gradient(
-      180deg,
-      rgb(75 47 29 / 8%) 0 58%,
-      rgb(62 40 27 / 34%) 58% 100%
-    ),
-    linear-gradient(180deg, var(--color-canvas-top), var(--color-canvas-bottom));
+  background: linear-gradient(
+    180deg,
+    var(--palette-parchment-200),
+    var(--palette-sand-400)
+  );
   font-family: var(--font-family-body);
   font-size: var(--font-size-300);
   line-height: var(--line-height-body);
@@ -111,6 +104,8 @@ code {
 }
 
 .site-shell {
+  position: relative;
+  z-index: var(--layer-content);
   display: grid;
   min-height: 100vh;
   grid-template-rows: auto 1fr auto;

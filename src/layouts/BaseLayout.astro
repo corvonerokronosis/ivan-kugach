@@ -1,13 +1,15 @@
 ---
+import StudioDecoration from "../components/StudioDecoration.astro";
 import SiteNavigation from "../components/SiteNavigation.astro";
 import "../styles/global.css";
 
 interface Props {
   title: string;
   description: string;
+  studioDecoration?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, studioDecoration = false } = Astro.props;
 const hasHeaderContent = Astro.slots.has("header");
 const hasFooter = Astro.slots.has("footer");
 ---
@@ -20,8 +22,10 @@ const hasFooter = Astro.slots.has("footer");
     <meta name="viewport" content="width=device-width" />
     <title>{title}</title>
   </head>
-  <body>
+  <body class:list={{ "has-studio-decoration": studioDecoration }}>
     <a class="skip-link" href="#main-content">Перейти к содержанию</a>
+
+    {studioDecoration && <StudioDecoration />}
 
     <div class="site-shell">
       <header class="site-header">
