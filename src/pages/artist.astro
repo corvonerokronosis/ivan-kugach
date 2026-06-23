@@ -1,22 +1,394 @@
 ---
 import Action from "../components/common/Action.astro";
-import MessageState from "../components/common/MessageState.astro";
-import SectionHeader from "../components/common/SectionHeader.astro";
+import FramedArtwork from "../components/common/FramedArtwork.astro";
+import MetaBadge from "../components/common/MetaBadge.astro";
+import { getArtistPageContent } from "../data/artist-page";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import interiorArtwork from "../Kugach_picture_1.png";
+import architectureArtwork from "../Kugach_picture_2.png";
+
+const content = getArtistPageContent();
+const artworkByKey = {
+  interior: interiorArtwork.src,
+  architecture: architectureArtwork.src,
+};
 ---
 
-<BaseLayout
-  title="Художник — Иван Кугач"
-  description="Техническая страница будущего раздела о художнике Иване Кугаче."
->
-  <SectionHeader
-    level="h1"
-    eyebrow="Раздел готовится"
-    title="Художник"
-    description="Биография и художественный контекст будут перенесены сюда отдельной задачей."
-  />
-  <MessageState title="Технический маршрут">
-    <p>Страница уже участвует в общей навигации и поддерживает прямой вход.</p>
-  </MessageState>
-  <Action href="/works/" variant="secondary">Перейти в каталог</Action>
+<BaseLayout title={`${content.title} — художник`} description={content.lead}>
+  <article class="artist-page">
+    <section class="artist-hero" aria-labelledby="artist-title">
+      <div class="artist-hero__copy">
+        <p class="artist-kicker">{content.eyebrow}</p>
+        <h1 id="artist-title">{content.title}</h1>
+        <p class="artist-lead">{content.lead}</p>
+
+        <div class="artist-hero__actions">
+          <Action href="/works/">Смотреть работы</Action>
+          <Action href="/experience/" variant="quiet">
+            Перейти к интерактивам
+          </Action>
+        </div>
+      </div>
+
+      <div class="artist-hero__artwork">
+        <span class="artist-hero__note" aria-hidden="true">
+          живопись · пространство · свет
+        </span>
+        <FramedArtwork
+          src={interiorArtwork.src}
+          alt="Живописный интерьер с печью, столом и открытым дверным проёмом"
+          caption="Работа из текущей коллекции проекта"
+          loading="eager"
+          aspectRatio="4 / 3"
+        />
+      </div>
+    </section>
+
+    <section class="artist-context" aria-labelledby="artist-context-title">
+      <div class="artist-context__quote">
+        <span aria-hidden="true">“</span>
+        <blockquote>{content.quote}</blockquote>
+      </div>
+
+      <div class="artist-context__copy">
+        <MetaBadge tone="accent">Временный редакционный текст</MetaBadge>
+        <h2 id="artist-context-title">{content.contextTitle}</h2>
+        {content.contextParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+    </section>
+
+    <section class="artist-themes" aria-labelledby="artist-themes-title">
+      <div class="artist-section-heading">
+        <p class="artist-kicker">Контекст</p>
+        <h2 id="artist-themes-title">На что обратить внимание</h2>
+      </div>
+
+      <ol class="artist-theme-list">
+        {
+          content.themes.map((theme, index) => (
+            <li>
+              <span aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div>
+                <h3>{theme.title}</h3>
+                <p>{theme.description}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="artist-series" aria-labelledby="artist-series-title">
+      <div class="artist-section-heading artist-section-heading--series">
+        <div>
+          <p class="artist-kicker">Продолжить знакомство</p>
+          <h2 id="artist-series-title">Связанные серии</h2>
+        </div>
+        <p>
+          Названия ниже — временные редакционные группировки. Они будут заменены
+          утверждённой структурой каталога.
+        </p>
+      </div>
+
+      <div class="artist-series__grid">
+        {
+          content.relatedSeries.map((series) => (
+            <article class="artist-series-card">
+              <FramedArtwork
+                src={artworkByKey[series.artworkKey]}
+                alt=""
+                caption="Изображение из текущей коллекции проекта"
+                aspectRatio="4 / 3"
+              />
+              <div class="artist-series-card__copy">
+                <MetaBadge>Временная подборка</MetaBadge>
+                <h3>{series.title}</h3>
+                <p>{series.description}</p>
+                <Action href={series.href} variant="quiet" size="small">
+                  Открыть каталог
+                </Action>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+  </article>
 </BaseLayout>
+
+<style>
+  .artist-page {
+    display: grid;
+    gap: clamp(var(--space-12), 8vw, 6.5rem);
+    padding-block: var(--space-4) var(--space-12);
+  }
+
+  .artist-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 0.82fr) minmax(20rem, 1.18fr);
+    gap: clamp(var(--space-8), 7vw, 6rem);
+    align-items: center;
+    min-height: min(43rem, calc(100vh - 10rem));
+  }
+
+  .artist-hero__copy {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .artist-kicker {
+    margin: 0;
+    color: var(--color-accent-strong);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .artist-hero h1 {
+    max-width: 8ch;
+    margin: 0;
+    font-size: clamp(3.75rem, 9vw, 8.5rem);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: -0.055em;
+    line-height: 0.82;
+  }
+
+  .artist-lead {
+    max-width: 36rem;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: clamp(var(--font-size-500), 2vw, var(--font-size-600));
+    line-height: 1.5;
+  }
+
+  .artist-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  .artist-hero__artwork {
+    position: relative;
+    padding-top: var(--space-8);
+  }
+
+  .artist-hero__artwork::before {
+    position: absolute;
+    inset: 0 0 12% 18%;
+    z-index: -1;
+    border-radius: 48% 52% 40% 60% / 58% 36% 64% 42%;
+    background: color-mix(
+      in srgb,
+      var(--palette-paint-yellow) 18%,
+      transparent
+    );
+    content: "";
+    transform: rotate(-4deg);
+  }
+
+  .artist-hero__note {
+    position: absolute;
+    top: 0;
+    right: var(--space-5);
+    color: var(--color-text-muted);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transform: rotate(2deg);
+  }
+
+  .artist-context {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.9fr);
+    gap: clamp(var(--space-8), 8vw, 7rem);
+    align-items: start;
+    padding: clamp(var(--space-8), 6vw, var(--space-12));
+    border-block: 1px solid var(--color-border);
+  }
+
+  .artist-context__quote {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-4);
+  }
+
+  .artist-context__quote > span {
+    color: var(--color-accent);
+    font-size: 5rem;
+    line-height: 0.75;
+  }
+
+  .artist-context blockquote {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.2vw, 3.25rem);
+    line-height: 1.15;
+  }
+
+  .artist-context__copy {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .artist-context__copy h2,
+  .artist-section-heading h2 {
+    margin: var(--space-2) 0 0;
+    font-size: var(--font-size-heading-md);
+    line-height: var(--line-height-heading);
+  }
+
+  .artist-context__copy p,
+  .artist-section-heading--series > p {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .artist-themes,
+  .artist-series {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .artist-section-heading {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .artist-theme-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--color-border);
+    list-style: none;
+  }
+
+  .artist-theme-list li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .artist-theme-list li + li {
+    border-left: 1px solid var(--color-border);
+  }
+
+  .artist-theme-list li > span {
+    color: var(--color-accent);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .artist-theme-list h3,
+  .artist-series-card h3 {
+    margin: 0 0 var(--space-3);
+    font-size: var(--font-size-600);
+  }
+
+  .artist-theme-list p,
+  .artist-series-card p {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .artist-section-heading--series {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.62fr);
+    gap: var(--space-8);
+    align-items: end;
+  }
+
+  .artist-series__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(var(--space-6), 5vw, var(--space-12));
+  }
+
+  .artist-series-card {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .artist-series-card:nth-child(2) {
+    padding-top: clamp(var(--space-8), 7vw, 5rem);
+  }
+
+  .artist-series-card__copy {
+    display: grid;
+    gap: var(--space-3);
+    padding-inline: var(--space-4);
+  }
+
+  .artist-series-card__copy :global(.meta-badge) {
+    justify-self: start;
+  }
+
+  @media (max-width: 56rem) {
+    .artist-hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+
+    .artist-hero h1 {
+      max-width: none;
+      font-size: clamp(3.5rem, 16vw, 6.5rem);
+    }
+
+    .artist-context {
+      grid-template-columns: 1fr;
+    }
+
+    .artist-theme-list {
+      grid-template-columns: 1fr;
+    }
+
+    .artist-theme-list li + li {
+      border-left: 0;
+    }
+  }
+
+  @media (max-width: 42rem) {
+    .artist-page {
+      gap: var(--space-12);
+    }
+
+    .artist-hero {
+      gap: var(--space-8);
+    }
+
+    .artist-context {
+      margin-inline: calc(-1 * var(--space-4));
+      padding-inline: var(--space-4);
+    }
+
+    .artist-context__quote {
+      grid-template-columns: 1fr;
+    }
+
+    .artist-context__quote > span {
+      height: 2rem;
+    }
+
+    .artist-theme-list li {
+      padding-inline: 0;
+    }
+
+    .artist-section-heading--series,
+    .artist-series__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .artist-series-card:nth-child(2) {
+      padding-top: 0;
+    }
+  }
+</style>
