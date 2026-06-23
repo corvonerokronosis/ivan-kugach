@@ -1,22 +1,251 @@
 ---
 import Action from "../../components/common/Action.astro";
-import MessageState from "../../components/common/MessageState.astro";
+import FramedArtwork from "../../components/common/FramedArtwork.astro";
 import SectionHeader from "../../components/common/SectionHeader.astro";
+import { artworkAvailabilityLabels, getArtworks } from "../../data/artworks";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const artworks = getArtworks();
+const activeArtworks = artworks.filter(
+  (artwork) => artwork.availability !== "sold",
+);
+const archiveArtworks = artworks.filter(
+  (artwork) => artwork.availability === "sold",
+);
+
+function formatPrice(artwork: (typeof artworks)[number]): string {
+  return artwork.priceType === "request" ? "Цена по запросу" : artwork.price;
+}
 ---
 
 <BaseLayout
   title="Каталог работ — Иван Кугач"
-  description="Техническая страница будущего каталога работ Ивана Кугача."
+  description="Каталог доступных, зарезервированных и архивных работ Ивана Кугача."
 >
   <SectionHeader
     level="h1"
-    eyebrow="Раздел готовится"
+    eyebrow="Каталог работ"
     title="Каталог работ"
-    description="Работы, серии и статусы доступности будут перенесены сюда отдельными задачами."
+    description="Первые пять записей перенесены из legacy-прототипа в локальный типизированный источник данных. Временные атрибуты оставлены в карточках явно."
   />
-  <MessageState title="Технический маршрут">
-    <p>Страница уже участвует в общей навигации и поддерживает прямой вход.</p>
-  </MessageState>
-  <Action href="/artist/" variant="secondary">О художнике</Action>
+
+  <section class="works-section" aria-labelledby="active-works-title">
+    <div class="works-section__header">
+      <h2 id="active-works-title">Доступные и зарезервированные</h2>
+      <p>Эти карточки остаются в основном каталоге для заявочного сценария.</p>
+    </div>
+    <ul class="works-grid" aria-label="Работы основного каталога">
+      {
+        activeArtworks.map((artwork) => {
+          const primaryImage = artwork.images[0];
+
+          return (
+            <li class="work-card">
+              <FramedArtwork
+                src={primaryImage.src}
+                alt={primaryImage.alt}
+                caption={artwork.series?.title}
+                fit="cover"
+              />
+              <div class="work-card__body">
+                <div class="work-card__meta">
+                  <span
+                    class={`work-card__status work-card__status--${artwork.availability}`}
+                  >
+                    {artworkAvailabilityLabels[artwork.availability]}
+                  </span>
+                  <span>{artwork.year}</span>
+                </div>
+                <h3>{artwork.title}</h3>
+                <p>{artwork.shortDescription}</p>
+                <dl class="work-card__facts">
+                  <div>
+                    <dt>Техника</dt>
+                    <dd>{artwork.technique}</dd>
+                  </div>
+                  <div>
+                    <dt>Размер</dt>
+                    <dd>{artwork.dimensions.label}</dd>
+                  </div>
+                  <div>
+                    <dt>Цена</dt>
+                    <dd>{formatPrice(artwork)}</dd>
+                  </div>
+                </dl>
+                <p class="work-card__slug">Slug: {artwork.slug}</p>
+              </div>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </section>
+
+  <section class="works-section" aria-labelledby="archive-works-title">
+    <div class="works-section__header">
+      <h2 id="archive-works-title">Архив</h2>
+      <p>
+        Проданные работы показываются отдельно и не выглядят свободными для
+        покупки.
+      </p>
+    </div>
+    <ul class="works-grid works-grid--archive" aria-label="Архивные работы">
+      {
+        archiveArtworks.map((artwork) => {
+          const primaryImage = artwork.images[0];
+
+          return (
+            <li class="work-card work-card--archive">
+              <FramedArtwork
+                src={primaryImage.src}
+                alt={primaryImage.alt}
+                caption={artwork.series?.title}
+                fit="cover"
+              />
+              <div class="work-card__body">
+                <div class="work-card__meta">
+                  <span
+                    class={`work-card__status work-card__status--${artwork.availability}`}
+                  >
+                    {artworkAvailabilityLabels[artwork.availability]}
+                  </span>
+                  <span>{artwork.year}</span>
+                </div>
+                <h3>{artwork.title}</h3>
+                <p>{artwork.shortDescription}</p>
+                <dl class="work-card__facts">
+                  <div>
+                    <dt>Техника</dt>
+                    <dd>{artwork.technique}</dd>
+                  </div>
+                  <div>
+                    <dt>Размер</dt>
+                    <dd>{artwork.dimensions.label}</dd>
+                  </div>
+                  <div>
+                    <dt>Цена</dt>
+                    <dd>{formatPrice(artwork)}</dd>
+                  </div>
+                </dl>
+                <p class="work-card__slug">Slug: {artwork.slug}</p>
+              </div>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </section>
+
+  <div class="works-actions">
+    <Action href="/artist/" variant="secondary">О художнике</Action>
+  </div>
 </BaseLayout>
+
+<style>
+  .works-section {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .works-section__header {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .works-section__header h2 {
+    margin-block-end: 0;
+  }
+
+  .works-section__header p {
+    color: var(--color-text-muted);
+  }
+
+  .works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-5);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .work-card {
+    display: grid;
+    gap: var(--space-4);
+    padding: clamp(var(--space-4), 3vw, var(--space-5));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-surface);
+  }
+
+  .work-card--archive {
+    background: color-mix(
+      in srgb,
+      var(--color-surface) 82%,
+      var(--color-muted)
+    );
+  }
+
+  .work-card__body {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .work-card__body h3,
+  .work-card__body p {
+    margin-block-end: 0;
+  }
+
+  .work-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-200);
+  }
+
+  .work-card__status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-pill);
+    color: var(--color-text);
+    background: var(--color-accent-muted);
+    font-weight: 700;
+  }
+
+  .work-card__status--sold {
+    background: var(--color-muted);
+  }
+
+  .work-card__facts {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .work-card__facts div {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .work-card__facts dt {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-200);
+  }
+
+  .work-card__facts dd {
+    margin: 0;
+  }
+
+  .work-card__slug {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-200);
+  }
+
+  .works-actions {
+    display: flex;
+  }
+</style>
