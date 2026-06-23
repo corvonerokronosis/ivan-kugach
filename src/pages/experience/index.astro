@@ -1,22 +1,485 @@
 ---
+import colorArtwork from "../../Kugach_picture_1.png";
+import detailsArtwork from "../../Kugach_picture_2.png";
+import lightArtworkUrl from "../../picture_light_shadow/_DOR6258.JPG?url";
 import Action from "../../components/common/Action.astro";
-import MessageState from "../../components/common/MessageState.astro";
-import SectionHeader from "../../components/common/SectionHeader.astro";
+import FramedArtwork from "../../components/common/FramedArtwork.astro";
+import MetaBadge from "../../components/common/MetaBadge.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
 <BaseLayout
   title="Интерактивный маршрут — Иван Кугач"
-  description="Техническая страница входа в будущий интерактивный маршрут по работам Ивана Кугача."
+  description="Три последовательных интерактива по живописи Ивана Кугача: возвращение цвета, исследование деталей и работа со светом."
+  studioDecoration
 >
-  <SectionHeader
-    level="h1"
-    eyebrow="Раздел готовится"
-    title="Интерактивный маршрут"
-    description="Последовательность интерактивов будет перенесена сюда отдельной задачей."
-  />
-  <MessageState title="Технический маршрут">
-    <p>Страница уже участвует в общей навигации и поддерживает прямой вход.</p>
-  </MessageState>
-  <Action href="/" variant="secondary">Вернуться на главную</Action>
+  <section class="route-hero" aria-labelledby="route-title">
+    <div class="route-hero__copy">
+      <MetaBadge tone="accent">Три этапа · единый маршрут</MetaBadge>
+      <h1 id="route-title">
+        Смотреть на картину — значит двигаться внутри неё
+      </h1>
+      <p>
+        Маршрут последовательно меняет способ наблюдения: сначала вы возвращаете
+        живописи цвет, затем приближаете детали и в финале управляете светом.
+        Пройти можно по порядку или начать с любого этапа.
+      </p>
+      <div class="route-hero__actions">
+        <Action href="/experience/color-return/">Начать с первого этапа</Action>
+        <Action href="#route-stages" variant="secondary"> Выбрать этап </Action>
+      </div>
+    </div>
+
+    <aside class="route-hero__note" aria-label="Как устроен маршрут">
+      <span class="route-hero__note-number" aria-hidden="true">01—03</span>
+      <h2>Один опыт, три самостоятельных входа</h2>
+      <p>
+        Последовательное прохождение создаёт цельную историю. Прямые ссылки
+        позволяют вернуться к нужной механике отдельно и обновить страницу без
+        потери маршрута.
+      </p>
+    </aside>
+  </section>
+
+  <section
+    id="route-stages"
+    class="route-stages"
+    aria-labelledby="stages-title"
+  >
+    <header class="route-stages__header">
+      <div>
+        <span class="route-stages__eyebrow">Порядок прохождения</span>
+        <h2 id="stages-title">От проявления цвета к свету мастерской</h2>
+      </div>
+      <p>
+        Каждый этап открывается на собственной странице. Пока интерактивы
+        переносятся из legacy-прототипа, их URL уже доступны как независимые
+        точки входа.
+      </p>
+    </header>
+
+    <ol class="route-list">
+      <li class="route-stage">
+        <div class="route-stage__rail" aria-hidden="true">
+          <span>01</span>
+        </div>
+        <div class="route-stage__media">
+          <FramedArtwork
+            src={colorArtwork.src}
+            alt="Интерьер мастерской на картине Ивана Кугача"
+            caption="Первый взгляд: живопись проступает из монохромного слоя."
+            aspectRatio="1.08 / 1"
+          />
+        </div>
+        <div class="route-stage__copy">
+          <div class="route-stage__meta">
+            <MetaBadge>Первый этап</MetaBadge>
+            <MetaBadge tone="accent">1–2 минуты</MetaBadge>
+          </div>
+          <h3>Возвращение цвета</h3>
+          <p>
+            Проведите по картине, чтобы постепенно открыть живописный слой.
+            Здесь маршрут начинается с простого жеста и внимательного взгляда на
+            целую композицию.
+          </p>
+          <Action href="/experience/color-return/">
+            Открыть возвращение цвета
+          </Action>
+        </div>
+      </li>
+
+      <li class="route-stage route-stage--reverse">
+        <div class="route-stage__rail" aria-hidden="true">
+          <span>02</span>
+        </div>
+        <div class="route-stage__media">
+          <FramedArtwork
+            src={detailsArtwork.src}
+            alt="Фрагмент здания с памятной табличкой на картине Ивана Кугача"
+            caption="Второй взгляд: отдельные фрагменты раскрывают собственные истории."
+            aspectRatio="1.08 / 1"
+          />
+        </div>
+        <div class="route-stage__copy">
+          <div class="route-stage__meta">
+            <MetaBadge>Второй этап</MetaBadge>
+            <MetaBadge tone="accent">Зум и точки</MetaBadge>
+          </div>
+          <h3>Приблизить детали</h3>
+          <p>
+            Исследуйте полотно крупным планом, находите точки интереса и
+            открывайте короткие пояснения. После общего впечатления маршрут
+            переводит внимание к следам времени и сюжета.
+          </p>
+          <Action href="/experience/details/">Исследовать детали</Action>
+        </div>
+      </li>
+
+      <li class="route-stage">
+        <div class="route-stage__rail" aria-hidden="true">
+          <span>03</span>
+        </div>
+        <div class="route-stage__media">
+          <FramedArtwork
+            src={lightArtworkUrl}
+            alt="Пейзаж с водой и деревьями для интерактива света"
+            caption="Третий взгляд: один мотив меняется вместе с освещением."
+            aspectRatio="1.08 / 1"
+          />
+        </div>
+        <div class="route-stage__copy">
+          <div class="route-stage__meta">
+            <MetaBadge>Третий этап</MetaBadge>
+            <MetaBadge tone="accent">Четыре состояния</MetaBadge>
+          </div>
+          <h3>Свет в мастерской</h3>
+          <p>
+            Меняйте освещение и наблюдайте, как утро, день, вечер и лампа
+            перестраивают настроение работы. Финальный этап возвращает картину в
+            пространство живой мастерской.
+          </p>
+          <Action href="/experience/light/">Перейти к свету</Action>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="route-catalog" aria-labelledby="catalog-title">
+    <div class="route-catalog__mark" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <div>
+      <span class="route-stages__eyebrow">Отдельный раздел</span>
+      <h2 id="catalog-title">Каталог не является четвёртым этапом</h2>
+      <p>
+        Интерактивный маршрут посвящён наблюдению за живописью. Доступные
+        работы, статусы, цены и заявка собраны отдельно, чтобы коммерческий
+        сценарий не прерывал музейный опыт.
+      </p>
+    </div>
+    <Action href="/works/" variant="secondary">Открыть каталог работ</Action>
+  </section>
+
+  <p slot="footer">
+    Интерактивный маршрут можно пройти последовательно или открыть любой этап
+    напрямую.
+  </p>
 </BaseLayout>
+
+<style>
+  .route-hero {
+    position: relative;
+    display: grid;
+    gap: var(--space-7);
+    overflow: hidden;
+    padding: clamp(var(--space-6), 5vw, var(--space-13));
+    border: 0.5rem solid var(--color-wood-strong);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(
+        circle at 78% 18%,
+        rgb(215 163 58 / 22%),
+        transparent 28%
+      ),
+      linear-gradient(140deg, rgb(255 252 246 / 96%), rgb(235 215 183 / 92%));
+    box-shadow:
+      inset 0 0 0 0.25rem rgb(235 199 129 / 28%),
+      var(--shadow-raised);
+  }
+
+  .route-hero::after {
+    position: absolute;
+    right: -4rem;
+    bottom: -6rem;
+    width: 16rem;
+    height: 16rem;
+    border: 2.5rem solid rgb(94 39 23 / 8%);
+    border-radius: var(--radius-round);
+    content: "";
+  }
+
+  .route-hero__copy,
+  .route-hero__note {
+    position: relative;
+    z-index: 1;
+  }
+
+  .route-hero__copy {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: var(--space-5);
+  }
+
+  .route-hero h1 {
+    max-width: 12ch;
+    margin: 0;
+    font-size: clamp(2.75rem, 7vw, 5.25rem);
+    font-weight: var(--font-weight-semibold);
+    line-height: 0.94;
+  }
+
+  .route-hero__copy > p {
+    max-width: 42rem;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: clamp(var(--font-size-400), 2vw, var(--font-size-600));
+  }
+
+  .route-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .route-hero__note {
+    display: grid;
+    align-content: end;
+    gap: var(--space-3);
+    min-height: 20rem;
+    padding: var(--space-6);
+    border: 1px solid rgb(255 245 224 / 22%);
+    border-radius: var(--radius-xl);
+    color: var(--color-text-on-accent);
+    background:
+      linear-gradient(160deg, rgb(41 29 20 / 72%), rgb(94 39 23 / 94%)),
+      var(--color-wood-strong);
+    box-shadow: var(--shadow-surface);
+  }
+
+  .route-hero__note-number {
+    position: absolute;
+    top: var(--space-5);
+    right: var(--space-5);
+    color: rgb(255 245 224 / 28%);
+    font-family: var(--font-family-ui);
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+  }
+
+  .route-hero__note h2 {
+    max-width: 12ch;
+    margin: 0;
+    font-size: var(--font-size-heading-sm);
+  }
+
+  .route-hero__note p {
+    margin: 0;
+    color: rgb(255 245 224 / 78%);
+  }
+
+  .route-stages {
+    display: grid;
+    gap: var(--space-8);
+    scroll-margin-top: var(--space-6);
+  }
+
+  .route-stages__header {
+    display: grid;
+    gap: var(--space-5);
+    align-items: end;
+  }
+
+  .route-stages__header h2,
+  .route-catalog h2 {
+    max-width: 15ch;
+    margin: var(--space-2) 0 0;
+    font-size: var(--font-size-heading-lg);
+    line-height: var(--line-height-tight);
+  }
+
+  .route-stages__header p {
+    max-width: 40rem;
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .route-stages__eyebrow {
+    color: var(--color-accent-strong);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  .route-list {
+    display: grid;
+    gap: var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .route-stage {
+    position: relative;
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+    padding: clamp(var(--space-5), 4vw, var(--space-8));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl);
+    background:
+      linear-gradient(135deg, rgb(255 255 255 / 30%), transparent 42%),
+      var(--color-surface);
+    box-shadow: var(--shadow-surface);
+  }
+
+  .route-stage__rail {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-accent-strong);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .route-stage__rail::after {
+    width: 100%;
+    height: 1px;
+    background: var(--color-border);
+    content: "";
+  }
+
+  .route-stage__copy {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: var(--space-4);
+  }
+
+  .route-stage__copy h3 {
+    margin: 0;
+    font-size: var(--font-size-heading-md);
+    line-height: var(--line-height-tight);
+  }
+
+  .route-stage__copy p {
+    max-width: 37rem;
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .route-stage__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .route-catalog {
+    display: grid;
+    gap: var(--space-5);
+    align-items: center;
+    padding: clamp(var(--space-5), 4vw, var(--space-8));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl);
+    background: var(--color-surface-strong);
+    box-shadow: var(--shadow-surface);
+  }
+
+  .route-catalog h2 {
+    font-size: var(--font-size-heading-md);
+  }
+
+  .route-catalog p {
+    max-width: 48rem;
+    margin: var(--space-3) 0 0;
+    color: var(--color-text-muted);
+  }
+
+  .route-catalog__mark {
+    display: flex;
+    gap: var(--space-2);
+    align-items: end;
+    min-height: 4rem;
+  }
+
+  .route-catalog__mark span {
+    display: block;
+    width: 1rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent);
+  }
+
+  .route-catalog__mark span:nth-child(1) {
+    height: 2.5rem;
+  }
+
+  .route-catalog__mark span:nth-child(2) {
+    height: 4rem;
+    background: var(--palette-paint-blue);
+  }
+
+  .route-catalog__mark span:nth-child(3) {
+    height: 1.75rem;
+    background: var(--palette-paint-yellow);
+  }
+
+  @media (min-width: 56rem) {
+    .route-hero {
+      grid-template-columns: minmax(0, 1.25fr) minmax(18rem, 0.75fr);
+    }
+
+    .route-stages__header {
+      grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.7fr);
+    }
+
+    .route-stage {
+      grid-template-columns: 3rem minmax(18rem, 0.9fr) minmax(20rem, 1.1fr);
+    }
+
+    .route-stage__rail {
+      align-self: stretch;
+      flex-direction: column;
+    }
+
+    .route-stage__rail::after {
+      width: 1px;
+      height: 100%;
+    }
+
+    .route-stage--reverse .route-stage__media {
+      grid-column: 3;
+    }
+
+    .route-stage--reverse .route-stage__copy {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .route-catalog {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+  }
+
+  @media (max-width: 45rem) {
+    .route-hero {
+      padding: var(--space-5);
+      border-width: 0.375rem;
+      border-radius: var(--radius-lg);
+    }
+
+    .route-hero h1 {
+      font-size: clamp(2.35rem, 13vw, 3.45rem);
+    }
+
+    .route-hero__actions,
+    .route-hero__actions :global(.action),
+    .route-stage__copy :global(.action),
+    .route-catalog :global(.action) {
+      width: 100%;
+    }
+
+    .route-hero__note {
+      min-height: 17rem;
+    }
+
+    .route-stage {
+      border-radius: var(--radius-xl);
+    }
+  }
+</style>
