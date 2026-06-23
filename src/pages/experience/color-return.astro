@@ -1,0 +1,20 @@
+---
+import MessageState from "../../components/common/MessageState.astro";
+import SectionHeader from "../../components/common/SectionHeader.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Возвращение цвета — Иван Кугач"
+  description="Технический маршрут будущего интерактива возвращения цвета."
+>
+  <SectionHeader
+    level="h1"
+    eyebrow="Интерактив готовится"
+    title="Возвращение цвета"
+    description="Полный canvas-интерактив будет перенесён в FRT-032."
+  />
+  <MessageState title="Маршрут уже доступен">
+    <p>Прямой вход и обновление URL работают независимо от главной страницы.</p>
+  </MessageState>
+</BaseLayout>

@@ -7,12 +7,24 @@ interface Props {
   href: string;
   actionLabel: string;
   eyebrow?: string;
+  headingLevel?: "h2" | "h3";
+  layout?: "stacked" | "split";
 }
 
-const { title, description, href, actionLabel, eyebrow } = Astro.props;
+const {
+  title,
+  description,
+  href,
+  actionLabel,
+  eyebrow,
+  headingLevel = "h3",
+  layout = "split",
+} = Astro.props;
+
+const Heading = headingLevel;
 ---
 
-<article class="launch-card">
+<article class={`launch-card launch-card--${layout}`}>
   {
     Astro.slots.has("media") && (
       <div class="launch-card__media">
@@ -30,8 +42,15 @@ const { title, description, href, actionLabel, eyebrow } = Astro.props;
       )
     }
     {eyebrow && <p class="launch-card__eyebrow">{eyebrow}</p>}
-    <h3>{title}</h3>
+    <Heading>{title}</Heading>
     <p class="launch-card__description">{description}</p>
+    {
+      Astro.slots.has("details") && (
+        <div class="launch-card__details">
+          <slot name="details" />
+        </div>
+      )
+    }
     <Action href={href}>{actionLabel}</Action>
   </div>
 </article>
@@ -76,6 +95,7 @@ const { title, description, href, actionLabel, eyebrow } = Astro.props;
     text-transform: uppercase;
   }
 
+  .launch-card h2,
   .launch-card h3 {
     margin: 0;
     font-size: var(--font-size-heading-sm);
@@ -86,8 +106,31 @@ const { title, description, href, actionLabel, eyebrow } = Astro.props;
     color: var(--color-text-muted);
   }
 
+  .launch-card__details {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    background: rgb(255 252 247 / 72%);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-200);
+  }
+
+  .launch-card__details :global(strong) {
+    color: var(--color-text);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  .launch-card__details :global(p) {
+    margin: 0;
+  }
+
   @media (min-width: 52rem) {
-    .launch-card:has(.launch-card__media) {
+    .launch-card--split:has(.launch-card__media) {
       grid-template-columns: minmax(14rem, 0.85fr) minmax(0, 1fr);
       align-items: center;
       padding: var(--space-6);

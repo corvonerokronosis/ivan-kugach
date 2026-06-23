@@ -1,0 +1,20 @@
+---
+import MessageState from "../../components/common/MessageState.astro";
+import SectionHeader from "../../components/common/SectionHeader.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Приблизить детали — Иван Кугач"
+  description="Технический маршрут будущего интерактива исследования деталей."
+>
+  <SectionHeader
+    level="h1"
+    eyebrow="Интерактив готовится"
+    title="Приблизить детали"
+    description="Полный zoom, pan и hotspot-сценарий будет перенесён в FRT-036."
+  />
+  <MessageState title="Маршрут уже доступен">
+    <p>Прямой вход и обновление URL работают независимо от главной страницы.</p>
+  </MessageState>
+</BaseLayout>

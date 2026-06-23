@@ -1,0 +1,20 @@
+---
+import MessageState from "../../components/common/MessageState.astro";
+import SectionHeader from "../../components/common/SectionHeader.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Свет в мастерской — Иван Кугач"
+  description="Технический маршрут будущего интерактива света."
+>
+  <SectionHeader
+    level="h1"
+    eyebrow="Интерактив готовится"
+    title="Свет в мастерской"
+    description="Полный интерактив управления светом будет перенесён в FRT-040."
+  />
+  <MessageState title="Маршрут уже доступен">
+    <p>Прямой вход и обновление URL работают независимо от главной страницы.</p>
+  </MessageState>
+</BaseLayout>

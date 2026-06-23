@@ -9,7 +9,7 @@
 
 Текущая полнофункциональная версия — proof-of-concept в одном файле `index_masterskaya.html`. В нём находятся разметка, CSS, данные, состояние и JavaScript всех актуальных экранов.
 
-Рядом создан минимальный Astro-каркас: `package.json`, `astro.config.mjs`, строгий `tsconfig.json`, `src/layouts/BaseLayout.astro` и `src/pages/index.astro`. Новая страница пока служит только технической проверкой запуска и не заменяет legacy-прототип.
+Рядом развивается Astro-версия: главная `/` уже перенесена, а остальные продуктовые маршруты пока реализованы поэтапно и местами остаются техническими заглушками. До FRT-062 эта версия не заменяет полнофункциональный legacy-прототип.
 
 ## 2. Стек
 
@@ -18,7 +18,7 @@
 | Разметка    | Legacy HTML и техническая Astro-страница | Astro pages/components                                     |
 | Стили       | Встроенный CSS                           | Раздельные CSS tokens/global/component styles              |
 | Логика      | Vanilla JavaScript, DOM API, Canvas API  | TypeScript и изолированные клиентские модули               |
-| Роутинг     | Legacy без URL; Astro имеет только `/`   | Файловые маршруты Astro                                    |
+| Роутинг     | Legacy без URL; Astro имеет 8 маршрутов  | Полная файловая карта Astro                                |
 | Данные      | Константы внутри `<script>`              | Типизированные локальные данные с заменяемым CMS-адаптером |
 | Сборка      | Astro dev, build и production preview    | Astro production build                                     |
 | Тесты       | Нет                                      | Unit, content checks и browser smoke tests                 |
@@ -31,11 +31,11 @@
 | `AGENTS.md`                                | Обязательные правила работы будущих сессий Codex               | Автоматически учитывать до исследования и изменений               |
 | `index_masterskaya.html`                   | Единственная актуальная полнофункциональная версия сайта       | Любое изменение текущего UI, сценариев, данных или интерактивов   |
 | `package.json`                             | Зависимости и доступные npm-команды Astro                      | Запуск и настройка инструментов                                   |
-| `.gitattributes`                          | Единые LF-окончания строк и binary-исключения                  | При ложных Git-изменениях или настройке редактора                 |
+| `.gitattributes`                           | Единые LF-окончания строк и binary-исключения                  | При ложных Git-изменениях или настройке редактора                 |
 | `astro.config.mjs`                         | Базовая конфигурация статической Astro-сборки                  | Изменение режима сборки или интеграций                            |
 | `tsconfig.json`                            | Строгая TypeScript-конфигурация                                | Изменение правил типов и области проверки                         |
-| `src/pages/index.astro`                    | Техническая стартовая страница новой версии                    | Проверка Astro-каркаса                                            |
-| `src/layouts/BaseLayout.astro`             | Минимальный HTML-layout новой версии                           | Общая оболочка Astro-страниц                                      |
+| `src/pages/index.astro`                    | Новая главная: hero, четыре входа и информационные блоки       | Изменение Astro-главной и её CTA                                  |
+| `src/layouts/BaseLayout.astro`             | Общий layout новой версии с навигацией и optional-декором      | Общая оболочка Astro-страниц                                      |
 | `src/README.md`                            | Правила структуры, именования и границ модулей                 | Перед созданием новых Astro/TypeScript-файлов                     |
 | `README.md`                                | Краткое описание продукта, маршрута, ассетов и способа запуска | Первичная ориентация и проверка актуальной точки входа            |
 | `docs/PROJECT_MAP.md`                      | Навигация по проекту                                           | Всегда первой в новой сессии                                      |
@@ -63,7 +63,7 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 | `src/content/`              | Записи Astro Content Collections                               | Пустой каркас                                           |
 | `src/data/`                 | Типизированные локальные данные                                | Пустой каркас                                           |
 | `src/layouts/`              | Общие Astro-layouts                                            | `BaseLayout.astro`: metadata, skip-link и page slots    |
-| `src/pages/`                | Файловые маршруты Astro                                        | Основные заглушки и технический `/ui-preview/`          |
+| `src/pages/`                | Файловые маршруты Astro                                        | Главная, заглушки разделов и технический `/ui-preview/` |
 | `src/scripts/`              | Изолированные клиентские DOM/Canvas-модули                     | Пустой каркас                                           |
 | `src/styles/`               | Токены и общие CSS-слои                                        | `global.css`, `tokens.css` и опциональный `studio.css`  |
 | `src/types/`                | Общие TypeScript-контракты                                     | Пустой каркас                                           |
@@ -114,6 +114,7 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 | Зона                  | Где искать                                  | Примечание                                      |
 | --------------------- | ------------------------------------------- | ----------------------------------------------- |
 | Astro navigation      | `src/components/SiteNavigation.astro`       | Обычные ссылки, active state и mobile layout    |
+| Astro home page       | `src/pages/index.astro`                     | Hero, четыре launch-card и три fact-блока       |
 | Common Astro UI       | `src/components/common/`                    | Actions, headers, artwork, forms, dialog, state |
 | UI component preview  | `src/pages/ui-preview.astro`                | Техническая проверка; не продуктовый URL        |
 | Studio decoration     | `src/components/StudioDecoration.astro`     | `aria-hidden` декор, подключаемый через layout  |
@@ -138,7 +139,8 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 
 | Задача                                    | Начать здесь                                                  | Затем проверить                                                  |
 | ----------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------- |
-| Изменить текст или CTA главной            | `#landingScreen` в `index_masterskaya.html`                   | Связанные `addEventListener` и переходы `goTo*`                  |
+| Изменить Astro-главную или её CTA         | `src/pages/index.astro`                                       | Все целевые URL и desktop/mobile layout                          |
+| Изменить legacy-главную                   | `#landingScreen` в `index_masterskaya.html`                   | Связанные `addEventListener` и переходы `goTo*`                  |
 | Изменить общий визуальный стиль           | `:root`, `body`, `.hero-panel`, `.workspace`                  | Все шесть экранов и responsive rules                             |
 | Изменить картину/цену/статус              | `SALES_WORKS`                                                 | `renderSalesCatalog`, select формы, detail modal и архив         |
 | Изменить форму                            | Разметка двух sales forms                                     | `getSalesFormState`, `validateSalesFormState`, `submitSalesForm` |
