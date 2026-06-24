@@ -1,0 +1,198 @@
+---
+import Action from "../common/Action.astro";
+import FramedArtwork from "../common/FramedArtwork.astro";
+import type { ArtworkSummary } from "../../types/artwork";
+
+interface Props {
+  artwork: ArtworkSummary;
+  statusLabel: string;
+  priceLabel: string;
+}
+
+const { artwork, statusLabel, priceLabel } = Astro.props;
+const primaryImage =
+  artwork.images.find((image) => image.role === "primary") ?? artwork.images[0];
+const artworkUrl = `/works/${artwork.slug}/`;
+const isSold = artwork.availability === "sold";
+const actionLabel = isSold
+  ? "Смотреть в архиве"
+  : artwork.priceType === "request"
+    ? "Уточнить цену"
+    : "Запросить покупку";
+---
+
+<article
+  class:list={[
+    "artwork-catalog-card",
+    `artwork-catalog-card--${artwork.availability}`,
+  ]}
+  aria-labelledby={`artwork-${artwork.id}-title`}
+>
+  <a class="artwork-catalog-card__media-link" href={artworkUrl} tabindex="-1">
+    <FramedArtwork
+      src={primaryImage.src}
+      alt={primaryImage.alt}
+      caption={artwork.series?.title}
+      fit="cover"
+    />
+  </a>
+
+  <div class="artwork-catalog-card__body">
+    <div class="artwork-catalog-card__meta">
+      <span
+        class:list={[
+          "artwork-catalog-card__status",
+          `artwork-catalog-card__status--${artwork.availability}`,
+        ]}
+      >
+        {statusLabel}
+      </span>
+      <span>{artwork.year}</span>
+    </div>
+
+    <h3 id={`artwork-${artwork.id}-title`}>
+      <a href={artworkUrl}>{artwork.title}</a>
+    </h3>
+
+    <p>{artwork.shortDescription}</p>
+
+    <dl class="artwork-catalog-card__facts">
+      <div>
+        <dt>Техника</dt>
+        <dd>{artwork.technique}</dd>
+      </div>
+      <div>
+        <dt>Размер</dt>
+        <dd>{artwork.dimensions.label}</dd>
+      </div>
+      <div>
+        <dt>Цена</dt>
+        <dd>{priceLabel}</dd>
+      </div>
+    </dl>
+
+    <div class="artwork-catalog-card__actions">
+      <Action href={artworkUrl} variant={isSold ? "secondary" : "primary"}>
+        {actionLabel}
+      </Action>
+      {
+        artwork.series && (
+          <Action href={`/series/${artwork.series.slug}/`} variant="quiet">
+            Серия
+          </Action>
+        )
+      }
+    </div>
+  </div>
+</article>
+
+<style>
+  .artwork-catalog-card {
+    display: grid;
+    gap: var(--space-4);
+    height: 100%;
+    padding: clamp(var(--space-4), 3vw, var(--space-5));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-surface);
+  }
+
+  .artwork-catalog-card--sold {
+    background: color-mix(
+      in srgb,
+      var(--color-surface) 82%,
+      var(--color-muted)
+    );
+  }
+
+  .artwork-catalog-card__media-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .artwork-catalog-card__media-link:hover :global(img) {
+    transform: scale(1.025);
+  }
+
+  .artwork-catalog-card__media-link :global(img) {
+    transition: transform var(--motion-duration-medium)
+      var(--motion-easing-standard);
+  }
+
+  .artwork-catalog-card__body {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .artwork-catalog-card__body h3,
+  .artwork-catalog-card__body p {
+    margin-block-end: 0;
+  }
+
+  .artwork-catalog-card__body h3 a {
+    color: var(--color-text);
+    text-decoration-color: transparent;
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.16em;
+  }
+
+  .artwork-catalog-card__body h3 a:hover {
+    color: var(--color-accent-strong);
+    text-decoration-color: currentColor;
+  }
+
+  .artwork-catalog-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-200);
+  }
+
+  .artwork-catalog-card__status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-pill);
+    color: var(--color-text);
+    background: var(--color-accent-muted);
+    font-weight: 700;
+  }
+
+  .artwork-catalog-card__status--reserved {
+    background: var(--color-surface-muted);
+  }
+
+  .artwork-catalog-card__status--sold {
+    background: var(--color-muted);
+  }
+
+  .artwork-catalog-card__facts {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .artwork-catalog-card__facts div {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .artwork-catalog-card__facts dt {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-200);
+  }
+
+  .artwork-catalog-card__facts dd {
+    margin: 0;
+  }
+
+  .artwork-catalog-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+  }
+</style>

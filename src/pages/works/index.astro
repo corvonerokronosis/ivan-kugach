@@ -1,7 +1,7 @@
 ---
 import Action from "../../components/common/Action.astro";
-import FramedArtwork from "../../components/common/FramedArtwork.astro";
 import SectionHeader from "../../components/common/SectionHeader.astro";
+import ArtworkCatalogCard from "../../components/works/ArtworkCatalogCard.astro";
 import { artworkAvailabilityLabels, getArtworks } from "../../data/repository";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
@@ -26,7 +26,7 @@ function formatPrice(artwork: (typeof artworks)[number]): string {
     level="h1"
     eyebrow="Каталог работ"
     title="Каталог работ"
-    description="Первые пять записей перенесены из legacy-прототипа в локальный типизированный источник данных. Временные атрибуты оставлены в карточках явно."
+    description="Работы из локального типизированного источника разделены по статусам: основной каталог показывает доступные и зарезервированные произведения, архив — проданные."
   />
 
   <section class="works-section" aria-labelledby="active-works-title">
@@ -36,47 +36,15 @@ function formatPrice(artwork: (typeof artworks)[number]): string {
     </div>
     <ul class="works-grid" aria-label="Работы основного каталога">
       {
-        activeArtworks.map((artwork) => {
-          const primaryImage = artwork.images[0];
-
-          return (
-            <li class="work-card">
-              <FramedArtwork
-                src={primaryImage.src}
-                alt={primaryImage.alt}
-                caption={artwork.series?.title}
-                fit="cover"
-              />
-              <div class="work-card__body">
-                <div class="work-card__meta">
-                  <span
-                    class={`work-card__status work-card__status--${artwork.availability}`}
-                  >
-                    {artworkAvailabilityLabels[artwork.availability]}
-                  </span>
-                  <span>{artwork.year}</span>
-                </div>
-                <h3>{artwork.title}</h3>
-                <p>{artwork.shortDescription}</p>
-                <dl class="work-card__facts">
-                  <div>
-                    <dt>Техника</dt>
-                    <dd>{artwork.technique}</dd>
-                  </div>
-                  <div>
-                    <dt>Размер</dt>
-                    <dd>{artwork.dimensions.label}</dd>
-                  </div>
-                  <div>
-                    <dt>Цена</dt>
-                    <dd>{formatPrice(artwork)}</dd>
-                  </div>
-                </dl>
-                <p class="work-card__slug">Slug: {artwork.slug}</p>
-              </div>
-            </li>
-          );
-        })
+        activeArtworks.map((artwork) => (
+          <li>
+            <ArtworkCatalogCard
+              artwork={artwork}
+              statusLabel={artworkAvailabilityLabels[artwork.availability]}
+              priceLabel={formatPrice(artwork)}
+            />
+          </li>
+        ))
       }
     </ul>
   </section>
@@ -91,47 +59,15 @@ function formatPrice(artwork: (typeof artworks)[number]): string {
     </div>
     <ul class="works-grid works-grid--archive" aria-label="Архивные работы">
       {
-        archiveArtworks.map((artwork) => {
-          const primaryImage = artwork.images[0];
-
-          return (
-            <li class="work-card work-card--archive">
-              <FramedArtwork
-                src={primaryImage.src}
-                alt={primaryImage.alt}
-                caption={artwork.series?.title}
-                fit="cover"
-              />
-              <div class="work-card__body">
-                <div class="work-card__meta">
-                  <span
-                    class={`work-card__status work-card__status--${artwork.availability}`}
-                  >
-                    {artworkAvailabilityLabels[artwork.availability]}
-                  </span>
-                  <span>{artwork.year}</span>
-                </div>
-                <h3>{artwork.title}</h3>
-                <p>{artwork.shortDescription}</p>
-                <dl class="work-card__facts">
-                  <div>
-                    <dt>Техника</dt>
-                    <dd>{artwork.technique}</dd>
-                  </div>
-                  <div>
-                    <dt>Размер</dt>
-                    <dd>{artwork.dimensions.label}</dd>
-                  </div>
-                  <div>
-                    <dt>Цена</dt>
-                    <dd>{formatPrice(artwork)}</dd>
-                  </div>
-                </dl>
-                <p class="work-card__slug">Slug: {artwork.slug}</p>
-              </div>
-            </li>
-          );
-        })
+        archiveArtworks.map((artwork) => (
+          <li>
+            <ArtworkCatalogCard
+              artwork={artwork}
+              statusLabel={artworkAvailabilityLabels[artwork.availability]}
+              priceLabel={formatPrice(artwork)}
+            />
+          </li>
+        ))
       }
     </ul>
   </section>
@@ -167,82 +103,6 @@ function formatPrice(artwork: (typeof artworks)[number]): string {
     padding: 0;
     margin: 0;
     list-style: none;
-  }
-
-  .work-card {
-    display: grid;
-    gap: var(--space-4);
-    padding: clamp(var(--space-4), 3vw, var(--space-5));
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-surface);
-  }
-
-  .work-card--archive {
-    background: color-mix(
-      in srgb,
-      var(--color-surface) 82%,
-      var(--color-muted)
-    );
-  }
-
-  .work-card__body {
-    display: grid;
-    gap: var(--space-3);
-  }
-
-  .work-card__body h3,
-  .work-card__body p {
-    margin-block-end: 0;
-  }
-
-  .work-card__meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    align-items: center;
-    color: var(--color-text-muted);
-    font-size: var(--font-size-200);
-  }
-
-  .work-card__status {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.2rem 0.55rem;
-    border-radius: var(--radius-pill);
-    color: var(--color-text);
-    background: var(--color-accent-muted);
-    font-weight: 700;
-  }
-
-  .work-card__status--sold {
-    background: var(--color-muted);
-  }
-
-  .work-card__facts {
-    display: grid;
-    gap: var(--space-2);
-    margin: 0;
-  }
-
-  .work-card__facts div {
-    display: grid;
-    gap: var(--space-1);
-  }
-
-  .work-card__facts dt {
-    color: var(--color-text-muted);
-    font-size: var(--font-size-200);
-  }
-
-  .work-card__facts dd {
-    margin: 0;
-  }
-
-  .work-card__slug {
-    color: var(--color-text-muted);
-    font-size: var(--font-size-200);
   }
 
   .works-actions {
