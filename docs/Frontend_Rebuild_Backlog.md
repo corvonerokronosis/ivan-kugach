@@ -811,7 +811,7 @@ npm.cmd run verify
 - `/works/` строит основной каталог и архив через `getArtworks()`, поэтому добавление работы не требует изменения страницы каталога;
 - проверить: выполнить `npm.cmd run verify`, открыть `/works/` в dev или preview и убедиться, что видны три карточки основного каталога и две архивные работы.
 
-### [ ] FRT-020. Описать модель серии
+### [x] FRT-020. Описать модель серии
 
 Приоритет: Must  
 Версия: Frontend v0.2  
@@ -827,6 +827,14 @@ npm.cmd run verify
 
 - страницы серий генерируются из данных;
 - отсутствующая связь выявляется проверкой.
+
+Выполнено:
+
+- создан `src/types/series.ts` с `SeriesRef`, `SeriesCover`, `Series`, `SeriesSummary` и SEO-полями;
+- создан `src/data/series.ts` с временной демонстрационной серией из legacy-каталога, cover-изображением, getter-функциями и валидацией обязательных полей, slug и уникальности `id`/`slug`/`order`;
+- `ArtworkSeriesRef` теперь связан с `SeriesRef`, а `src/data/artworks.ts` берёт ссылку серии через стабильный ID и валидирует, что `id`, `slug` и `title` существуют и совпадают с `src/data/series.ts`;
+- добавлен минимальный generated route `src/pages/series/[slug].astro`, который строит страницы серий из `getSeries()` и показывает связанные работы через `getArtworksBySeriesId()`;
+- проверить: выполнить `npm.cmd run verify`, затем открыть `/series/demo-series-needs-title/` в dev или preview.
 
 ### [ ] FRT-021. Описать модели narrative и hotspots
 

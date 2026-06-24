@@ -1,0 +1,192 @@
+---
+import Action from "../../components/common/Action.astro";
+import FramedArtwork from "../../components/common/FramedArtwork.astro";
+import MessageState from "../../components/common/MessageState.astro";
+import SectionHeader from "../../components/common/SectionHeader.astro";
+import { getArtworksBySeriesId } from "../../data/artworks";
+import { getSeries } from "../../data/series";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import type { Series } from "../../types/series";
+
+interface Props {
+  series: Series;
+}
+
+export function getStaticPaths() {
+  return getSeries().map((series) => ({
+    params: {
+      slug: series.slug,
+    },
+    props: {
+      series,
+    },
+  }));
+}
+
+const { series } = Astro.props;
+const seriesArtworks = getArtworksBySeriesId(series.id);
+---
+
+<BaseLayout
+  title={`${series.title} — серия Ивана Кугача`}
+  description={series.description}
+>
+  <SectionHeader
+    level="h1"
+    eyebrow="Серия"
+    title={series.title}
+    description={series.description}
+  />
+
+  <section class="series-overview" aria-labelledby="series-overview-title">
+    <div class="series-overview__copy">
+      <h2 id="series-overview-title">Данные серии</h2>
+      <dl class="series-facts">
+        <div>
+          <dt>ID</dt>
+          <dd>{series.id}</dd>
+        </div>
+        <div>
+          <dt>Slug</dt>
+          <dd>{series.slug}</dd>
+        </div>
+        <div>
+          <dt>Порядок</dt>
+          <dd>{series.order}</dd>
+        </div>
+      </dl>
+    </div>
+
+    {
+      series.cover && (
+        <FramedArtwork
+          src={series.cover.src}
+          alt={series.cover.alt}
+          caption={series.cover.caption}
+          fit="cover"
+        />
+      )
+    }
+  </section>
+
+  <section class="series-works" aria-labelledby="series-works-title">
+    <div class="series-works__header">
+      <h2 id="series-works-title">Связанные работы</h2>
+      <p>
+        Связь строится через стабильный ID серии в локальных данных, а не через
+        текстовое название.
+      </p>
+    </div>
+
+    {
+      seriesArtworks.length > 0 ? (
+        <ul class="series-works__list">
+          {seriesArtworks.map((artwork) => (
+            <li>
+              <span>{artwork.title}</span>
+              <small>{artwork.slug}</small>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <MessageState title="В этой серии пока нет работ">
+          <p>
+            Пустая серия остаётся валидной страницей и может быть заполнена
+            позже без изменения маршрута.
+          </p>
+        </MessageState>
+      )
+    }
+  </section>
+
+  <div class="series-actions">
+    <Action href="/works/" variant="secondary">Вернуться в каталог</Action>
+  </div>
+</BaseLayout>
+
+<style>
+  .series-overview,
+  .series-works {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .series-overview {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .series-overview__copy,
+  .series-works__header {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .series-overview h2,
+  .series-works h2,
+  .series-overview p,
+  .series-works p {
+    margin-block-end: 0;
+  }
+
+  .series-facts {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+  }
+
+  .series-facts div {
+    padding: var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+
+  .series-facts dt {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-200);
+  }
+
+  .series-facts dd {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .series-works__header p {
+    color: var(--color-text-muted);
+  }
+
+  .series-works__list {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .series-works__list li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: baseline;
+    justify-content: space-between;
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+
+  .series-works__list small {
+    color: var(--color-text-muted);
+  }
+
+  .series-actions {
+    display: flex;
+  }
+
+  @media (min-width: 48rem) {
+    .series-overview {
+      grid-template-columns: minmax(0, 0.9fr) minmax(18rem, 0.7fr);
+    }
+  }
+</style>

@@ -1,3 +1,5 @@
+import type { SeriesRef } from "./series";
+
 export const artworkAvailabilityValues = [
   "available",
   "reserved",
@@ -10,11 +12,7 @@ export const artworkPriceTypeValues = ["fixed", "request"] as const;
 
 export type ArtworkPriceType = (typeof artworkPriceTypeValues)[number];
 
-export interface ArtworkSeriesRef {
-  id: string;
-  slug: string;
-  title: string;
-}
+export type ArtworkSeriesRef = SeriesRef;
 
 export interface ArtworkImage {
   src: string;

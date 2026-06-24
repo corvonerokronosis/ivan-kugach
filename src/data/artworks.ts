@@ -3,11 +3,11 @@ import dor3571Image from "../for_sales/DOR_3571.jpg";
 import dsc8578Image from "../for_sales/DSC_8578 1.jpg";
 import dsc8599Image from "../for_sales/DSC_8599 1.jpg";
 import dsc8602Image from "../for_sales/DSC_8602 1.jpg";
+import { getSeriesById, getSeriesRefById } from "./series";
 import {
   isArtworkAvailability,
   isArtworkPriceType,
   type Artwork,
-  type ArtworkSeriesRef,
   type ArtworkSummary,
 } from "../types/artwork";
 
@@ -17,19 +17,13 @@ export const artworkAvailabilityLabels = {
   sold: "Продана",
 } as const satisfies Record<Artwork["availability"], string>;
 
-const temporarySalesSeries = {
-  id: "demo-series-needs-title",
-  slug: "demo-series-needs-title",
-  title: "Демонстрационная серия: требует замены названия",
-} as const satisfies ArtworkSeriesRef;
-
 const artworks = validateArtworks([
   {
     id: "dor-3518",
     slug: "dor-3518",
     title: "Название уточняется",
     year: "Год уточняется",
-    series: temporarySalesSeries,
+    series: getSeriesRefById("demo-series-needs-title"),
     images: [
       {
         src: dor3518Image.src,
@@ -55,7 +49,7 @@ const artworks = validateArtworks([
     slug: "dor-3571",
     title: "Название уточняется",
     year: "Год уточняется",
-    series: temporarySalesSeries,
+    series: getSeriesRefById("demo-series-needs-title"),
     images: [
       {
         src: dor3571Image.src,
@@ -81,7 +75,7 @@ const artworks = validateArtworks([
     slug: "dsc-8578",
     title: "Название уточняется",
     year: "Год уточняется",
-    series: temporarySalesSeries,
+    series: getSeriesRefById("demo-series-needs-title"),
     images: [
       {
         src: dsc8578Image.src,
@@ -108,7 +102,7 @@ const artworks = validateArtworks([
     slug: "dsc-8599",
     title: "Название уточняется",
     year: "Год уточняется",
-    series: temporarySalesSeries,
+    series: getSeriesRefById("demo-series-needs-title"),
     images: [
       {
         src: dsc8599Image.src,
@@ -135,7 +129,7 @@ const artworks = validateArtworks([
     slug: "dsc-8602",
     title: "Название уточняется",
     year: "Год уточняется",
-    series: temporarySalesSeries,
+    series: getSeriesRefById("demo-series-needs-title"),
     images: [
       {
         src: dsc8602Image.src,
@@ -175,6 +169,12 @@ export function getFeaturedArtworks(): ArtworkSummary[] {
 
 export function getArtworkBySlug(slug: string): Artwork | undefined {
   return artworks.find((artwork) => artwork.slug === slug);
+}
+
+export function getArtworksBySeriesId(seriesId: string): ArtworkSummary[] {
+  return getArtworkSummaries().filter(
+    (artwork) => artwork.series?.id === seriesId,
+  );
 }
 
 function validateArtworks(records: Artwork[]): Artwork[] {
@@ -261,6 +261,8 @@ function validateArtwork(record: Artwork, index: number): void {
   });
 
   if (record.series !== null) {
+    const linkedSeries = getSeriesById(record.series.id);
+
     assertNonEmptyString(
       record.series.id,
       `artworks "${label}": series.id обязателен`,
@@ -272,6 +274,18 @@ function validateArtwork(record: Artwork, index: number): void {
     assertNonEmptyString(
       record.series.title,
       `artworks "${label}": series.title обязателен`,
+    );
+    assert(
+      linkedSeries !== undefined,
+      `artworks "${label}": серия "${record.series.id}" отсутствует в src/data/series.ts`,
+    );
+    assert(
+      record.series.slug === linkedSeries.slug,
+      `artworks "${label}": series.slug "${record.series.slug}" не совпадает с "${linkedSeries.slug}"`,
+    );
+    assert(
+      record.series.title === linkedSeries.title,
+      `artworks "${label}": series.title "${record.series.title}" не совпадает с "${linkedSeries.title}"`,
     );
   }
 
