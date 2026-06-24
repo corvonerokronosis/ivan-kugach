@@ -836,7 +836,7 @@ npm.cmd run verify
 - добавлен минимальный generated route `src/pages/series/[slug].astro`, который строит страницы серий из `getSeries()` и показывает связанные работы через `getArtworksBySeriesId()`;
 - проверить: выполнить `npm.cmd run verify`, затем открыть `/series/demo-series-needs-title/` в dev или preview.
 
-### [ ] FRT-021. Описать модели narrative и hotspots
+### [x] FRT-021. Описать модели narrative и hotspots
 
 Приоритет: Must  
 Версия: Frontend v0.3  
@@ -853,6 +853,15 @@ npm.cmd run verify
 
 - narrative-слайд и hotspot можно изменить без редактирования интерактивного движка;
 - некорректная ссылка на следующий этап выявляется проверкой.
+
+Выполнено:
+
+- созданы `src/types/narrative.ts` и `src/types/hotspot.ts` с ID, `order`, изображениями и текстовыми полями;
+- legacy `NARRATIVE_SEQUENCES` перенесён в `src/data/narrative.ts` как типизированный массив sequence/slide-записей с сохранёнными временными текстами и getter-функциями;
+- legacy `HOTSPOTS` перенесён в `src/data/hotspots.ts` как типизированный массив точек с координатами, `targetScale`, текстами и общей привязкой к изображению интерактива деталей;
+- добавлена проверка обязательных полей, уникальности ID/order, координат hotspot и допустимых `completionAction`; некорректный следующий этап ловится типами и валидацией;
+- `/experience/` и `/experience/details/` импортируют новые data-модули, чтобы сборка проверяла вынесенный контент без переноса интерактивного движка;
+- проверить: выполнить `npm.cmd run verify`, открыть `/experience/` и `/experience/details/`, убедиться, что технические страницы показывают количество narrative-блоков и hotspot-точек.
 
 ### [ ] FRT-022. Создать frontend-репозиторий данных
 

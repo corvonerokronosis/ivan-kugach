@@ -1,7 +1,10 @@
 ---
 import MessageState from "../../components/common/MessageState.astro";
 import SectionHeader from "../../components/common/SectionHeader.astro";
+import { getHotspots } from "../../data/hotspots";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const hotspots = getHotspots();
 ---
 
 <BaseLayout
@@ -16,5 +19,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   />
   <MessageState title="Маршрут уже доступен">
     <p>Прямой вход и обновление URL работают независимо от главной страницы.</p>
+    <p>
+      Контент точек уже вынесен в локальные данные: {hotspots.length} точки.
+    </p>
   </MessageState>
 </BaseLayout>

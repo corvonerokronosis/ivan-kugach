@@ -5,7 +5,10 @@ import lightArtworkUrl from "../../picture_light_shadow/_DOR6258.JPG?url";
 import Action from "../../components/common/Action.astro";
 import FramedArtwork from "../../components/common/FramedArtwork.astro";
 import MetaBadge from "../../components/common/MetaBadge.astro";
+import { getNarrativeSequences } from "../../data/narrative";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const narrativeSequences = getNarrativeSequences();
 ---
 
 <BaseLayout
@@ -37,6 +40,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         Последовательное прохождение создаёт цельную историю. Прямые ссылки
         позволяют вернуться к нужной механике отдельно и обновить страницу без
         потери маршрута.
+      </p>
+      <p>
+        Narrative-контент уже вынесен в локальные данные:
+        {narrativeSequences.length} блока.
       </p>
     </aside>
   </section>
