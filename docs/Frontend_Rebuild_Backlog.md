@@ -863,7 +863,7 @@ npm.cmd run verify
 - `/experience/` и `/experience/details/` импортируют новые data-модули, чтобы сборка проверяла вынесенный контент без переноса интерактивного движка;
 - проверить: выполнить `npm.cmd run verify`, открыть `/experience/` и `/experience/details/`, убедиться, что технические страницы показывают количество narrative-блоков и hotspot-точек.
 
-### [ ] FRT-022. Создать frontend-репозиторий данных
+### [x] FRT-022. Создать frontend-репозиторий данных
 
 Приоритет: Should  
 Версия: Frontend v0.3  
@@ -880,6 +880,14 @@ npm.cmd run verify
 
 - UI не знает, загружены данные из локальных файлов или CMS;
 - будущая интеграция не требует менять props карточек и страниц.
+
+Выполнено:
+
+- создан `src/data/repository.ts` с интерфейсом `FrontendDataRepository`, local-адаптером и typed getter-функциями для artist page, works, series, narrative и hotspots;
+- репозиторий экспортирует `getArtworks`, `getArtworkBySlug`, `getSeries`, `getNarrativeSequence` и дополнительные уже используемые getter-функции без раскрытия конкретных local-модулей UI-слою;
+- страницы `/artist/`, `/works/`, `/series/[slug]/`, `/experience/` и `/experience/details/` переведены на импорт из `src/data/repository.ts`;
+- local-файлы `artist-page.ts`, `artworks.ts`, `series.ts`, `narrative.ts` и `hotspots.ts` остаются заменяемыми источниками под репозиторием, чтобы будущий Strapi/build-time адаптер менялся без изменения props страниц;
+- проверить: выполнить `npm.cmd run verify`, затем `rg -n "data/" src\\pages src\\components src\\layouts` и убедиться, что UI импортирует только `data/repository`.
 
 ---
 
