@@ -2,9 +2,16 @@
 import Action from "../../components/common/Action.astro";
 import FramedArtwork from "../../components/common/FramedArtwork.astro";
 import MessageState from "../../components/common/MessageState.astro";
+import MetaBadge from "../../components/common/MetaBadge.astro";
 import SectionHeader from "../../components/common/SectionHeader.astro";
-import { getArtworksBySeriesId, getSeries } from "../../data/repository";
+import ArtworkCatalogCard from "../../components/works/ArtworkCatalogCard.astro";
+import {
+  artworkAvailabilityLabels,
+  getArtworksBySeriesId,
+  getSeries,
+} from "../../data/repository";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import type { ArtworkSummary } from "../../types/artwork";
 import type { Series } from "../../types/series";
 
 interface Props {
@@ -24,12 +31,21 @@ export function getStaticPaths() {
 
 const { series } = Astro.props;
 const seriesArtworks = getArtworksBySeriesId(series.id);
+const availableCount = seriesArtworks.filter(
+  (artwork) => artwork.availability !== "sold",
+).length;
+const soldCount = seriesArtworks.length - availableCount;
+const pageTitle = series.seo?.title ?? `${series.title} — серия Ивана Кугача`;
+const pageDescription = series.seo?.description ?? series.description;
+
+function formatPrice(artwork: ArtworkSummary): string {
+  return artwork.priceType === "request"
+    ? "Цена по запросу"
+    : (artwork.price ?? "Цена по запросу");
+}
 ---
 
-<BaseLayout
-  title={`${series.title} — серия Ивана Кугача`}
-  description={series.description}
->
+<BaseLayout title={pageTitle} description={pageDescription}>
   <SectionHeader
     level="h1"
     eyebrow="Серия"
@@ -39,59 +55,72 @@ const seriesArtworks = getArtworksBySeriesId(series.id);
 
   <section class="series-overview" aria-labelledby="series-overview-title">
     <div class="series-overview__copy">
-      <h2 id="series-overview-title">Данные серии</h2>
+      <div class="series-overview__badges" aria-label="Сводка серии">
+        <MetaBadge tone="accent">{seriesArtworks.length} работ</MetaBadge>
+        <MetaBadge>{availableCount} в каталоге</MetaBadge>
+        <MetaBadge>{soldCount} в архиве</MetaBadge>
+      </div>
+
+      <h2 id="series-overview-title">О серии</h2>
+      <p>{series.description}</p>
+
       <dl class="series-facts">
         <div>
-          <dt>ID</dt>
+          <dt>Идентификатор</dt>
           <dd>{series.id}</dd>
         </div>
         <div>
-          <dt>Slug</dt>
-          <dd>{series.slug}</dd>
-        </div>
-        <div>
-          <dt>Порядок</dt>
-          <dd>{series.order}</dd>
+          <dt>Адрес</dt>
+          <dd>/series/{series.slug}/</dd>
         </div>
       </dl>
     </div>
 
     {
-      series.cover && (
+      series.cover ? (
         <FramedArtwork
           src={series.cover.src}
           alt={series.cover.alt}
           caption={series.cover.caption}
           fit="cover"
+          loading="eager"
         />
+      ) : (
+        <div class="series-overview__placeholder" aria-hidden="true">
+          <span>{series.title}</span>
+        </div>
       )
     }
   </section>
 
   <section class="series-works" aria-labelledby="series-works-title">
     <div class="series-works__header">
-      <h2 id="series-works-title">Связанные работы</h2>
+      <h2 id="series-works-title">Работы серии</h2>
       <p>
-        Связь строится через стабильный ID серии в локальных данных, а не через
-        текстовое название.
+        Список собирается по стабильному ID серии из локальных данных. Если в
+        серию позже добавят или уберут работу, страница перестроится без
+        изменения route.
       </p>
     </div>
 
     {
       seriesArtworks.length > 0 ? (
-        <ul class="series-works__list">
+        <ul class="series-works__grid">
           {seriesArtworks.map((artwork) => (
             <li>
-              <span>{artwork.title}</span>
-              <small>{artwork.slug}</small>
+              <ArtworkCatalogCard
+                artwork={artwork}
+                statusLabel={artworkAvailabilityLabels[artwork.availability]}
+                priceLabel={formatPrice(artwork)}
+              />
             </li>
           ))}
         </ul>
       ) : (
         <MessageState title="В этой серии пока нет работ">
           <p>
-            Пустая серия остаётся валидной страницей и может быть заполнена
-            позже без изменения маршрута.
+            Пустая серия остаётся валидной страницей: сюда можно вернуться после
+            редакционного наполнения, не меняя URL и шаблон.
           </p>
         </MessageState>
       )
@@ -101,6 +130,11 @@ const seriesArtworks = getArtworksBySeriesId(series.id);
   <div class="series-actions">
     <Action href="/works/" variant="secondary">Вернуться в каталог</Action>
   </div>
+
+  <p slot="footer">
+    Страница серии генерируется из локального источника `src/data/series.ts` и
+    связей работ по стабильному ID.
+  </p>
 </BaseLayout>
 
 <style>
@@ -121,11 +155,22 @@ const seriesArtworks = getArtworksBySeriesId(series.id);
     gap: var(--space-3);
   }
 
+  .series-overview__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
   .series-overview h2,
   .series-works h2,
   .series-overview p,
   .series-works p {
     margin-block-end: 0;
+  }
+
+  .series-overview p,
+  .series-works__header p {
+    color: var(--color-text-muted);
   }
 
   .series-facts {
@@ -151,39 +196,33 @@ const seriesArtworks = getArtworksBySeriesId(series.id);
     font-weight: 700;
   }
 
-  .series-works__header p {
+  .series-overview__placeholder {
+    display: grid;
+    min-height: 18rem;
+    place-items: center;
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
     color: var(--color-text-muted);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-surface);
+    text-align: center;
   }
 
-  .series-works__list {
+  .series-works__grid {
     display: grid;
-    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-5);
     padding: 0;
     margin: 0;
     list-style: none;
-  }
-
-  .series-works__list li {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    align-items: baseline;
-    justify-content: space-between;
-    padding: var(--space-4);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background: var(--color-surface);
-  }
-
-  .series-works__list small {
-    color: var(--color-text-muted);
   }
 
   .series-actions {
     display: flex;
   }
 
-  @media (min-width: 48rem) {
+  @media (min-width: 56rem) {
     .series-overview {
       grid-template-columns: minmax(0, 0.9fr) minmax(18rem, 0.7fr);
     }
