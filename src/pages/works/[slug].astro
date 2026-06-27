@@ -1,0 +1,310 @@
+---
+import Action from "../../components/common/Action.astro";
+import FramedArtwork from "../../components/common/FramedArtwork.astro";
+import MetaBadge from "../../components/common/MetaBadge.astro";
+import SectionHeader from "../../components/common/SectionHeader.astro";
+import { artworkAvailabilityLabels, getArtworks } from "../../data/repository";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import type { Artwork } from "../../types/artwork";
+
+interface Props {
+  artwork: Artwork;
+}
+
+export function getStaticPaths() {
+  return getArtworks().map((artwork) => ({
+    params: {
+      slug: artwork.slug,
+    },
+    props: {
+      artwork,
+    },
+  }));
+}
+
+const { artwork } = Astro.props;
+const primaryImage =
+  artwork.images.find((image) => image.role === "primary") ?? artwork.images[0];
+const statusLabel = artworkAvailabilityLabels[artwork.availability];
+const priceLabel =
+  artwork.priceType === "request" ? "Цена по запросу" : artwork.price;
+const inquiryLabel =
+  artwork.availability === "sold"
+    ? "Спросить о похожих работах"
+    : artwork.priceType === "request"
+      ? "Уточнить цену"
+      : "Запросить покупку";
+const pageTitle = artwork.seo?.title ?? `${artwork.title} — Иван Кугач`;
+const pageDescription = artwork.seo?.description ?? artwork.shortDescription;
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <SectionHeader
+    level="h1"
+    eyebrow="Работа"
+    title={artwork.title}
+    description={artwork.shortDescription}
+  />
+
+  <section class="work-detail" aria-labelledby="work-detail-title">
+    <div class="work-detail__image">
+      <FramedArtwork
+        src={primaryImage.src}
+        alt={primaryImage.alt}
+        caption={primaryImage.caption ?? artwork.series?.title}
+        fit="cover"
+        loading="eager"
+        aspectRatio="1 / 1"
+      />
+    </div>
+
+    <div class="work-detail__summary">
+      <div class="work-detail__badges" aria-label="Краткие параметры работы">
+        <MetaBadge
+          tone={artwork.availability === "sold" ? "neutral" : "accent"}
+        >
+          {statusLabel}
+        </MetaBadge>
+        <MetaBadge>{priceLabel}</MetaBadge>
+        <MetaBadge>{artwork.year}</MetaBadge>
+      </div>
+
+      <h2 id="work-detail-title">Параметры работы</h2>
+
+      <dl class="work-facts">
+        <div>
+          <dt>Техника</dt>
+          <dd>{artwork.technique}</dd>
+        </div>
+        <div>
+          <dt>Размер</dt>
+          <dd>{artwork.dimensions.label}</dd>
+        </div>
+        <div>
+          <dt>Статус</dt>
+          <dd>{statusLabel}</dd>
+        </div>
+        <div>
+          <dt>Цена</dt>
+          <dd>{priceLabel}</dd>
+        </div>
+        {
+          artwork.series && (
+            <div>
+              <dt>Серия</dt>
+              <dd>
+                <a href={`/series/${artwork.series.slug}/`}>
+                  {artwork.series.title}
+                </a>
+              </dd>
+            </div>
+          )
+        }
+      </dl>
+
+      <div class="work-detail__actions">
+        <Action href="#work-inquiry">{inquiryLabel}</Action>
+        <Action href="/works/" variant="secondary">Вернуться в каталог</Action>
+      </div>
+    </div>
+  </section>
+
+  <section class="work-description" aria-labelledby="work-description-title">
+    <h2 id="work-description-title">Описание</h2>
+    <p>{artwork.fullDescription}</p>
+  </section>
+
+  <section class="work-gallery" aria-labelledby="work-gallery-title">
+    <div class="work-gallery__header">
+      <h2 id="work-gallery-title">Галерея</h2>
+      <p>
+        Страница готова к нескольким изображениям: основному виду, деталям и
+        контекстным снимкам.
+      </p>
+    </div>
+
+    <ul class="work-gallery__list">
+      {
+        artwork.images.map((image, index) => (
+          <li>
+            <FramedArtwork
+              src={image.src}
+              alt={image.alt}
+              caption={
+                image.caption ?? (index === 0 ? "Основной вид" : undefined)
+              }
+              fit={image.role === "detail" ? "cover" : "contain"}
+              aspectRatio="4 / 3"
+            />
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  {
+    artwork.series && (
+      <section class="work-series" aria-labelledby="work-series-title">
+        <div>
+          <h2 id="work-series-title">Серия</h2>
+          <p>
+            Работа связана с серией через стабильный ID в локальных данных, а не
+            через текстовое название.
+          </p>
+        </div>
+        <Action href={`/series/${artwork.series.slug}/`} variant="secondary">
+          Открыть серию
+        </Action>
+      </section>
+    )
+  }
+
+  <section
+    id="work-inquiry"
+    class="work-inquiry"
+    aria-labelledby="work-inquiry-title"
+  >
+    <div>
+      <h2 id="work-inquiry-title">Заявка по работе</h2>
+      <p>
+        Заявочный сценарий остаётся frontend-частью: можно выбрать интересующую
+        работу, уточнить наличие, цену, условия просмотра или похожие
+        произведения без онлайн-оплаты.
+      </p>
+    </div>
+    <Action
+      href="/works/"
+      variant={artwork.availability === "sold" ? "secondary" : "primary"}
+    >
+      Перейти к каталогу заявок
+    </Action>
+  </section>
+
+  <p slot="footer">
+    Детальная страница работы генерируется из той же локальной записи, что и
+    карточка каталога.
+  </p>
+</BaseLayout>
+
+<style>
+  .work-detail,
+  .work-description,
+  .work-gallery,
+  .work-series,
+  .work-inquiry {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .work-detail {
+    align-items: start;
+  }
+
+  .work-detail__summary {
+    display: grid;
+    gap: var(--space-4);
+    padding: clamp(var(--space-4), 3vw, var(--space-6));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-surface);
+  }
+
+  .work-detail__badges,
+  .work-detail__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  .work-detail h2,
+  .work-description h2,
+  .work-gallery h2,
+  .work-series h2,
+  .work-inquiry h2,
+  .work-description p,
+  .work-gallery p,
+  .work-series p,
+  .work-inquiry p {
+    margin-block-end: 0;
+  }
+
+  .work-facts {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+  }
+
+  .work-facts div {
+    display: grid;
+    gap: var(--space-1);
+    padding-block-end: var(--space-3);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .work-facts div:last-child {
+    padding-block-end: 0;
+    border-bottom: 0;
+  }
+
+  .work-facts dt {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-200);
+  }
+
+  .work-facts dd {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .work-facts a {
+    color: var(--color-accent-strong);
+  }
+
+  .work-description,
+  .work-series,
+  .work-inquiry {
+    padding: clamp(var(--space-4), 3vw, var(--space-6));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-surface);
+  }
+
+  .work-gallery__header {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .work-gallery__header p,
+  .work-series p,
+  .work-inquiry p {
+    color: var(--color-text-muted);
+  }
+
+  .work-gallery__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-4);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .work-series,
+  .work-inquiry {
+    align-items: center;
+  }
+
+  @media (min-width: 56rem) {
+    .work-detail {
+      grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.72fr);
+    }
+
+    .work-series,
+    .work-inquiry {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+  }
+</style>
