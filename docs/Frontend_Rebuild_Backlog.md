@@ -1115,7 +1115,7 @@ npm.cmd run verify
 
 ## EPIC F8. Интерактив «Возвращение цвета»
 
-### [ ] FRT-031. Изолировать canvas-движок раскрытия
+### [x] FRT-031. Изолировать canvas-движок раскрытия
 
 Приоритет: Must  
 Версия: Frontend v0.3  
@@ -1134,6 +1134,16 @@ npm.cmd run verify
 - модуль можно смонтировать и демонтировать повторно;
 - повторная инициализация не удваивает обработчики;
 - логика не использует глобальные переменные страницы.
+
+Выполнено:
+
+- добавлен `src/scripts/color-reveal-engine.ts`: фабрика принимает container, два canvas, source image, optional brush и callbacks, инкапсулирует crop, resize, grayscale overlay, кисть, coverage grid, pointer capture, порог `82%` и auto-reveal `2100 ms`;
+- контроллер возвращает `resize`, `reset`, `startAutoReveal`, `getProgress`, `destroy`; cleanup отменяет animation frame и timer, отключает `ResizeObserver`, освобождает pointer capture и снимает все обработчики;
+- `WeakMap` по container перед повторным mount уничтожает прежний экземпляр, поэтому обработчики не удваиваются; движок не использует page selectors или глобальные переменные страницы;
+- `src/types/color-reveal.ts` отделяет DOM/options, callbacks, progress и phase-контракты от реализации;
+- отображаемый процент равен фактическому coverage: auto-reveal начинается при первом значении не ниже `82%`, после чего прогресс растёт до `100%` синхронно с полным удалением серого слоя;
+- на `/ui-preview/#preview-reveal-title` добавлен технический стенд: pointer-жест меняет прогресс, повторный mount, reset, destroy и mount после destroy проверяются до продуктового подключения FRT-032;
+- проверить: выполнить `npm.cmd run verify`, открыть `/ui-preview/#preview-reveal-title`, провести по canvas, нажать «Смонтировать повторно», «Сбросить», «Демонтировать» и снова «Смонтировать повторно»; прогресс должен возвращаться к `0%`, а фазы — `idle → destroyed → idle`.
 
 ### [ ] FRT-032. Реализовать страницу интерактива раскрытия
 

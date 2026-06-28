@@ -9,6 +9,7 @@ import MessageState from "../components/common/MessageState.astro";
 import MetaBadge from "../components/common/MetaBadge.astro";
 import ProgressIndicator from "../components/common/ProgressIndicator.astro";
 import SectionHeader from "../components/common/SectionHeader.astro";
+import ColorRevealEnginePreview from "../components/experience/ColorRevealEnginePreview.astro";
 import NarrativeSequence from "../components/narrative/NarrativeSequence.astro";
 import { getNarrativeSequence } from "../data/repository";
 import BaseLayout from "../layouts/BaseLayout.astro";
@@ -152,6 +153,17 @@ const lightBridgeSequence = getNarrativeSequence("lightBridge");
       </section>
     )
   }
+
+  <section class="preview-section" aria-labelledby="preview-reveal-title">
+    <SectionHeader
+      id="preview-reveal-title"
+      level="h2"
+      eyebrow="FRT-031"
+      title="Изолированный canvas-движок"
+      description="Проведите по изображению, затем повторно смонтируйте, сбросьте или демонтируйте экземпляр. Стенд не является продуктовой страницей интерактива."
+    />
+    <ColorRevealEnginePreview />
+  </section>
 </BaseLayout>
 
 <style>

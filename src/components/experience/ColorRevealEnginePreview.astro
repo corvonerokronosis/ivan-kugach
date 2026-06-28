@@ -1,0 +1,114 @@
+---
+import artwork from "../../Kugach_picture_1.png";
+---
+
+<section class="reveal-preview" data-color-reveal-preview>
+  <div class="reveal-preview__stage" data-reveal-container>
+    <canvas data-reveal-base aria-hidden="true"></canvas>
+    <img
+      data-reveal-source
+      src={artwork.src}
+      alt=""
+      hidden
+      crossorigin="anonymous"
+    />
+    <canvas data-reveal-layer aria-label="Техническая проверка раскрытия цвета"
+    ></canvas>
+    <span class="reveal-preview__brush" data-reveal-brush aria-hidden="true"
+    ></span>
+  </div>
+
+  <div class="reveal-preview__status" aria-live="polite">
+    <span>Фаза: <strong data-reveal-phase>idle</strong></span>
+    <span>Прогресс: <strong data-reveal-progress>0%</strong></span>
+  </div>
+
+  <div class="reveal-preview__actions">
+    <button type="button" data-reveal-remount>Смонтировать повторно</button>
+    <button type="button" data-reveal-reset>Сбросить</button>
+    <button type="button" data-reveal-destroy>Демонтировать</button>
+  </div>
+</section>
+
+<script>
+  import "../../scripts/color-reveal-preview";
+</script>
+
+<style>
+  .reveal-preview {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .reveal-preview__stage {
+    position: relative;
+    width: min(100%, 42rem);
+    aspect-ratio: 579 / 480;
+    overflow: hidden;
+    border: 0.5rem solid var(--color-wood-strong);
+    border-radius: var(--radius-lg);
+    background: var(--color-linen);
+    box-shadow: var(--shadow-surface);
+    touch-action: none;
+    user-select: none;
+  }
+
+  .reveal-preview__stage canvas {
+    position: absolute;
+    display: block;
+  }
+
+  .reveal-preview__stage [data-reveal-base] {
+    z-index: 1;
+  }
+
+  .reveal-preview__stage [data-reveal-layer] {
+    z-index: 2;
+    cursor: none;
+  }
+
+  .reveal-preview__brush {
+    position: absolute;
+    z-index: 3;
+    width: 5.25rem;
+    height: 5.25rem;
+    margin: -2.625rem 0 0 -2.625rem;
+    border-radius: var(--radius-round);
+    opacity: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      circle,
+      rgb(255 255 255 / 16%) 0 26%,
+      rgb(139 75 45 / 20%) 27% 52%,
+      rgb(47 36 25 / 55%) 53% 56%,
+      transparent 57%
+    );
+    mix-blend-mode: multiply;
+    transition: opacity var(--motion-duration-fast)
+      var(--motion-easing-standard);
+  }
+
+  .reveal-preview__status,
+  .reveal-preview__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .reveal-preview__status {
+    color: var(--color-text-muted);
+    font-family: var(--font-family-ui);
+  }
+
+  .reveal-preview__actions button {
+    min-height: 2.5rem;
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    color: var(--color-text);
+    background: var(--color-surface-strong);
+    font-family: var(--font-family-ui);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+  }
+</style>
