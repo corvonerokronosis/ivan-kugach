@@ -9,7 +9,12 @@ import MessageState from "../components/common/MessageState.astro";
 import MetaBadge from "../components/common/MetaBadge.astro";
 import ProgressIndicator from "../components/common/ProgressIndicator.astro";
 import SectionHeader from "../components/common/SectionHeader.astro";
+import NarrativeSequence from "../components/narrative/NarrativeSequence.astro";
+import { getNarrativeSequence } from "../data/repository";
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+const introSequence = getNarrativeSequence("intro");
+const lightBridgeSequence = getNarrativeSequence("lightBridge");
 ---
 
 <BaseLayout
@@ -122,6 +127,31 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       </div>
     </DialogShell>
   </section>
+
+  {
+    introSequence && lightBridgeSequence && (
+      <section
+        class="preview-section"
+        aria-labelledby="preview-narrative-title"
+      >
+        <SectionHeader
+          id="preview-narrative-title"
+          level="h2"
+          eyebrow="FRT-028"
+          title="Универсальная narrative-последовательность"
+          description="Один компонент получает контент извне и работает с блоками разной длины. Первый пример содержит три окна, второй — два."
+        />
+        <NarrativeSequence
+          id="preview-narrative-intro"
+          sequence={introSequence}
+        />
+        <NarrativeSequence
+          id="preview-narrative-short"
+          sequence={lightBridgeSequence}
+        />
+      </section>
+    )
+  }
 </BaseLayout>
 
 <style>
