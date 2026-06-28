@@ -47,11 +47,15 @@
 | `src/pages/ui-preview.astro`                               | Техническая проверка common UI, narrative и canvas engine        | Ручная проверка переиспользуемых модулей до продуктового подключения        |
 | `src/components/experience/ColorRevealExperience.astro`    | Продуктовый UI интерактива возвращения цвета                     | Stage, HUD, progress, reset, подсказка и dialog завершения                  |
 | `src/components/experience/ColorRevealEnginePreview.astro` | Технический canvas-стенд FRT-031                                 | Ручная проверка paint, progress, remount, reset и destroy                   |
+| `src/components/experience/ZoomPanEnginePreview.astro`     | Технический стенд zoom/pan-движка FRT-034                        | Ручная проверка buttons, wheel, drag, reset, remount и destroy              |
 | `src/components/narrative/NarrativeSequence.astro`         | Универсальный UI narrative-последовательности                    | Изменение разметки слайда, счётчика и кнопок без встраивания story-контента |
 | `src/scripts/color-reveal-engine.ts`                       | Изолированный Canvas/Pointer-движок возвращения цвета            | Кисть, coverage, resize, auto-reveal, callbacks и lifecycle                 |
 | `src/scripts/color-reveal-page.ts`                         | Инициализация продуктовой страницы возвращения цвета             | Подключение движка, progress, reset, dialog и pagehide cleanup              |
 | `src/scripts/color-reveal-preview.ts`                      | Инициализация технического стенда canvas engine                  | Только `/ui-preview/`; не продуктовая страница интерактива                  |
 | `src/utils/color-reveal-progress.ts`                       | Чистая математика coverage grid для интерактива раскрытия        | Progress, reset, completion threshold и граничные координаты кисти          |
+| `src/scripts/zoom-pan-engine.ts`                           | Изолированный DOM-движок zoom/pan для исследования деталей       | Buttons, wheel, pointer drag, fit/reset, bounds и lifecycle                 |
+| `src/scripts/zoom-pan-preview.ts`                          | Инициализация технического стенда zoom/pan engine                | Только `/ui-preview/`; не продуктовая страница интерактива                  |
+| `src/utils/zoom-pan.ts`                                    | Чистая математика zoom/pan                                       | Fit, bounds, clamp, zoom-at-focus, pan и center-on                          |
 | `src/scripts/narrative-sequence.ts`                        | Изолированное DOM-управление narrative-компонентом               | Переключение слайдов, клавиатура и события завершения/пропуска              |
 | `src/scripts/narrative-route.ts`                           | Связь narrative-событий с completionPath через location.replace  | Изменение финального перехода и browser history                             |
 | `src/data/narrative-routes.ts`                             | Валидируемый контракт URL и browser history narrative-маршрута   | Изменение порядка переходов, completionPath или канонических story URL      |
@@ -63,6 +67,7 @@
 | `src/data/hotspots.ts`                                     | Локальный типизированный источник hotspot-точек                  | Изменение точек деталей, координат, масштаба и поясняющих текстов           |
 | `src/types/artwork.ts`                                     | Канонический TypeScript-контракт произведения                    | Перед переносом данных работ, карточек, страниц работ и серий               |
 | `src/types/color-reveal.ts`                                | Контракты options, lifecycle, phase и progress canvas engine     | Подключение движка к UI без page-global состояния                           |
+| `src/types/zoom-pan.ts`                                    | Контракты состояния, bounds и options zoom/pan engine            | Подключение исследовательского интерактива без глобального состояния        |
 | `src/types/inquiry.ts`                                     | Контракты payload, ошибок, состояний и адаптера формы            | Изменение frontend-формы и будущего интерфейса отправки                     |
 | `src/types/series.ts`                                      | Канонический TypeScript-контракт серии                           | Перед переносом страниц серий, связей работ и будущего CMS-адаптера         |
 | `src/types/narrative.ts`                                   | TypeScript-контракт narrative-последовательностей                | Перед переносом narrative UI и маршрутов между этапами                      |
@@ -98,10 +103,10 @@ ESLint проверяет новый Astro/TypeScript-код, unit-тесты и
 | `src/data/`                 | Типизированные локальные данные и frontend-репозиторий         | `repository.ts` читает local-источники, включая narrative-контент и route-contract            |
 | `src/layouts/`              | Общие Astro-layouts                                            | `BaseLayout.astro`: metadata, skip-link и page slots                                          |
 | `src/pages/`                | Файловые маршруты Astro                                        | Главная, художник, experience/story, каталог, архив, generated-страницы, 404 и `/ui-preview/` |
-| `src/scripts/`              | Изолированные клиентские DOM/Canvas-модули                     | Форма, narrative и lifecycle canvas-движка                                                    |
+| `src/scripts/`              | Изолированные клиентские DOM/Canvas-модули                     | Форма, narrative, lifecycle canvas-движка и zoom/pan engine                                   |
 | `src/styles/`               | Токены и общие CSS-слои                                        | `global.css`, `tokens.css` и опциональный `studio.css`                                        |
-| `src/types/`                | Общие TypeScript-контракты                                     | Модели данных, narrative, hotspot-точек и canvas engine                                       |
-| `src/utils/`                | Чистые helpers и адаптеры                                      | Валидация заявки, coverage grid и заменяемый frontend-only `inquiry-adapter.ts`               |
+| `src/types/`                | Общие TypeScript-контракты                                     | Модели данных, narrative, hotspot-точек, canvas engine и zoom/pan                             |
+| `src/utils/`                | Чистые helpers и адаптеры                                      | Валидация заявки, coverage grid, zoom/pan math и frontend-only `inquiry-adapter.ts`           |
 | `tests/`                    | Unit-тесты чистой frontend-логики                              | Сейчас покрывает progress/reset/threshold интерактива раскрытия цвета                         |
 | `public/`                   | Статические файлы без обработки Astro                          | Пустой каркас                                                                                 |
 | `src/for_sales/`            | Legacy-изображения каталога работ                              | Временно сохраняет пути монолита                                                              |

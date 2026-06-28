@@ -1208,7 +1208,7 @@ npm.cmd run verify
 
 ## EPIC F9. Интерактив «Приблизить детали»
 
-### [ ] FRT-034. Изолировать zoom/pan-движок
+### [x] FRT-034. Изолировать zoom/pan-движок
 
 Приоритет: Must  
 Версия: Frontend v0.3  
@@ -1226,6 +1226,14 @@ npm.cmd run verify
 - модуль не зависит от ID элементов других экранов;
 - позиция всегда ограничена viewport;
 - reset возвращает изображение в fit-состояние.
+
+Выполнено:
+
+- добавлены `src/types/zoom-pan.ts` и `src/utils/zoom-pan.ts`: scale, position, bounds, fit, zoom-at-focus, pan и center-on считаются без DOM;
+- добавлен `src/scripts/zoom-pan-engine.ts`: DOM-движок принимает явные элементы viewport/content/buttons/image, подключает zoom buttons, wheel и pointer drag, возвращает `fit`, `reset`, `setScale`, `panBy`, `centerOn`, `getState`, `destroy`;
+- повторный mount уничтожает прежний экземпляр через `WeakMap`, а `destroy` снимает обработчики, `ResizeObserver` и pointer capture;
+- добавлен технический стенд `src/components/experience/ZoomPanEnginePreview.astro` на `/ui-preview/` для проверки кнопок, wheel, drag, reset, remount и destroy до продуктового подключения FRT-036;
+- проверить: выполнить `npm.cmd run verify`, открыть `/ui-preview/#preview-zoom-title`, приблизить/отдалить кнопками и колесом, перетащить изображение, нажать `Сбросить`, `Смонтировать повторно` и `Демонтировать`; после reset изображение должно возвращаться в fit-состояние, а позиция не должна выходить за viewport.
 
 ### [ ] FRT-035. Реализовать hotspots как данные
 

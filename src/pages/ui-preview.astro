@@ -10,6 +10,7 @@ import MetaBadge from "../components/common/MetaBadge.astro";
 import ProgressIndicator from "../components/common/ProgressIndicator.astro";
 import SectionHeader from "../components/common/SectionHeader.astro";
 import ColorRevealEnginePreview from "../components/experience/ColorRevealEnginePreview.astro";
+import ZoomPanEnginePreview from "../components/experience/ZoomPanEnginePreview.astro";
 import NarrativeSequence from "../components/narrative/NarrativeSequence.astro";
 import { getNarrativeSequence } from "../data/repository";
 import BaseLayout from "../layouts/BaseLayout.astro";
@@ -163,6 +164,17 @@ const lightBridgeSequence = getNarrativeSequence("lightBridge");
       description="Проведите по изображению, затем повторно смонтируйте, сбросьте или демонтируйте экземпляр. Стенд не является продуктовой страницей интерактива."
     />
     <ColorRevealEnginePreview />
+  </section>
+
+  <section class="preview-section" aria-labelledby="preview-zoom-title">
+    <SectionHeader
+      id="preview-zoom-title"
+      level="h2"
+      eyebrow="FRT-034"
+      title="Изолированный zoom/pan-движок"
+      description="Проверьте кнопки масштаба, колесо, drag, reset, повторный mount и destroy. Стенд не является продуктовой страницей интерактива."
+    />
+    <ZoomPanEnginePreview />
   </section>
 </BaseLayout>
 
