@@ -21,7 +21,7 @@
 | Роутинг     | Legacy без URL; Astro имеет 13 route patterns и 20 static pages | Полная файловая карта Astro                                |
 | Данные      | Константы внутри `<script>`                                     | Типизированные локальные данные с заменяемым CMS-адаптером |
 | Сборка      | Astro dev, build и production preview                           | Astro production build                                     |
-| Тесты       | Нет                                                             | Unit, content checks и browser smoke tests                 |
+| Тесты       | `test:unit` для чистой математики раскрытия цвета               | Полный unit-контур, content checks и browser smoke tests   |
 | Backend/API | Нет                                                             | Вне текущего frontend-этапа                                |
 
 ## 3. Входные точки
@@ -51,6 +51,7 @@
 | `src/scripts/color-reveal-engine.ts`                       | Изолированный Canvas/Pointer-движок возвращения цвета            | Кисть, coverage, resize, auto-reveal, callbacks и lifecycle                 |
 | `src/scripts/color-reveal-page.ts`                         | Инициализация продуктовой страницы возвращения цвета             | Подключение движка, progress, reset, dialog и pagehide cleanup              |
 | `src/scripts/color-reveal-preview.ts`                      | Инициализация технического стенда canvas engine                  | Только `/ui-preview/`; не продуктовая страница интерактива                  |
+| `src/utils/color-reveal-progress.ts`                       | Чистая математика coverage grid для интерактива раскрытия        | Progress, reset, completion threshold и граничные координаты кисти          |
 | `src/scripts/narrative-sequence.ts`                        | Изолированное DOM-управление narrative-компонентом               | Переключение слайдов, клавиатура и события завершения/пропуска              |
 | `src/scripts/narrative-route.ts`                           | Связь narrative-событий с completionPath через location.replace  | Изменение финального перехода и browser history                             |
 | `src/data/narrative-routes.ts`                             | Валидируемый контракт URL и browser history narrative-маршрута   | Изменение порядка переходов, completionPath или канонических story URL      |
@@ -80,9 +81,9 @@
 
 Запуск Astro-каркаса: `npm.cmd install`, затем `npm.cmd run dev`.
 
-Проверки и production-сборка: `npm.cmd run verify`. Отдельно доступны `check`, `lint`, `format`, `format:check`, `build` и `preview`.
+Проверки и production-сборка: `npm.cmd run verify`. Отдельно доступны `check`, `lint`, `test:unit`, `format`, `format:check`, `build` и `preview`.
 
-ESLint проверяет новый Astro/TypeScript-код и корневые конфиги. Prettier форматирует Astro, TypeScript, CSS, JSON и активную Markdown-документацию. Legacy HTML, архивы, эксперименты и generated output исключены.
+ESLint проверяет новый Astro/TypeScript-код, unit-тесты и корневые конфиги. Prettier форматирует Astro, TypeScript, тесты, CSS, JSON и активную Markdown-документацию. Legacy HTML, архивы, эксперименты и generated output исключены.
 
 Запуск полнофункционального legacy-эталона: открыть `index_masterskaya.html` в браузере.
 
@@ -100,7 +101,8 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 | `src/scripts/`              | Изолированные клиентские DOM/Canvas-модули                     | Форма, narrative и lifecycle canvas-движка                                                    |
 | `src/styles/`               | Токены и общие CSS-слои                                        | `global.css`, `tokens.css` и опциональный `studio.css`                                        |
 | `src/types/`                | Общие TypeScript-контракты                                     | Модели данных, narrative, hotspot-точек и canvas engine                                       |
-| `src/utils/`                | Чистые helpers и адаптеры                                      | Валидация заявки и заменяемый frontend-only `inquiry-adapter.ts`                              |
+| `src/utils/`                | Чистые helpers и адаптеры                                      | Валидация заявки, coverage grid и заменяемый frontend-only `inquiry-adapter.ts`               |
+| `tests/`                    | Unit-тесты чистой frontend-логики                              | Сейчас покрывает progress/reset/threshold интерактива раскрытия цвета                         |
 | `public/`                   | Статические файлы без обработки Astro                          | Пустой каркас                                                                                 |
 | `src/for_sales/`            | Legacy-изображения каталога работ                              | Временно сохраняет пути монолита                                                              |
 | `src/picture_light_shadow/` | Legacy-изображения интерактива света                           | Временно сохраняет пути монолита                                                              |

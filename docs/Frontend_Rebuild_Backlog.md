@@ -1178,7 +1178,7 @@ npm.cmd run verify
 - нажать `Раскрасить ещё раз`, убедиться, что dialog закрыт, progress возвращается к `0%`, а серый слой восстановлен;
 - проверить узкий viewport: stage и HUD не должны перекрываться, canvas должен пересчитаться под ширину экрана.
 
-### [ ] FRT-033. Добавить тестируемые функции расчёта прогресса
+### [x] FRT-033. Добавить тестируемые функции расчёта прогресса
 
 Приоритет: Should  
 Версия: Frontend v0.3  
@@ -1195,6 +1195,14 @@ npm.cmd run verify
 
 - ключевые расчёты покрыты unit-тестами;
 - изменение визуальной части не ломает прогресс незаметно.
+
+Выполнено:
+
+- добавлен `src/utils/color-reveal-progress.ts`: DOM-independent функции создают coverage grid, ставят stamp кисти, считают raw/display progress, сбрасывают grid и проверяют completion threshold;
+- `src/scripts/color-reveal-engine.ts` больше не хранит локальную математику сетки: canvas-движок вызывает utility-функции и сохраняет прежний порог auto-reveal;
+- добавлены unit-тесты `tests/color-reveal-progress.test.mjs` на размер сетки, отсутствие двойного счёта, reset, threshold и граничные координаты кисти;
+- добавлена команда `npm.cmd run test:unit`, а `npm.cmd run verify` теперь запускает unit-тесты перед `format:check` и `build`;
+- проверить: выполнить `npm.cmd run test:unit` или полный `npm.cmd run verify`; для ручной проверки открыть `/experience/color-return/`, провести по картине до auto-reveal, нажать `Раскрасить ещё раз` и убедиться, что progress возвращается к `0%`.
 
 ---
 

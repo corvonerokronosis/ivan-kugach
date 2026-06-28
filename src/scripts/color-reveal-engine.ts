@@ -5,6 +5,15 @@ import type {
   ColorRevealProgress,
   ColorRevealSourceBounds,
 } from "../types/color-reveal";
+import {
+  createCoverageGrid,
+  getCoverageProgress,
+  isCoverageComplete,
+  resetCoverageGrid,
+  revealAllCoverageGrid,
+  stampCoverageGrid,
+  type CoverageGrid,
+} from "../utils/color-reveal-progress";
 
 const DEFAULT_SOURCE_BOUNDS: ColorRevealSourceBounds = {
   x: 0,
@@ -52,11 +61,11 @@ export function mountColorRevealEngine(
   let isPainting = false;
   let isPointerInside = false;
   let activePointerId: number | null = null;
-  let coverageColumns = 0;
-  let coverageRows = 0;
-  let revealedCells = 0;
-  let totalCells = 0;
-  let coverageMap: Uint8Array = new Uint8Array();
+  let coverageGrid: CoverageGrid = createCoverageGrid({
+    width: 1,
+    height: 1,
+    cellSize: coverageCellSize,
+  });
   let rawProgress = 0;
   let lastPaintPoint: { x: number; y: number } | null = null;
   let autoRevealFrame: number | null = null;
@@ -86,18 +95,12 @@ export function mountColorRevealEngine(
   }
 
   function initializeCoverageMap(): void {
-    coverageColumns = Math.max(
-      1,
-      Math.ceil(options.revealCanvas.width / coverageCellSize),
-    );
-    coverageRows = Math.max(
-      1,
-      Math.ceil(options.revealCanvas.height / coverageCellSize),
-    );
-    totalCells = coverageColumns * coverageRows;
-    revealedCells = 0;
-    coverageMap = new Uint8Array(totalCells);
-    rawProgress = 0;
+    coverageGrid = createCoverageGrid({
+      width: options.revealCanvas.width,
+      height: options.revealCanvas.height,
+      cellSize: coverageCellSize,
+    });
+    rawProgress = resetCoverageGrid(coverageGrid).rawPercent;
   }
 
   function drawBasePainting(): void {
@@ -272,33 +275,7 @@ export function mountColorRevealEngine(
   }
 
   function stampCoverage(x: number, y: number, radius: number): void {
-    const minColumn = Math.max(0, Math.floor((x - radius) / coverageCellSize));
-    const maxColumn = Math.min(
-      coverageColumns - 1,
-      Math.floor((x + radius) / coverageCellSize),
-    );
-    const minRow = Math.max(0, Math.floor((y - radius) / coverageCellSize));
-    const maxRow = Math.min(
-      coverageRows - 1,
-      Math.floor((y + radius) / coverageCellSize),
-    );
-
-    for (let row = minRow; row <= maxRow; row += 1) {
-      for (let column = minColumn; column <= maxColumn; column += 1) {
-        const centerX = column * coverageCellSize + coverageCellSize / 2;
-        const centerY = row * coverageCellSize + coverageCellSize / 2;
-
-        if (Math.hypot(centerX - x, centerY - y) > radius) {
-          continue;
-        }
-
-        const index = row * coverageColumns + column;
-        if (coverageMap[index] === 0) {
-          coverageMap[index] = 1;
-          revealedCells += 1;
-        }
-      }
-    }
+    rawProgress = stampCoverageGrid(coverageGrid, { x, y, radius }).rawPercent;
   }
 
   function splashReveal(x: number, y: number): void {
@@ -321,10 +298,10 @@ export function mountColorRevealEngine(
   }
 
   function updateProgress(): void {
-    rawProgress = totalCells > 0 ? (revealedCells / totalCells) * 100 : 0;
+    rawProgress = getCoverageProgress(coverageGrid).rawPercent;
     emitProgress();
 
-    if (rawProgress >= completionTarget) {
+    if (isCoverageComplete(rawProgress, completionTarget)) {
       startAutoReveal();
     }
   }
@@ -438,8 +415,7 @@ export function mountColorRevealEngine(
     isPainting = false;
     activePointerId = null;
     const autoRevealStartProgress = rawProgress;
-    revealedCells = totalCells;
-    coverageMap.fill(1);
+    rawProgress = revealAllCoverageGrid(coverageGrid).rawPercent;
     setPhase("completing");
     setBrushOpacity(isPointerInside ? 0.9 : 0);
     emitProgress();
