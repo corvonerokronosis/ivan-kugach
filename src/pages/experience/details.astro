@@ -1,26 +1,110 @@
 ---
-import MessageState from "../../components/common/MessageState.astro";
-import SectionHeader from "../../components/common/SectionHeader.astro";
-import { getHotspots } from "../../data/repository";
+import Action from "../../components/common/Action.astro";
+import DetailsExplorer from "../../components/experience/DetailsExplorer.astro";
+import {
+  getHotspots,
+  getNarrativeRouteBySequenceId,
+} from "../../data/repository";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
 const hotspots = getHotspots();
+const lightBridgeRoute = getNarrativeRouteBySequenceId("lightBridge");
+
+if (!lightBridgeRoute) {
+  throw new Error('Narrative route "lightBridge" не найден');
+}
 ---
 
 <BaseLayout
   title="Приблизить детали — Иван Кугач"
-  description="Технический маршрут будущего интерактива исследования деталей."
+  description="Исследуйте детали картины Ивана Кугача: приближайте полотно, перемещайтесь по нему и открывайте точки с кураторскими комментариями."
+  studioDecoration
 >
-  <SectionHeader
-    level="h1"
-    eyebrow="Интерактив готовится"
-    title="Приблизить детали"
-    description="Полный zoom, pan и hotspot-сценарий будет перенесён в FRT-036."
-  />
-  <MessageState title="Маршрут уже доступен">
-    <p>Прямой вход и обновление URL работают независимо от главной страницы.</p>
-    <p>
-      Контент точек уже вынесен в локальные данные: {hotspots.length} точки.
-    </p>
-  </MessageState>
+  <section class="details-page" aria-labelledby="details-page-title">
+    <div class="details-page__topbar">
+      <div class="details-page__title">
+        <p class="details-page__eyebrow">Интерактив исследования</p>
+        <h1 id="details-page-title">Приблизить детали</h1>
+        <p>
+          Приближайте изображение, перемещайтесь по полотну и открывайте точки
+          взаимодействия. При выборе точки сцена автоматически фокусируется на
+          нужной детали.
+        </p>
+      </div>
+
+      <Action href="/experience/" variant="secondary">К маршруту</Action>
+    </div>
+
+    <DetailsExplorer
+      {hotspots}
+      lightBridgePath={lightBridgeRoute.pathname}
+      catalogPath="/works/"
+    />
+  </section>
+
+  <p slot="footer">
+    После открытия всех четырёх точек можно продолжить сюжет через переход в
+    мастерскую света или остаться у картины в свободном режиме.
+  </p>
 </BaseLayout>
+
+<style>
+  .details-page {
+    display: grid;
+    min-width: 0;
+    gap: var(--space-5);
+    overflow-x: clip;
+  }
+
+  .details-page__topbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: start;
+    justify-content: space-between;
+  }
+
+  .details-page__title {
+    display: grid;
+    max-width: 48rem;
+    gap: var(--space-2);
+  }
+
+  .details-page__eyebrow {
+    width: 100%;
+    margin: 0;
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid rgb(255 255 255 / 36%);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    background: linear-gradient(
+      90deg,
+      rgb(255 248 236 / 82%),
+      rgb(255 245 224 / 48%)
+    );
+    box-shadow: var(--shadow-surface);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  .details-page h1 {
+    margin: 0;
+    font-size: var(--font-size-heading-lg);
+  }
+
+  .details-page__title > p:last-child {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-400);
+  }
+
+  @media (max-width: 45rem) {
+    .details-page__topbar,
+    .details-page__topbar :global(.action) {
+      width: 100%;
+    }
+  }
+</style>
