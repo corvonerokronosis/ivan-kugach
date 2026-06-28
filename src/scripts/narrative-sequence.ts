@@ -42,6 +42,11 @@ function setupNarrativeSequence(root: HTMLElement): void {
     return;
   }
 
+  const counterElement = counter;
+  const previousControl = previousButton;
+  const nextControl = nextButton;
+  const skipControl = skipButton;
+
   const sequenceId = root.dataset.sequenceId ?? "";
   const completionAction = root.dataset.completionAction ?? "";
   const completionLabel = root.dataset.completionLabel ?? "Завершить блок";
@@ -77,9 +82,9 @@ function setupNarrativeSequence(root: HTMLElement): void {
       slide.hidden = index !== currentIndex;
     });
     root.dataset.currentIndex = String(currentIndex);
-    counter.textContent = `Окно ${currentIndex + 1} из ${slides.length}`;
-    previousButton.disabled = currentIndex === 0;
-    nextButton.textContent =
+    counterElement.textContent = `Окно ${currentIndex + 1} из ${slides.length}`;
+    previousControl.disabled = currentIndex === 0;
+    nextControl.textContent =
       currentIndex === slides.length - 1 ? completionLabel : "Далее";
 
     if (announceChange) {
@@ -104,9 +109,9 @@ function setupNarrativeSequence(root: HTMLElement): void {
     render();
   }
 
-  previousButton.addEventListener("click", () => move(-1));
-  nextButton.addEventListener("click", () => move(1));
-  skipButton.addEventListener("click", () => {
+  previousControl.addEventListener("click", () => move(-1));
+  nextControl.addEventListener("click", () => move(1));
+  skipControl.addEventListener("click", () => {
     dispatchNarrativeEvent("narrative:skip");
   });
   root.addEventListener("keydown", (event) => {

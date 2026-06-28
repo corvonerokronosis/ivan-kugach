@@ -21,6 +21,11 @@ import {
   getNarrativeSequences as getLocalNarrativeSequences,
 } from "./narrative";
 import {
+  getNarrativeRouteByPathname as getLocalNarrativeRouteByPathname,
+  getNarrativeRouteBySequenceId as getLocalNarrativeRouteBySequenceId,
+  getNarrativeRouteDefinitions as getLocalNarrativeRouteDefinitions,
+} from "./narrative-routes";
+import {
   getSeries as getLocalSeries,
   getSeriesById as getLocalSeriesById,
   getSeriesBySlug as getLocalSeriesBySlug,
@@ -30,6 +35,7 @@ import {
 import type { Artwork, ArtworkSummary } from "../types/artwork";
 import type { Hotspot } from "../types/hotspot";
 import type { NarrativeSequence } from "../types/narrative";
+import type { NarrativeRouteDefinition } from "../types/narrative-route";
 import type { Series, SeriesRef, SeriesSummary } from "../types/series";
 
 export type ArtworkAvailabilityLabels = typeof localArtworkAvailabilityLabels;
@@ -51,6 +57,13 @@ export interface FrontendDataRepository {
   getSeriesRefById(id: string): SeriesRef;
   getNarrativeSequences(): NarrativeSequence[];
   getNarrativeSequence(id: string): NarrativeSequence | undefined;
+  getNarrativeRouteDefinitions(): NarrativeRouteDefinition[];
+  getNarrativeRouteBySequenceId(
+    sequenceId: string,
+  ): NarrativeRouteDefinition | undefined;
+  getNarrativeRouteByPathname(
+    pathname: string,
+  ): NarrativeRouteDefinition | undefined;
   getHotspots(): Hotspot[];
   getHotspotById(id: string): Hotspot | undefined;
 }
@@ -72,6 +85,9 @@ const localDataRepository = {
   getSeriesRefById: getLocalSeriesRefById,
   getNarrativeSequences: getLocalNarrativeSequences,
   getNarrativeSequence: getLocalNarrativeSequence,
+  getNarrativeRouteDefinitions: getLocalNarrativeRouteDefinitions,
+  getNarrativeRouteBySequenceId: getLocalNarrativeRouteBySequenceId,
+  getNarrativeRouteByPathname: getLocalNarrativeRouteByPathname,
   getHotspots: getLocalHotspots,
   getHotspotById: getLocalHotspotById,
 } satisfies FrontendDataRepository;
@@ -143,6 +159,22 @@ export function getNarrativeSequence(
   id: string,
 ): NarrativeSequence | undefined {
   return getDataRepository().getNarrativeSequence(id);
+}
+
+export function getNarrativeRouteDefinitions(): NarrativeRouteDefinition[] {
+  return getDataRepository().getNarrativeRouteDefinitions();
+}
+
+export function getNarrativeRouteBySequenceId(
+  sequenceId: string,
+): NarrativeRouteDefinition | undefined {
+  return getDataRepository().getNarrativeRouteBySequenceId(sequenceId);
+}
+
+export function getNarrativeRouteByPathname(
+  pathname: string,
+): NarrativeRouteDefinition | undefined {
+  return getDataRepository().getNarrativeRouteByPathname(pathname);
 }
 
 export function getHotspots(): Hotspot[] {

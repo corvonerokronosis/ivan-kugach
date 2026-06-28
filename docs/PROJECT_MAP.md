@@ -45,6 +45,7 @@
 | `src/pages/ui-preview.astro`                       | Техническая проверка common UI и narrative разной длины          | Ручная проверка переиспользуемых компонентов до продуктового подключения    |
 | `src/components/narrative/NarrativeSequence.astro` | Универсальный UI narrative-последовательности                    | Изменение разметки слайда, счётчика и кнопок без встраивания story-контента |
 | `src/scripts/narrative-sequence.ts`                | Изолированное DOM-управление narrative-компонентом               | Переключение слайдов, клавиатура и события завершения/пропуска              |
+| `src/data/narrative-routes.ts`                     | Валидируемый контракт URL и browser history narrative-маршрута   | Изменение порядка переходов, completionPath или канонических story URL      |
 | `src/data/artist-page.ts`                          | Временный типизированный контент страницы художника              | Замена текстов, тем и связанных подборок без изменения layout               |
 | `src/data/repository.ts`                           | Frontend-репозиторий данных и фасад над local-источниками        | Основная точка чтения данных из UI; место будущего CMS/build-time адаптера  |
 | `src/data/artworks.ts`                             | Локальный типизированный источник пяти работ каталога            | Изменение данных работ, slug, статусов, цен и временных атрибутов           |
@@ -55,6 +56,7 @@
 | `src/types/inquiry.ts`                             | Контракты payload, ошибок, состояний и адаптера формы            | Изменение frontend-формы и будущего интерфейса отправки                     |
 | `src/types/series.ts`                              | Канонический TypeScript-контракт серии                           | Перед переносом страниц серий, связей работ и будущего CMS-адаптера         |
 | `src/types/narrative.ts`                           | TypeScript-контракт narrative-последовательностей                | Перед переносом narrative UI и маршрутов между этапами                      |
+| `src/types/narrative-route.ts`                     | TypeScript-контракт URL, входов и history actions narrative      | Изменение структуры route-definition                                        |
 | `src/types/hotspot.ts`                             | TypeScript-контракт hotspot-точек исследовательского интерактива | Перед переносом zoom/pan и карточек точек                                   |
 | `src/layouts/BaseLayout.astro`                     | Общий layout новой версии с навигацией и optional-декором        | Общая оболочка Astro-страниц                                                |
 | `src/README.md`                                    | Правила структуры, именования и границ модулей                   | Перед созданием новых Astro/TypeScript-файлов                               |
@@ -62,6 +64,7 @@
 | `docs/PROJECT_MAP.md`                              | Навигация по проекту                                             | Всегда первой в новой сессии                                                |
 | `docs/Frontend_Rebuild_Backlog.md`                 | План миграции в Astro, задачи `FRT-001`–`FRT-062`                | Работа над технической переработкой                                         |
 | `docs/LEGACY_MIGRATION_CHECKLIST.md`               | Карта экранов, переходов, состояний и форм legacy-прототипа      | Перед переносом или проверкой любого работающего сценария                   |
+| `docs/NARRATIVE_ROUTE_CONTRACT.md`                 | Решение по URL, direct entry, completion и browser Back          | Перед подключением narrative-страниц и completion-переходов                 |
 | `docs/VISUAL_BASELINE.md`                          | Индекс desktop/mobile PNG и допустимых отличий Astro-версии      | Перед визуальным переносом и regression-сравнением                          |
 | `docs/ENTRYPOINT_CUTOVER_PLAN.md`                  | Статусы точек входа, gates FRT-062 и порядок архивации legacy    | При вопросах о production entry, cutover или rollback                       |
 | `docs/Prototype_Functional_Description.md`         | Более подробное описание исторически реализованных сценариев     | Когда нужно понять ожидаемое поведение прототипа; сверять с кодом           |
@@ -76,27 +79,27 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 
 ## 4. Основные директории
 
-| Директория                  | Содержимое                                                     | Статус                                                                                             |
-| --------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `src/`                      | Astro-код и изображения актуального прототипа                  | Новая исходная директория; правила в `src/README.md`                                               |
-| `src/assets/`               | Импортируемые Astro web-ассеты                                 | Пустой каркас; legacy-ассеты будут перенесены позже                                                |
-| `src/components/`           | Повторно используемые Astro-компоненты                         | Навигация, common UI, works-, narrative-компоненты и `StudioDecoration.astro`                      |
-| `src/content/`              | Записи Astro Content Collections                               | Пустой каркас                                                                                      |
-| `src/data/`                 | Типизированные локальные данные и frontend-репозиторий         | `repository.ts` читает local-источники работ, серий, narrative, hotspot-точек и страницы художника |
-| `src/layouts/`              | Общие Astro-layouts                                            | `BaseLayout.astro`: metadata, skip-link и page slots                                               |
-| `src/pages/`                | Файловые маршруты Astro                                        | Главная, художник, landing, каталог, архив, generated-серии, 404, заглушки и `/ui-preview/`        |
-| `src/scripts/`              | Изолированные клиентские DOM/Canvas-модули                     | Модули формы интереса и переключения narrative-последовательности                                  |
-| `src/styles/`               | Токены и общие CSS-слои                                        | `global.css`, `tokens.css` и опциональный `studio.css`                                             |
-| `src/types/`                | Общие TypeScript-контракты                                     | Модели работ, серий, narrative-последовательностей и hotspot-точек                                 |
-| `src/utils/`                | Чистые helpers и адаптеры                                      | Валидация заявки и заменяемый frontend-only `inquiry-adapter.ts`                                   |
-| `public/`                   | Статические файлы без обработки Astro                          | Пустой каркас                                                                                      |
-| `src/for_sales/`            | Legacy-изображения каталога работ                              | Временно сохраняет пути монолита                                                                   |
-| `src/picture_light_shadow/` | Legacy-изображения интерактива света                           | Временно сохраняет пути монолита                                                                   |
-| `docs/`                     | Требования, описание прототипа, дизайн-планы и frontend-бэклог | Читать выборочно по задаче                                                                         |
-| `docs/visual-baseline/`     | Эталонные PNG актуального legacy-прототипа                     | Использовать для visual regression; не менять вручную                                              |
-| `experiments/`              | Самостоятельные HTML-эксперименты дизайна и механик            | Не production; только визуальные/исторические референсы                                            |
-| `archive/`                  | Старые версии HTML, changelog и bug notes                      | История; не источник текущего поведения                                                            |
-| `scrns/`                    | Старые скриншоты                                               | Визуальный референс, не код                                                                        |
+| Директория                  | Содержимое                                                     | Статус                                                                                      |
+| --------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `src/`                      | Astro-код и изображения актуального прототипа                  | Новая исходная директория; правила в `src/README.md`                                        |
+| `src/assets/`               | Импортируемые Astro web-ассеты                                 | Пустой каркас; legacy-ассеты будут перенесены позже                                         |
+| `src/components/`           | Повторно используемые Astro-компоненты                         | Навигация, common UI, works-, narrative-компоненты и `StudioDecoration.astro`               |
+| `src/content/`              | Записи Astro Content Collections                               | Пустой каркас                                                                               |
+| `src/data/`                 | Типизированные локальные данные и frontend-репозиторий         | `repository.ts` читает local-источники, включая narrative-контент и route-contract          |
+| `src/layouts/`              | Общие Astro-layouts                                            | `BaseLayout.astro`: metadata, skip-link и page slots                                        |
+| `src/pages/`                | Файловые маршруты Astro                                        | Главная, художник, landing, каталог, архив, generated-серии, 404, заглушки и `/ui-preview/` |
+| `src/scripts/`              | Изолированные клиентские DOM/Canvas-модули                     | Модули формы интереса и переключения narrative-последовательности                           |
+| `src/styles/`               | Токены и общие CSS-слои                                        | `global.css`, `tokens.css` и опциональный `studio.css`                                      |
+| `src/types/`                | Общие TypeScript-контракты                                     | Модели работ, серий, narrative-последовательностей и hotspot-точек                          |
+| `src/utils/`                | Чистые helpers и адаптеры                                      | Валидация заявки и заменяемый frontend-only `inquiry-adapter.ts`                            |
+| `public/`                   | Статические файлы без обработки Astro                          | Пустой каркас                                                                               |
+| `src/for_sales/`            | Legacy-изображения каталога работ                              | Временно сохраняет пути монолита                                                            |
+| `src/picture_light_shadow/` | Legacy-изображения интерактива света                           | Временно сохраняет пути монолита                                                            |
+| `docs/`                     | Требования, описание прототипа, дизайн-планы и frontend-бэклог | Читать выборочно по задаче                                                                  |
+| `docs/visual-baseline/`     | Эталонные PNG актуального legacy-прототипа                     | Использовать для visual regression; не менять вручную                                       |
+| `experiments/`              | Самостоятельные HTML-эксперименты дизайна и механик            | Не production; только визуальные/исторические референсы                                     |
+| `archive/`                  | Старые версии HTML, changelog и bug notes                      | История; не источник текущего поведения                                                     |
+| `scrns/`                    | Старые скриншоты                                               | Визуальный референс, не код                                                                 |
 
 ## 5. Ключевые экраны и фичи
 
