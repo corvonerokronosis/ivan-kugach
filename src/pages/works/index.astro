@@ -2,13 +2,16 @@
 import Action from "../../components/common/Action.astro";
 import SectionHeader from "../../components/common/SectionHeader.astro";
 import ArtworkCatalogCard from "../../components/works/ArtworkCatalogCard.astro";
+import InterestForm from "../../components/works/InterestForm.astro";
 import {
   artworkAvailabilityLabels,
+  getArtworkSummaries,
   getCatalogArtworks,
 } from "../../data/repository";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
 const artworks = getCatalogArtworks();
+const inquiryArtworks = getArtworkSummaries();
 
 function formatPrice(artwork: (typeof artworks)[number]): string {
   return artwork.priceType === "request"
@@ -52,6 +55,25 @@ function formatPrice(artwork: (typeof artworks)[number]): string {
     <Action href="/archive/">Открыть архив</Action>
     <Action href="/artist/" variant="secondary">О художнике</Action>
   </div>
+
+  <section
+    id="work-inquiry"
+    class="inquiry-section"
+    aria-labelledby="inquiry-title"
+  >
+    <div class="inquiry-section__header">
+      <h2 id="inquiry-title">Запросить покупку или уточнить цену</h2>
+      <p>
+        Выберите работу и оставьте удобный контакт. Техническая версия проверит
+        поля и подготовит заявку локально, не отправляя персональные данные.
+      </p>
+    </div>
+    <InterestForm
+      artworks={inquiryArtworks}
+      availabilityLabels={artworkAvailabilityLabels}
+      idPrefix="catalog-interest"
+    />
+  </section>
 </BaseLayout>
 
 <style>
@@ -84,5 +106,23 @@ function formatPrice(artwork: (typeof artworks)[number]): string {
 
   .works-actions {
     display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .inquiry-section,
+  .inquiry-section__header {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .inquiry-section__header h2,
+  .inquiry-section__header p {
+    margin-block-end: 0;
+  }
+
+  .inquiry-section__header p {
+    max-width: 48rem;
+    color: var(--color-text-muted);
   }
 </style>

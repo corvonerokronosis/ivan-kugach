@@ -15,6 +15,7 @@ interface Props {
   autocomplete?: string;
   hint?: string;
   error?: string;
+  dynamicError?: boolean;
   required?: boolean;
   rows?: number;
   options?: FieldOption[];
@@ -31,13 +32,14 @@ const {
   autocomplete,
   hint,
   error,
+  dynamicError = false,
   required = false,
   rows = 4,
   options = [],
 } = Astro.props;
 
 const hintId = hint ? `${id}-hint` : undefined;
-const errorId = error ? `${id}-error` : undefined;
+const errorId = error || dynamicError ? `${id}-error` : undefined;
 const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
 ---
 
@@ -101,8 +103,13 @@ const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
     )
   }
   {
-    error && (
-      <p id={errorId} class="form-field__error">
+    (error || dynamicError) && (
+      <p
+        id={errorId}
+        class="form-field__error"
+        data-field-error={name}
+        hidden={!error}
+      >
         {error}
       </p>
     )

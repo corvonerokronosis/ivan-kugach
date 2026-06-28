@@ -3,7 +3,12 @@ import Action from "../../components/common/Action.astro";
 import FramedArtwork from "../../components/common/FramedArtwork.astro";
 import MetaBadge from "../../components/common/MetaBadge.astro";
 import SectionHeader from "../../components/common/SectionHeader.astro";
-import { artworkAvailabilityLabels, getArtworks } from "../../data/repository";
+import InterestForm from "../../components/works/InterestForm.astro";
+import {
+  artworkAvailabilityLabels,
+  getArtworks,
+  getArtworkSummaries,
+} from "../../data/repository";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import type { Artwork } from "../../types/artwork";
 
@@ -23,6 +28,7 @@ export function getStaticPaths() {
 }
 
 const { artwork } = Astro.props;
+const inquiryArtworks = getArtworkSummaries();
 const primaryImage =
   artwork.images.find((image) => image.role === "primary") ?? artwork.images[0];
 const statusLabel = artworkAvailabilityLabels[artwork.availability];
@@ -164,20 +170,19 @@ const pageDescription = artwork.seo?.description ?? artwork.shortDescription;
     class="work-inquiry"
     aria-labelledby="work-inquiry-title"
   >
-    <div>
+    <div class="work-inquiry__header">
       <h2 id="work-inquiry-title">Заявка по работе</h2>
       <p>
-        Заявочный сценарий остаётся frontend-частью: можно выбрать интересующую
-        работу, уточнить наличие, цену, условия просмотра или похожие
-        произведения без онлайн-оплаты.
+        Работа уже выбрана автоматически. Можно уточнить наличие, цену, условия
+        просмотра или похожие произведения без онлайн-оплаты.
       </p>
     </div>
-    <Action
-      href="/works/"
-      variant={artwork.availability === "sold" ? "secondary" : "primary"}
-    >
-      Перейти к каталогу заявок
-    </Action>
+    <InterestForm
+      artworks={inquiryArtworks}
+      availabilityLabels={artworkAvailabilityLabels}
+      selectedWorkId={artwork.id}
+      idPrefix={`work-${artwork.id}-interest`}
+    />
   </section>
 
   <p slot="footer">
@@ -263,8 +268,7 @@ const pageDescription = artwork.seo?.description ?? artwork.shortDescription;
   }
 
   .work-description,
-  .work-series,
-  .work-inquiry {
+  .work-series {
     padding: clamp(var(--space-4), 3vw, var(--space-6));
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
@@ -292,9 +296,14 @@ const pageDescription = artwork.seo?.description ?? artwork.shortDescription;
     list-style: none;
   }
 
-  .work-series,
-  .work-inquiry {
+  .work-series {
     align-items: center;
+  }
+
+  .work-inquiry__header {
+    display: grid;
+    max-width: 48rem;
+    gap: var(--space-2);
   }
 
   @media (min-width: 56rem) {
@@ -302,8 +311,7 @@ const pageDescription = artwork.seo?.description ?? artwork.shortDescription;
       grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.72fr);
     }
 
-    .work-series,
-    .work-inquiry {
+    .work-series {
       grid-template-columns: minmax(0, 1fr) auto;
     }
   }

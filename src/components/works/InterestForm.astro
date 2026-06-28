@@ -1,0 +1,270 @@
+---
+import Action from "../common/Action.astro";
+import FormField from "../common/FormField.astro";
+import type { ArtworkSummary } from "../../types/artwork";
+import type { ArtworkAvailabilityLabels } from "../../data/repository";
+
+interface Props {
+  artworks: ArtworkSummary[];
+  availabilityLabels: ArtworkAvailabilityLabels;
+  selectedWorkId?: string;
+  idPrefix?: string;
+}
+
+const {
+  artworks,
+  availabilityLabels,
+  selectedWorkId = artworks[0]?.id,
+  idPrefix = "interest",
+} = Astro.props;
+const selectedWork = artworks.find((artwork) => artwork.id === selectedWorkId);
+const initialComment =
+  selectedWork?.availability === "sold"
+    ? "Интересуют похожие работы или произведения этой серии."
+    : undefined;
+
+function formatPrice(artwork: ArtworkSummary): string {
+  return artwork.priceType === "request"
+    ? "Цена по запросу"
+    : (artwork.price ?? "Цена уточняется");
+}
+---
+
+<form
+  class="interest-form"
+  data-interest-form
+  data-form-status="idle"
+  novalidate
+>
+  <div class="interest-form__grid">
+    <FormField
+      id={`${idPrefix}-name`}
+      name="name"
+      label="Имя"
+      autocomplete="name"
+      required
+      dynamicError
+    />
+    <FormField
+      id={`${idPrefix}-email`}
+      name="email"
+      label="Email"
+      type="email"
+      autocomplete="email"
+      hint="Нужен email или телефон — достаточно одного способа связи."
+      dynamicError
+    />
+    <FormField
+      id={`${idPrefix}-phone`}
+      name="phone"
+      label="Телефон"
+      type="tel"
+      autocomplete="tel"
+      dynamicError
+    />
+
+    <div class="interest-form__field">
+      <label for={`${idPrefix}-work`}>
+        Выбранная работа <span aria-hidden="true">*</span>
+      </label>
+      <select
+        id={`${idPrefix}-work`}
+        name="workId"
+        required
+        aria-required="true"
+        aria-describedby={`${idPrefix}-work-error`}
+      >
+        {
+          artworks.map((artwork) => (
+            <option
+              value={artwork.id}
+              selected={artwork.id === selectedWorkId}
+              data-work-title={artwork.title}
+              data-availability={artwork.availability}
+            >
+              {artwork.title} — {availabilityLabels[artwork.availability]},{" "}
+              {formatPrice(artwork)}
+            </option>
+          ))
+        }
+      </select>
+      <p
+        id={`${idPrefix}-work-error`}
+        class="interest-form__error"
+        data-field-error="workId"
+        hidden
+      >
+      </p>
+    </div>
+
+    <div class="interest-form__wide">
+      <FormField
+        id={`${idPrefix}-comment`}
+        name="comment"
+        label="Комментарий"
+        control="textarea"
+        value={initialComment}
+        placeholder="Например: хочу уточнить цену, наличие, условия передачи или похожие работы."
+      />
+    </div>
+  </div>
+
+  <p class="interest-form__note">
+    Форма работает только в браузере. Она проверяет поля и подготавливает
+    данные, но ничего не отправляет на сервер, не резервирует работу и не
+    запускает оплату.
+  </p>
+
+  <div class="interest-form__consent">
+    <label for={`${idPrefix}-consent`}>
+      <input
+        id={`${idPrefix}-consent`}
+        name="consent"
+        type="checkbox"
+        aria-describedby={`${idPrefix}-consent-error`}
+      />
+      <span>
+        Я согласен на обработку персональных данных для подготовки ответа по
+        выбранной работе.
+      </span>
+    </label>
+    <p
+      id={`${idPrefix}-consent-error`}
+      class="interest-form__error"
+      data-field-error="consent"
+      hidden
+    >
+    </p>
+  </div>
+
+  <div class="interest-form__actions">
+    <Action type="submit">Подготовить заявку</Action>
+    <Action type="reset" variant="secondary">Очистить форму</Action>
+  </div>
+
+  <p
+    class="interest-form__message"
+    data-form-message
+    data-message-tone="idle"
+    aria-live="polite"
+    hidden
+  >
+  </p>
+</form>
+
+<script>
+  import { initInterestForms } from "../../scripts/interest-form";
+
+  const cleanupInterestForms = initInterestForms();
+  window.addEventListener("pagehide", cleanupInterestForms, { once: true });
+</script>
+
+<style>
+  .interest-form {
+    display: grid;
+    gap: var(--space-5);
+    padding: clamp(var(--space-4), 4vw, var(--space-6));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-surface);
+  }
+
+  .interest-form__grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .interest-form__field,
+  .interest-form__consent {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .interest-form__field > label,
+  .interest-form__consent > label {
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .interest-form__field select {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    background: var(--color-surface-strong);
+  }
+
+  .interest-form__field select[aria-invalid="true"] {
+    border-color: var(--color-status-danger);
+  }
+
+  .interest-form__consent label {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+
+  .interest-form__consent input {
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-block-start: 0.15rem;
+    accent-color: var(--color-accent-strong);
+  }
+
+  .interest-form__note {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-200);
+  }
+
+  .interest-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .interest-form__error {
+    margin: 0;
+    color: var(--color-status-danger);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.4;
+  }
+
+  .interest-form__message {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-left-width: 0.3rem;
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    background: var(--color-surface-muted);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .interest-form__message[data-message-tone="error"] {
+    border-color: var(--color-status-danger);
+  }
+
+  .interest-form__message[data-message-tone="prepared"] {
+    border-color: var(--color-status-success);
+  }
+
+  @media (min-width: 48rem) {
+    .interest-form__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .interest-form__wide {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

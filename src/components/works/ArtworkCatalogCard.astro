@@ -19,7 +19,7 @@ const actionLabel = isSold
   : artwork.priceType === "request"
     ? "Уточнить цену"
     : "Запросить покупку";
-const actionUrl = isSold ? `${artworkUrl}#work-inquiry` : artworkUrl;
+const actionUrl = `/works/?work=${encodeURIComponent(artwork.id)}#work-inquiry`;
 ---
 
 <article

@@ -37,8 +37,8 @@
 | `src/pages/index.astro`                    | Новая главная: hero, четыре входа и информационные блоки         | Изменение Astro-главной и её CTA                                           |
 | `src/pages/artist.astro`                   | Страница художника: контекст, цитата и связанные подборки        | Изменение биографической композиции и её responsive-layout                 |
 | `src/pages/experience/index.astro`         | Landing маршрута: порядок трёх этапов и прямые входы             | Изменение последовательности, описаний и CTA интерактивного опыта          |
-| `src/pages/works/index.astro`              | Статический каталог доступных и зарезервированных работ          | Изменение композиции каталога, CTA карточек и разделения статусов          |
-| `src/pages/works/[slug].astro`             | Generated-страница отдельной работы из локальной записи          | Изменение detail-layout, параметров, CTA заявки, галереи и связи с серией  |
+| `src/pages/works/index.astro`              | Каталог доступных работ и frontend-форма интереса                | Изменение композиции каталога, CTA карточек, формы и разделения статусов   |
+| `src/pages/works/[slug].astro`             | Generated-страница работы с предвыбранной формой интереса        | Изменение detail-layout, параметров, CTA заявки, галереи и связи с серией  |
 | `src/pages/archive/index.astro`            | Отдельный архив проданных работ с CTA к похожим произведениям    | Изменение archive-layout, пустого состояния и CTA                          |
 | `src/pages/series/[slug].astro`            | Generated-витрина серии из локальных данных и связанных работ    | Изменение описания серии, cover/fallback, списка работ и пустого состояния |
 | `src/pages/404.astro`                      | Оформленная 404 и контекст неизвестных работ или серий           | Изменение fallback-навигации и текстов ненайденных маршрутов               |
@@ -49,6 +49,7 @@
 | `src/data/narrative.ts`                    | Локальный типизированный источник narrative-блоков               | Изменение story-слайдов, текстов, изображений и completionAction           |
 | `src/data/hotspots.ts`                     | Локальный типизированный источник hotspot-точек                  | Изменение точек деталей, координат, масштаба и поясняющих текстов          |
 | `src/types/artwork.ts`                     | Канонический TypeScript-контракт произведения                    | Перед переносом данных работ, карточек, страниц работ и серий              |
+| `src/types/inquiry.ts`                     | Контракты payload, ошибок, состояний и адаптера формы            | Изменение frontend-формы и будущего интерфейса отправки                    |
 | `src/types/series.ts`                      | Канонический TypeScript-контракт серии                           | Перед переносом страниц серий, связей работ и будущего CMS-адаптера        |
 | `src/types/narrative.ts`                   | TypeScript-контракт narrative-последовательностей                | Перед переносом narrative UI и маршрутов между этапами                     |
 | `src/types/hotspot.ts`                     | TypeScript-контракт hotspot-точек исследовательского интерактива | Перед переносом zoom/pan и карточек точек                                  |
@@ -81,10 +82,10 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 | `src/data/`                 | Типизированные локальные данные и frontend-репозиторий         | `repository.ts` читает local-источники работ, серий, narrative, hotspot-точек и страницы художника |
 | `src/layouts/`              | Общие Astro-layouts                                            | `BaseLayout.astro`: metadata, skip-link и page slots                                               |
 | `src/pages/`                | Файловые маршруты Astro                                        | Главная, художник, landing, каталог, архив, generated-серии, 404, заглушки и `/ui-preview/`        |
-| `src/scripts/`              | Изолированные клиентские DOM/Canvas-модули                     | Пустой каркас                                                                                      |
+| `src/scripts/`              | Изолированные клиентские DOM/Canvas-модули                     | `interest-form.ts`: автоподстановка, валидация и состояния frontend-формы                          |
 | `src/styles/`               | Токены и общие CSS-слои                                        | `global.css`, `tokens.css` и опциональный `studio.css`                                             |
 | `src/types/`                | Общие TypeScript-контракты                                     | Модели работ, серий, narrative-последовательностей и hotspot-точек                                 |
-| `src/utils/`                | Чистые helpers и адаптеры                                      | Пустой каркас                                                                                      |
+| `src/utils/`                | Чистые helpers и адаптеры                                      | Валидация заявки и заменяемый frontend-only `inquiry-adapter.ts`                                   |
 | `public/`                   | Статические файлы без обработки Astro                          | Пустой каркас                                                                                      |
 | `src/for_sales/`            | Legacy-изображения каталога работ                              | Временно сохраняет пути монолита                                                                   |
 | `src/picture_light_shadow/` | Legacy-изображения интерактива света                           | Временно сохраняет пути монолита                                                                   |
@@ -128,32 +129,32 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 
 ## 7. Стили и дизайн-система
 
-| Зона                  | Где искать                                      | Примечание                                                       |
-| --------------------- | ----------------------------------------------- | ---------------------------------------------------------------- |
-| Astro navigation      | `src/components/SiteNavigation.astro`           | Обычные ссылки, active state и mobile layout                     |
-| Astro home page       | `src/pages/index.astro`                         | Hero, четыре launch-card и три fact-блока                        |
-| Astro artist page     | `src/pages/artist.astro`                        | Редакционное досье; контент в `src/data/artist-page.ts`          |
-| Astro works page      | `src/pages/works/index.astro`                   | Основной каталог доступных и зарезервированных работ             |
-| Astro archive page    | `src/pages/archive/index.astro`                 | Отдельный архив проданных работ и CTA к похожим произведениям    |
-| Astro work detail     | `src/pages/works/[slug].astro`                  | Страница работы: изображение, параметры, описание, CTA и галерея |
-| Common Astro UI       | `src/components/common/`                        | Actions, headers, artwork, forms, dialog, state                  |
-| Works Astro UI        | `src/components/works/ArtworkCatalogCard.astro` | Семантическая карточка каталога со статусом, ценой и ссылками    |
-| UI component preview  | `src/pages/ui-preview.astro`                    | Техническая проверка; не продуктовый URL                         |
-| Studio decoration     | `src/components/StudioDecoration.astro`         | `aria-hidden` декор, подключаемый через layout                   |
-| Studio background     | `src/styles/studio.css`                         | Тяжёлые слои только для страниц с декором                        |
-| Astro design tokens   | `src/styles/tokens.css`                         | Палитра, семантические цвета, шкалы и motion                     |
-| Astro global styles   | `src/styles/global.css`                         | Reset, базовая типографика, skip-link и shell                    |
-| Глобальные токены     | `:root` в начале `index_masterskaya.html`       | Цвета, тени, поверхности и акценты                               |
-| Body и фон мастерской | Начало `<style>`                                | Многослойные gradients и fixed pseudo-elements                   |
-| Общие экраны          | `.screen`, `.screen.hidden`                     | Основа текущей псевдонавигации                                   |
-| Декор мастерской      | `.studio-props`                                 | `aria-hidden`; широкое влияние на композицию                     |
-| Общие панели          | `.hero-panel`, `.workspace`                     | Используются несколькими экранами                                |
-| Narrative             | `.narrative-*`                                  | Карточка, progress и переходы                                    |
-| Details explorer      | `.explore-*`, `.hotspot`                        | Viewport, transforms и hotspot animations                        |
-| Light workshop        | `.light-*`                                      | Stage, control panel, layers и selectors                         |
-| Каталог               | `.sales-*`, `.art-card`, `.price-label`         | Каталог, архив, detail и forms                                   |
-| Модалки               | `.modal`, `.modal-card`                         | Общая основа всех modal-сценариев                                |
-| Responsive            | `@media` около строк 639, 1279, 2331 и 2360     | Breakpoints `721px`, `960px`, `720px`                            |
+| Зона                  | Где искать                                  | Примечание                                                       |
+| --------------------- | ------------------------------------------- | ---------------------------------------------------------------- |
+| Astro navigation      | `src/components/SiteNavigation.astro`       | Обычные ссылки, active state и mobile layout                     |
+| Astro home page       | `src/pages/index.astro`                     | Hero, четыре launch-card и три fact-блока                        |
+| Astro artist page     | `src/pages/artist.astro`                    | Редакционное досье; контент в `src/data/artist-page.ts`          |
+| Astro works page      | `src/pages/works/index.astro`               | Каталог доступных работ и форма интереса                         |
+| Astro archive page    | `src/pages/archive/index.astro`             | Отдельный архив проданных работ и CTA к похожим произведениям    |
+| Astro work detail     | `src/pages/works/[slug].astro`              | Страница работы: изображение, параметры, описание, CTA и галерея |
+| Common Astro UI       | `src/components/common/`                    | Actions, headers, artwork, forms, dialog, state                  |
+| Works Astro UI        | `src/components/works/`                     | Карточка каталога и переиспользуемая frontend-форма интереса     |
+| UI component preview  | `src/pages/ui-preview.astro`                | Техническая проверка; не продуктовый URL                         |
+| Studio decoration     | `src/components/StudioDecoration.astro`     | `aria-hidden` декор, подключаемый через layout                   |
+| Studio background     | `src/styles/studio.css`                     | Тяжёлые слои только для страниц с декором                        |
+| Astro design tokens   | `src/styles/tokens.css`                     | Палитра, семантические цвета, шкалы и motion                     |
+| Astro global styles   | `src/styles/global.css`                     | Reset, базовая типографика, skip-link и shell                    |
+| Глобальные токены     | `:root` в начале `index_masterskaya.html`   | Цвета, тени, поверхности и акценты                               |
+| Body и фон мастерской | Начало `<style>`                            | Многослойные gradients и fixed pseudo-elements                   |
+| Общие экраны          | `.screen`, `.screen.hidden`                 | Основа текущей псевдонавигации                                   |
+| Декор мастерской      | `.studio-props`                             | `aria-hidden`; широкое влияние на композицию                     |
+| Общие панели          | `.hero-panel`, `.workspace`                 | Используются несколькими экранами                                |
+| Narrative             | `.narrative-*`                              | Карточка, progress и переходы                                    |
+| Details explorer      | `.explore-*`, `.hotspot`                    | Viewport, transforms и hotspot animations                        |
+| Light workshop        | `.light-*`                                  | Stage, control panel, layers и selectors                         |
+| Каталог               | `.sales-*`, `.art-card`, `.price-label`     | Каталог, архив, detail и forms                                   |
+| Модалки               | `.modal`, `.modal-card`                     | Общая основа всех modal-сценариев                                |
+| Responsive            | `@media` около строк 639, 1279, 2331 и 2360 | Breakpoints `721px`, `960px`, `720px`                            |
 
 При переработке дизайн-системы начинать с `FRT-009`–`FRT-013`, а не механически копировать весь `<style>`.
 
