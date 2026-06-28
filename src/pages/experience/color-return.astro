@@ -1,20 +1,101 @@
 ---
-import MessageState from "../../components/common/MessageState.astro";
-import SectionHeader from "../../components/common/SectionHeader.astro";
+import ColorRevealExperience from "../../components/experience/ColorRevealExperience.astro";
+import Action from "../../components/common/Action.astro";
+import { getNarrativeRouteBySequenceId } from "../../data/repository";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const bridgeRoute = getNarrativeRouteBySequenceId("bridge");
+
+if (!bridgeRoute) {
+  throw new Error('Narrative route "bridge" не найден');
+}
 ---
 
 <BaseLayout
   title="Возвращение цвета — Иван Кугач"
-  description="Технический маршрут будущего интерактива возвращения цвета."
+  description="Интерактивный этап маршрута по живописи Ивана Кугача: проведите по картине, чтобы вернуть цвет и открыть следующий сюжетный блок."
+  studioDecoration
 >
-  <SectionHeader
-    level="h1"
-    eyebrow="Интерактив готовится"
-    title="Возвращение цвета"
-    description="Полный canvas-интерактив будет перенесён в FRT-032."
-  />
-  <MessageState title="Маршрут уже доступен">
-    <p>Прямой вход и обновление URL работают независимо от главной страницы.</p>
-  </MessageState>
+  <section class="color-return" aria-labelledby="color-return-title">
+    <div class="color-return__topbar">
+      <div class="color-return__title">
+        <p class="color-return__eyebrow">Интерактивный маршрут · этап 01</p>
+        <h1 id="color-return-title">Возвращение цвета</h1>
+        <p>
+          Проведите по полотну, чтобы вернуть цвет и открыть историю картины.
+        </p>
+      </div>
+
+      <Action href="/experience/" variant="secondary">К маршруту</Action>
+    </div>
+
+    <ColorRevealExperience bridgePath={bridgeRoute.pathname} />
+  </section>
+
+  <p slot="footer">
+    После раскрытия картины можно продолжить сюжетный маршрут или повторить
+    интерактив с чистого серого слоя.
+  </p>
 </BaseLayout>
+
+<style>
+  .color-return {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .color-return__topbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: end;
+    justify-content: space-between;
+  }
+
+  .color-return__title {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .color-return__eyebrow {
+    width: fit-content;
+    margin: 0;
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid rgb(255 255 255 / 36%);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    background: linear-gradient(
+      90deg,
+      rgb(255 248 236 / 82%),
+      rgb(255 245 224 / 48%)
+    );
+    box-shadow: var(--shadow-surface);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  .color-return h1 {
+    margin: 0;
+    font-size: var(--font-size-heading-lg);
+  }
+
+  .color-return__title > p:last-child {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-400);
+  }
+
+  @media (max-width: 42rem) {
+    .color-return__topbar,
+    .color-return__topbar :global(.action) {
+      width: 100%;
+    }
+
+    .color-return__topbar {
+      align-items: stretch;
+    }
+  }
+</style>

@@ -37,6 +37,7 @@
 | `src/pages/index.astro`                                    | Новая главная: hero, четыре входа и информационные блоки         | Изменение Astro-главной и её CTA                                            |
 | `src/pages/artist.astro`                                   | Страница художника: контекст, цитата и связанные подборки        | Изменение биографической композиции и её responsive-layout                  |
 | `src/pages/experience/index.astro`                         | Landing маршрута: порядок трёх этапов и прямые входы             | Изменение последовательности, описаний и CTA интерактивного опыта           |
+| `src/pages/experience/color-return.astro`                  | Продуктовая страница интерактива возвращения цвета               | Canvas-stage, HUD, reset, completion dialog и переход к `bridge`            |
 | `src/pages/experience/story/[sequence].astro`              | Generated-страницы четырёх narrative-блоков                      | Изменение композиции story-страницы и связи с route-contract                |
 | `src/pages/works/index.astro`                              | Каталог доступных работ и frontend-форма интереса                | Изменение композиции каталога, CTA карточек, формы и разделения статусов    |
 | `src/pages/works/[slug].astro`                             | Generated-страница работы с предвыбранной формой интереса        | Изменение detail-layout, параметров, CTA заявки, галереи и связи с серией   |
@@ -44,9 +45,11 @@
 | `src/pages/series/[slug].astro`                            | Generated-витрина серии из локальных данных и связанных работ    | Изменение описания серии, cover/fallback, списка работ и пустого состояния  |
 | `src/pages/404.astro`                                      | Оформленная 404 и контекст неизвестных работ или серий           | Изменение fallback-навигации и текстов ненайденных маршрутов                |
 | `src/pages/ui-preview.astro`                               | Техническая проверка common UI, narrative и canvas engine        | Ручная проверка переиспользуемых модулей до продуктового подключения        |
+| `src/components/experience/ColorRevealExperience.astro`    | Продуктовый UI интерактива возвращения цвета                     | Stage, HUD, progress, reset, подсказка и dialog завершения                  |
 | `src/components/experience/ColorRevealEnginePreview.astro` | Технический canvas-стенд FRT-031                                 | Ручная проверка paint, progress, remount, reset и destroy                   |
 | `src/components/narrative/NarrativeSequence.astro`         | Универсальный UI narrative-последовательности                    | Изменение разметки слайда, счётчика и кнопок без встраивания story-контента |
 | `src/scripts/color-reveal-engine.ts`                       | Изолированный Canvas/Pointer-движок возвращения цвета            | Кисть, coverage, resize, auto-reveal, callbacks и lifecycle                 |
+| `src/scripts/color-reveal-page.ts`                         | Инициализация продуктовой страницы возвращения цвета             | Подключение движка, progress, reset, dialog и pagehide cleanup              |
 | `src/scripts/color-reveal-preview.ts`                      | Инициализация технического стенда canvas engine                  | Только `/ui-preview/`; не продуктовая страница интерактива                  |
 | `src/scripts/narrative-sequence.ts`                        | Изолированное DOM-управление narrative-компонентом               | Переключение слайдов, клавиатура и события завершения/пропуска              |
 | `src/scripts/narrative-route.ts`                           | Связь narrative-событий с completionPath через location.replace  | Изменение финального перехода и browser history                             |
@@ -150,8 +153,10 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 | Astro archive page    | `src/pages/archive/index.astro`                            | Отдельный архив проданных работ и CTA к похожим произведениям    |
 | Astro work detail     | `src/pages/works/[slug].astro`                             | Страница работы: изображение, параметры, описание, CTA и галерея |
 | Astro narrative       | `src/pages/experience/story/[sequence].astro`              | Четыре generated story-страницы из route-contract                |
+| Astro color reveal    | `src/pages/experience/color-return.astro`                  | Продуктовый canvas-интерактив FRT-032                            |
 | Common Astro UI       | `src/components/common/`                                   | Actions, headers, artwork, forms, dialog, state                  |
 | Narrative Astro UI    | `src/components/narrative/`                                | Слайды, метаданные, прогресс и действия                          |
+| Color reveal Astro UI | `src/components/experience/ColorRevealExperience.astro`    | Stage, HUD, progress, reset и completion dialog                  |
 | Canvas engine preview | `src/components/experience/ColorRevealEnginePreview.astro` | Технический lifecycle-стенд FRT-031                              |
 | Works Astro UI        | `src/components/works/`                                    | Карточка каталога и переиспользуемая frontend-форма интереса     |
 | UI component preview  | `src/pages/ui-preview.astro`                               | Техническая проверка; не продуктовый URL                         |

@@ -160,10 +160,14 @@ export function mountColorRevealEngine(
   ): void {
     canvas.width = width;
     canvas.height = height;
+    canvas.style.position = "absolute";
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
     canvas.style.left = `${offsetX}px`;
     canvas.style.top = `${offsetY}px`;
+    canvas.style.right = "auto";
+    canvas.style.bottom = "auto";
+    canvas.style.transform = "none";
   }
 
   function resize(): void {
