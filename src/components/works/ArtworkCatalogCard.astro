@@ -15,10 +15,11 @@ const primaryImage =
 const artworkUrl = `/works/${artwork.slug}/`;
 const isSold = artwork.availability === "sold";
 const actionLabel = isSold
-  ? "Смотреть в архиве"
+  ? "Узнать о похожих работах"
   : artwork.priceType === "request"
     ? "Уточнить цену"
     : "Запросить покупку";
+const actionUrl = isSold ? `${artworkUrl}#work-inquiry` : artworkUrl;
 ---
 
 <article
@@ -72,7 +73,7 @@ const actionLabel = isSold
     </dl>
 
     <div class="artwork-catalog-card__actions">
-      <Action href={artworkUrl} variant={isSold ? "secondary" : "primary"}>
+      <Action href={actionUrl} variant={isSold ? "secondary" : "primary"}>
         {actionLabel}
       </Action>
       {

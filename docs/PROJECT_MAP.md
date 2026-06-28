@@ -18,7 +18,7 @@
 | Разметка    | Legacy HTML и техническая Astro-страница | Astro pages/components                                     |
 | Стили       | Встроенный CSS                           | Раздельные CSS tokens/global/component styles              |
 | Логика      | Vanilla JavaScript, DOM API, Canvas API  | TypeScript и изолированные клиентские модули               |
-| Роутинг     | Legacy без URL; Astro имеет 8 маршрутов  | Полная файловая карта Astro                                |
+| Роутинг     | Legacy без URL; Astro имеет 9 маршрутов  | Полная файловая карта Astro                                |
 | Данные      | Константы внутри `<script>`              | Типизированные локальные данные с заменяемым CMS-адаптером |
 | Сборка      | Astro dev, build и production preview    | Astro production build                                     |
 | Тесты       | Нет                                      | Unit, content checks и browser smoke tests                 |
@@ -37,8 +37,9 @@
 | `src/pages/index.astro`                    | Новая главная: hero, четыре входа и информационные блоки         | Изменение Astro-главной и её CTA                                           |
 | `src/pages/artist.astro`                   | Страница художника: контекст, цитата и связанные подборки        | Изменение биографической композиции и её responsive-layout                 |
 | `src/pages/experience/index.astro`         | Landing маршрута: порядок трёх этапов и прямые входы             | Изменение последовательности, описаний и CTA интерактивного опыта          |
-| `src/pages/works/index.astro`              | Статический каталог работ: основной список и архив проданных     | Изменение композиции каталога, CTA карточек и разделения статусов          |
+| `src/pages/works/index.astro`              | Статический каталог доступных и зарезервированных работ          | Изменение композиции каталога, CTA карточек и разделения статусов          |
 | `src/pages/works/[slug].astro`             | Generated-страница отдельной работы из локальной записи          | Изменение detail-layout, параметров, CTA заявки, галереи и связи с серией  |
+| `src/pages/archive/index.astro`            | Отдельный архив проданных работ с CTA к похожим произведениям    | Изменение archive-layout, пустого состояния и CTA                          |
 | `src/pages/series/[slug].astro`            | Generated-витрина серии из локальных данных и связанных работ    | Изменение описания серии, cover/fallback, списка работ и пустого состояния |
 | `src/pages/404.astro`                      | Оформленная 404 и контекст неизвестных работ или серий           | Изменение fallback-навигации и текстов ненайденных маршрутов               |
 | `src/data/artist-page.ts`                  | Временный типизированный контент страницы художника              | Замена текстов, тем и связанных подборок без изменения layout              |
@@ -79,7 +80,7 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 | `src/content/`              | Записи Astro Content Collections                               | Пустой каркас                                                                                      |
 | `src/data/`                 | Типизированные локальные данные и frontend-репозиторий         | `repository.ts` читает local-источники работ, серий, narrative, hotspot-точек и страницы художника |
 | `src/layouts/`              | Общие Astro-layouts                                            | `BaseLayout.astro`: metadata, skip-link и page slots                                               |
-| `src/pages/`                | Файловые маршруты Astro                                        | Главная, художник, landing, каталог, generated-серии, 404, заглушки и `/ui-preview/`               |
+| `src/pages/`                | Файловые маршруты Astro                                        | Главная, художник, landing, каталог, архив, generated-серии, 404, заглушки и `/ui-preview/`        |
 | `src/scripts/`              | Изолированные клиентские DOM/Canvas-модули                     | Пустой каркас                                                                                      |
 | `src/styles/`               | Токены и общие CSS-слои                                        | `global.css`, `tokens.css` и опциональный `studio.css`                                             |
 | `src/types/`                | Общие TypeScript-контракты                                     | Модели работ, серий, narrative-последовательностей и hotspot-точек                                 |
@@ -132,7 +133,8 @@ ESLint проверяет новый Astro/TypeScript-код и корневые
 | Astro navigation      | `src/components/SiteNavigation.astro`           | Обычные ссылки, active state и mobile layout                     |
 | Astro home page       | `src/pages/index.astro`                         | Hero, четыре launch-card и три fact-блока                        |
 | Astro artist page     | `src/pages/artist.astro`                        | Редакционное досье; контент в `src/data/artist-page.ts`          |
-| Astro works page      | `src/pages/works/index.astro`                   | Основной каталог и архив; карточки в `src/components/works/`     |
+| Astro works page      | `src/pages/works/index.astro`                   | Основной каталог доступных и зарезервированных работ             |
+| Astro archive page    | `src/pages/archive/index.astro`                 | Отдельный архив проданных работ и CTA к похожим произведениям    |
 | Astro work detail     | `src/pages/works/[slug].astro`                  | Страница работы: изображение, параметры, описание, CTA и галерея |
 | Common Astro UI       | `src/components/common/`                        | Actions, headers, artwork, forms, dialog, state                  |
 | Works Astro UI        | `src/components/works/ArtworkCatalogCard.astro` | Семантическая карточка каталога со статусом, ценой и ссылками    |

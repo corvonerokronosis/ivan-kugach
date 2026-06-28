@@ -4,10 +4,12 @@ import {
 } from "./artist-page";
 import {
   artworkAvailabilityLabels as localArtworkAvailabilityLabels,
+  getArchivedArtworks as getLocalArchivedArtworks,
   getArtworkBySlug as getLocalArtworkBySlug,
   getArtworkSummaries as getLocalArtworkSummaries,
   getArtworks as getLocalArtworks,
   getArtworksBySeriesId as getLocalArtworksBySeriesId,
+  getCatalogArtworks as getLocalCatalogArtworks,
   getFeaturedArtworks as getLocalFeaturedArtworks,
 } from "./artworks";
 import {
@@ -37,6 +39,8 @@ export interface FrontendDataRepository {
   getArtistPageContent(): ArtistPageContent;
   getArtworks(): Artwork[];
   getArtworkSummaries(): ArtworkSummary[];
+  getCatalogArtworks(): ArtworkSummary[];
+  getArchivedArtworks(): ArtworkSummary[];
   getFeaturedArtworks(): ArtworkSummary[];
   getArtworkBySlug(slug: string): Artwork | undefined;
   getArtworksBySeriesId(seriesId: string): ArtworkSummary[];
@@ -56,6 +60,8 @@ const localDataRepository = {
   getArtistPageContent: getLocalArtistPageContent,
   getArtworks: getLocalArtworks,
   getArtworkSummaries: getLocalArtworkSummaries,
+  getCatalogArtworks: getLocalCatalogArtworks,
+  getArchivedArtworks: getLocalArchivedArtworks,
   getFeaturedArtworks: getLocalFeaturedArtworks,
   getArtworkBySlug: getLocalArtworkBySlug,
   getArtworksBySeriesId: getLocalArtworksBySeriesId,
@@ -87,6 +93,14 @@ export function getArtworks(): Artwork[] {
 
 export function getArtworkSummaries(): ArtworkSummary[] {
   return getDataRepository().getArtworkSummaries();
+}
+
+export function getCatalogArtworks(): ArtworkSummary[] {
+  return getDataRepository().getCatalogArtworks();
+}
+
+export function getArchivedArtworks(): ArtworkSummary[] {
+  return getDataRepository().getArchivedArtworks();
 }
 
 export function getFeaturedArtworks(): ArtworkSummary[] {

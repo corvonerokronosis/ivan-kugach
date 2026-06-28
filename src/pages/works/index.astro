@@ -2,31 +2,30 @@
 import Action from "../../components/common/Action.astro";
 import SectionHeader from "../../components/common/SectionHeader.astro";
 import ArtworkCatalogCard from "../../components/works/ArtworkCatalogCard.astro";
-import { artworkAvailabilityLabels, getArtworks } from "../../data/repository";
+import {
+  artworkAvailabilityLabels,
+  getCatalogArtworks,
+} from "../../data/repository";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
-const artworks = getArtworks();
-const activeArtworks = artworks.filter(
-  (artwork) => artwork.availability !== "sold",
-);
-const archiveArtworks = artworks.filter(
-  (artwork) => artwork.availability === "sold",
-);
+const artworks = getCatalogArtworks();
 
 function formatPrice(artwork: (typeof artworks)[number]): string {
-  return artwork.priceType === "request" ? "Цена по запросу" : artwork.price;
+  return artwork.priceType === "request"
+    ? "Цена по запросу"
+    : (artwork.price ?? "Цена уточняется");
 }
 ---
 
 <BaseLayout
   title="Каталог работ — Иван Кугач"
-  description="Каталог доступных, зарезервированных и архивных работ Ивана Кугача."
+  description="Каталог доступных и зарезервированных работ Ивана Кугача."
 >
   <SectionHeader
     level="h1"
     eyebrow="Каталог работ"
     title="Каталог работ"
-    description="Работы из локального типизированного источника разделены по статусам: основной каталог показывает доступные и зарезервированные произведения, архив — проданные."
+    description="Здесь собраны доступные и зарезервированные произведения. Проданные работы вынесены в отдельный архив."
   />
 
   <section class="works-section" aria-labelledby="active-works-title">
@@ -36,30 +35,7 @@ function formatPrice(artwork: (typeof artworks)[number]): string {
     </div>
     <ul class="works-grid" aria-label="Работы основного каталога">
       {
-        activeArtworks.map((artwork) => (
-          <li>
-            <ArtworkCatalogCard
-              artwork={artwork}
-              statusLabel={artworkAvailabilityLabels[artwork.availability]}
-              priceLabel={formatPrice(artwork)}
-            />
-          </li>
-        ))
-      }
-    </ul>
-  </section>
-
-  <section class="works-section" aria-labelledby="archive-works-title">
-    <div class="works-section__header">
-      <h2 id="archive-works-title">Архив</h2>
-      <p>
-        Проданные работы показываются отдельно и не выглядят свободными для
-        покупки.
-      </p>
-    </div>
-    <ul class="works-grid works-grid--archive" aria-label="Архивные работы">
-      {
-        archiveArtworks.map((artwork) => (
+        artworks.map((artwork) => (
           <li>
             <ArtworkCatalogCard
               artwork={artwork}
@@ -73,6 +49,7 @@ function formatPrice(artwork: (typeof artworks)[number]): string {
   </section>
 
   <div class="works-actions">
+    <Action href="/archive/">Открыть архив</Action>
     <Action href="/artist/" variant="secondary">О художнике</Action>
   </div>
 </BaseLayout>

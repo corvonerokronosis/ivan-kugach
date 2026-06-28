@@ -1,0 +1,132 @@
+---
+import Action from "../../components/common/Action.astro";
+import MessageState from "../../components/common/MessageState.astro";
+import SectionHeader from "../../components/common/SectionHeader.astro";
+import ArtworkCatalogCard from "../../components/works/ArtworkCatalogCard.astro";
+import {
+  artworkAvailabilityLabels,
+  getArchivedArtworks,
+} from "../../data/repository";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const artworks = getArchivedArtworks();
+
+function formatPrice(artwork: (typeof artworks)[number]): string {
+  return artwork.priceType === "request"
+    ? "Цена по запросу"
+    : (artwork.price ?? "Цена уточняется");
+}
+---
+
+<BaseLayout
+  title="Архив проданных работ — Иван Кугач"
+  description="Архив проданных работ Ивана Кугача и путь к похожим доступным произведениям."
+>
+  <SectionHeader
+    level="h1"
+    eyebrow="Архив"
+    title="Проданные работы"
+    description="Эти произведения уже недоступны для покупки. Архив сохраняет их в контексте творчества художника и помогает перейти к похожим доступным работам."
+  />
+
+  <section class="archive-section" aria-labelledby="archive-list-title">
+    <div class="archive-section__header">
+      <h2 id="archive-list-title">Работы в архиве</h2>
+      <p>
+        Каждая карточка ведёт к истории произведения и возможности спросить о
+        похожих работах или серии.
+      </p>
+    </div>
+
+    {
+      artworks.length > 0 ? (
+        <ul class="archive-grid" aria-label="Проданные работы">
+          {artworks.map((artwork) => (
+            <li>
+              <ArtworkCatalogCard
+                artwork={artwork}
+                statusLabel={artworkAvailabilityLabels[artwork.availability]}
+                priceLabel={formatPrice(artwork)}
+              />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <MessageState title="Архив пока пуст">
+          <p>
+            Проданные работы появятся здесь автоматически после изменения
+            статуса в локальном источнике данных.
+          </p>
+          <Action href="/works/">Перейти в каталог</Action>
+        </MessageState>
+      )
+    }
+  </section>
+
+  <section class="archive-interest" aria-labelledby="archive-interest-title">
+    <div>
+      <h2 id="archive-interest-title">Найти похожую работу</h2>
+      <p>
+        Откройте актуальный каталог, чтобы посмотреть доступные и
+        зарезервированные произведения.
+      </p>
+    </div>
+    <Action href="/works/">Смотреть доступные работы</Action>
+  </section>
+
+  <p slot="footer">
+    Архив формируется из того же типизированного источника, что и основной
+    каталог: раздел определяется статусом работы.
+  </p>
+</BaseLayout>
+
+<style>
+  .archive-section {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .archive-section__header {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .archive-section__header h2,
+  .archive-section__header p,
+  .archive-interest h2,
+  .archive-interest p {
+    margin-block-end: 0;
+  }
+
+  .archive-section__header p,
+  .archive-interest p {
+    color: var(--color-text-muted);
+  }
+
+  .archive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-5);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .archive-interest {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: center;
+    justify-content: space-between;
+    padding: clamp(var(--space-4), 4vw, var(--space-6));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-muted);
+  }
+
+  .archive-interest > div {
+    display: grid;
+    max-width: 42rem;
+    gap: var(--space-2);
+  }
+</style>

@@ -167,6 +167,18 @@ export function getFeaturedArtworks(): ArtworkSummary[] {
   return getArtworkSummaries().filter((artwork) => artwork.featured);
 }
 
+export function getCatalogArtworks(): ArtworkSummary[] {
+  return getArtworkSummaries().filter(
+    (artwork) => artwork.availability !== "sold",
+  );
+}
+
+export function getArchivedArtworks(): ArtworkSummary[] {
+  return getArtworkSummaries().filter(
+    (artwork) => artwork.availability === "sold",
+  );
+}
+
 export function getArtworkBySlug(slug: string): Artwork | undefined {
   return artworks.find((artwork) => artwork.slug === slug);
 }
