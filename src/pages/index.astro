@@ -7,7 +7,14 @@ import Action from "../components/common/Action.astro";
 import FramedArtwork from "../components/common/FramedArtwork.astro";
 import InteractiveLaunchCard from "../components/common/InteractiveLaunchCard.astro";
 import MetaBadge from "../components/common/MetaBadge.astro";
+import { getNarrativeRouteBySequenceId } from "../data/repository";
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+const introRoute = getNarrativeRouteBySequenceId("intro");
+
+if (!introRoute) {
+  throw new Error('Narrative route "intro" не найден');
+}
 ---
 
 <BaseLayout
@@ -33,7 +40,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         человеческое присутствие и ощущение живой, узнаваемой среды.
       </blockquote>
       <div class="home-hero__actions">
-        <Action href="/experience/">Перейти к интерактиву</Action>
+        <Action href={introRoute.pathname}>Перейти к интерактиву</Action>
         <Action href="#interactive-entries" variant="secondary">
           Посмотреть карточки
         </Action>

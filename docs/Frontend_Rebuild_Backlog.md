@@ -1085,7 +1085,7 @@ npm.cmd run verify
 - контракт доступен через `src/data/repository.ts`, не зависит от глобального runtime-состояния и будет подключён к generated-страницам в FRT-030;
 - проверить: выполнить `npm.cmd run verify`, сверить таблицу в `docs/NARRATIVE_ROUTE_CONTRACT.md` и убедиться, что сборка валидирует ровно один route-definition для каждой записи `src/data/narrative.ts`.
 
-### [ ] FRT-030. Перенести вступление, переход и финал
+### [x] FRT-030. Перенести вступление, переход и финал
 
 Приоритет: Must  
 Версия: Frontend v0.3  
@@ -1102,6 +1102,14 @@ npm.cmd run verify
 
 - все три последовательности доступны;
 - замена текстов не требует правки компонента.
+
+Выполнено:
+
+- добавлен generated route `src/pages/experience/story/[sequence].astro`, который собирает самостоятельные страницы для `intro`, `bridge`, актуального дополнительного перехода `lightBridge` и `finale` из route-contract;
+- `src/scripts/narrative-route.ts` связывает события `narrative:complete` и `narrative:skip` с `window.location.replace(completionPath)`, не создавая history entries для отдельных слайдов;
+- последовательные CTA на главной и `/experience/` теперь открывают `/experience/story/intro/`, а существующие карточки сохраняют прямые входы в каждый интерактив;
+- `contentStatus: "placeholder"` хранится в `src/data/narrative.ts` и явно отмечает временный статус текущих текстов без условий внутри компонента;
+- проверить: выполнить `npm.cmd run verify`, открыть `/experience/story/intro/`, пройти три окна кнопками или стрелками и завершить блок в `/experience/color-return/`; отдельно проверить прямые URL `/experience/story/bridge/`, `/experience/story/light-bridge/` и `/experience/story/finale/`.
 
 ---
 

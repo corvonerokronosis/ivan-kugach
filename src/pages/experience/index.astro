@@ -5,10 +5,18 @@ import lightArtworkUrl from "../../picture_light_shadow/_DOR6258.JPG?url";
 import Action from "../../components/common/Action.astro";
 import FramedArtwork from "../../components/common/FramedArtwork.astro";
 import MetaBadge from "../../components/common/MetaBadge.astro";
-import { getNarrativeSequences } from "../../data/repository";
+import {
+  getNarrativeRouteBySequenceId,
+  getNarrativeSequences,
+} from "../../data/repository";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
 const narrativeSequences = getNarrativeSequences();
+const introRoute = getNarrativeRouteBySequenceId("intro");
+
+if (!introRoute) {
+  throw new Error('Narrative route "intro" не найден');
+}
 ---
 
 <BaseLayout
@@ -28,7 +36,7 @@ const narrativeSequences = getNarrativeSequences();
         Пройти можно по порядку или начать с любого этапа.
       </p>
       <div class="route-hero__actions">
-        <Action href="/experience/color-return/">Начать с первого этапа</Action>
+        <Action href={introRoute.pathname}>Начать с первого этапа</Action>
         <Action href="#route-stages" variant="secondary"> Выбрать этап </Action>
       </div>
     </div>

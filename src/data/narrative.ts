@@ -3,6 +3,7 @@ import detailsArtwork from "../Kugach_picture_2.png";
 import lightArtworkUrl from "../picture_light_shadow/_DOR6258.JPG?url";
 import {
   isNarrativeCompletionAction,
+  isNarrativeContentStatus,
   type NarrativeSequence,
 } from "../types/narrative";
 
@@ -10,6 +11,7 @@ const narrativeSequences = validateNarrativeSequences([
   {
     id: "intro",
     order: 1,
+    contentStatus: "placeholder",
     eyebrow: "Сюжетная линия",
     lead: "Первый блок вводит в историю и готовит пользователя к мягкому раскрытию живописи.",
     completionLabel: "Перейти к интерактиву",
@@ -66,6 +68,7 @@ const narrativeSequences = validateNarrativeSequences([
   {
     id: "bridge",
     order: 2,
+    contentStatus: "placeholder",
     eyebrow: "Связка маршрутов",
     lead: "Второй блок соединит завершение раскрашивания с переходом к исследованию другой картины.",
     completionLabel: "Перейти к исследованию",
@@ -121,6 +124,7 @@ const narrativeSequences = validateNarrativeSequences([
   {
     id: "lightBridge",
     order: 3,
+    contentStatus: "placeholder",
     eyebrow: "Переход в мастерскую",
     lead: "Третий блок переводит маршрут от открытых деталей к работе со светом и состоянием картины.",
     completionLabel: "Перейти к свету",
@@ -160,6 +164,7 @@ const narrativeSequences = validateNarrativeSequences([
   {
     id: "finale",
     order: 4,
+    contentStatus: "placeholder",
     eyebrow: "Финальная вставка",
     lead: "Последний блок завершит маршрут после работы со светом в мастерской.",
     completionLabel: "Завершить блок",
@@ -267,6 +272,10 @@ function validateNarrativeSequence(
     `narrative "${label}": eyebrow обязателен`,
   );
   assertNonEmptyString(record.lead, `narrative "${label}": lead обязателен`);
+  assert(
+    isNarrativeContentStatus(record.contentStatus),
+    `narrative "${label}": неизвестный contentStatus "${record.contentStatus}"`,
+  );
   assertNonEmptyString(
     record.completionLabel,
     `narrative "${label}": completionLabel обязателен`,

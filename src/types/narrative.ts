@@ -8,6 +8,15 @@ export const narrativeCompletionActionValues = [
 export type NarrativeCompletionAction =
   (typeof narrativeCompletionActionValues)[number];
 
+export const narrativeContentStatusValues = [
+  "placeholder",
+  "review",
+  "approved",
+] as const;
+
+export type NarrativeContentStatus =
+  (typeof narrativeContentStatusValues)[number];
+
 export interface NarrativeImage {
   src: string;
   alt: string;
@@ -27,6 +36,7 @@ export interface NarrativeSlide {
 export interface NarrativeSequence {
   id: string;
   order: number;
+  contentStatus: NarrativeContentStatus;
   eyebrow: string;
   lead: string;
   completionLabel: string;
@@ -41,4 +51,10 @@ export function isNarrativeCompletionAction(
   return narrativeCompletionActionValues.includes(
     value as NarrativeCompletionAction,
   );
+}
+
+export function isNarrativeContentStatus(
+  value: string,
+): value is NarrativeContentStatus {
+  return narrativeContentStatusValues.includes(value as NarrativeContentStatus);
 }

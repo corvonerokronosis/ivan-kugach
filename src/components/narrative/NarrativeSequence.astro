@@ -5,11 +5,13 @@ interface Props {
   id: string;
   sequence: NarrativeSequence;
   initialIndex?: number;
+  headingLevel?: "h1" | "h2";
 }
 
-const { id, sequence, initialIndex = 0 } = Astro.props;
+const { id, sequence, initialIndex = 0, headingLevel = "h2" } = Astro.props;
 const slides = [...sequence.slides].sort((a, b) => a.order - b.order);
 const safeInitialIndex = Math.max(0, Math.min(slides.length - 1, initialIndex));
+const Heading = headingLevel;
 ---
 
 <section
@@ -27,7 +29,7 @@ const safeInitialIndex = Math.max(0, Math.min(slides.length - 1, initialIndex));
   <header class="narrative-sequence__header">
     <div>
       <p class="narrative-sequence__eyebrow">{sequence.eyebrow}</p>
-      <h2 id={`${id}-title`}>Сюжетная последовательность</h2>
+      <Heading id={`${id}-title`}>Сюжетная последовательность</Heading>
       <p id={`${id}-lead`} class="narrative-sequence__lead">
         {sequence.lead}
       </p>
@@ -154,7 +156,7 @@ const safeInitialIndex = Math.max(0, Math.min(slides.length - 1, initialIndex));
     text-transform: uppercase;
   }
 
-  .narrative-sequence__header h2 {
+  .narrative-sequence__header :is(h1, h2) {
     margin: 0;
     font-size: var(--font-size-heading-sm);
   }

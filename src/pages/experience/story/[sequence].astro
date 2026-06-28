@@ -1,0 +1,98 @@
+---
+import Action from "../../../components/common/Action.astro";
+import NarrativeSequence from "../../../components/narrative/NarrativeSequence.astro";
+import {
+  getNarrativeRouteDefinitions,
+  getNarrativeSequence,
+} from "../../../data/repository";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import type { NarrativeSequence as NarrativeSequenceData } from "../../../types/narrative";
+import type { NarrativeRouteDefinition } from "../../../types/narrative-route";
+
+interface Props {
+  narrative: NarrativeSequenceData;
+  route: NarrativeRouteDefinition;
+}
+
+export function getStaticPaths() {
+  return getNarrativeRouteDefinitions().map((route) => {
+    const narrative = getNarrativeSequence(route.sequenceId);
+    const routeSlug = route.pathname.split("/").filter(Boolean).at(-1);
+
+    if (!narrative || !routeSlug) {
+      throw new Error(
+        `Не удалось собрать narrative route для "${route.sequenceId}"`,
+      );
+    }
+
+    return {
+      params: { sequence: routeSlug },
+      props: { narrative, route },
+    };
+  });
+}
+
+const { narrative, route } = Astro.props;
+---
+
+<BaseLayout
+  title={`${narrative.eyebrow} — Иван Кугач`}
+  description={narrative.lead}
+>
+  <div
+    class="narrative-route"
+    data-narrative-route
+    data-completion-path={route.completionPath}
+  >
+    <div class="narrative-route__toolbar">
+      <p>Сюжетный маршрут · {narrative.slides.length} окна</p>
+      <Action href="/" variant="quiet">На главную</Action>
+    </div>
+
+    <NarrativeSequence
+      id={`narrative-${narrative.id}`}
+      sequence={narrative}
+      headingLevel="h1"
+    />
+  </div>
+
+  <script>
+    import "../../../scripts/narrative-route";
+  </script>
+
+  <p slot="footer">
+    Переключение сюжетных окон не изменяет URL. Завершение или пропуск ведёт к
+    следующему этапу маршрута.
+  </p>
+</BaseLayout>
+
+<style>
+  .narrative-route {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .narrative-route__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .narrative-route__toolbar p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 42rem) {
+    .narrative-route__toolbar :global(.action) {
+      width: 100%;
+    }
+  }
+</style>
