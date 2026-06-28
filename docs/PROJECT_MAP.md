@@ -44,17 +44,17 @@
 | `src/pages/archive/index.astro`                            | Отдельный архив проданных работ с CTA к похожим произведениям    | Изменение archive-layout, пустого состояния и CTA                           |
 | `src/pages/series/[slug].astro`                            | Generated-витрина серии из локальных данных и связанных работ    | Изменение описания серии, cover/fallback, списка работ и пустого состояния  |
 | `src/pages/404.astro`                                      | Оформленная 404 и контекст неизвестных работ или серий           | Изменение fallback-навигации и текстов ненайденных маршрутов                |
-| `src/pages/ui-preview.astro`                               | Техническая проверка common UI, narrative и canvas engine        | Ручная проверка переиспользуемых модулей до продуктового подключения        |
+| `src/pages/ui-preview.astro`                               | Техническая проверка common UI, narrative, canvas и zoom/hotspot | Ручная проверка переиспользуемых модулей до продуктового подключения        |
 | `src/components/experience/ColorRevealExperience.astro`    | Продуктовый UI интерактива возвращения цвета                     | Stage, HUD, progress, reset, подсказка и dialog завершения                  |
 | `src/components/experience/ColorRevealEnginePreview.astro` | Технический canvas-стенд FRT-031                                 | Ручная проверка paint, progress, remount, reset и destroy                   |
-| `src/components/experience/ZoomPanEnginePreview.astro`     | Технический стенд zoom/pan-движка FRT-034                        | Ручная проверка buttons, wheel, drag, reset, remount и destroy              |
+| `src/components/experience/ZoomPanEnginePreview.astro`     | Технический стенд zoom/pan и hotspot-данных FRT-034/FRT-035      | Ручная проверка buttons, wheel, drag, reset, remount, destroy и dialog      |
 | `src/components/narrative/NarrativeSequence.astro`         | Универсальный UI narrative-последовательности                    | Изменение разметки слайда, счётчика и кнопок без встраивания story-контента |
 | `src/scripts/color-reveal-engine.ts`                       | Изолированный Canvas/Pointer-движок возвращения цвета            | Кисть, coverage, resize, auto-reveal, callbacks и lifecycle                 |
 | `src/scripts/color-reveal-page.ts`                         | Инициализация продуктовой страницы возвращения цвета             | Подключение движка, progress, reset, dialog и pagehide cleanup              |
 | `src/scripts/color-reveal-preview.ts`                      | Инициализация технического стенда canvas engine                  | Только `/ui-preview/`; не продуктовая страница интерактива                  |
 | `src/utils/color-reveal-progress.ts`                       | Чистая математика coverage grid для интерактива раскрытия        | Progress, reset, completion threshold и граничные координаты кисти          |
 | `src/scripts/zoom-pan-engine.ts`                           | Изолированный DOM-движок zoom/pan для исследования деталей       | Buttons, wheel, pointer drag, fit/reset, bounds и lifecycle                 |
-| `src/scripts/zoom-pan-preview.ts`                          | Инициализация технического стенда zoom/pan engine                | Только `/ui-preview/`; не продуктовая страница интерактива                  |
+| `src/scripts/zoom-pan-preview.ts`                          | Инициализация технического стенда zoom/pan и hotspot-поведения   | Только `/ui-preview/`; viewed IDs, центрирование точки и dialog             |
 | `src/utils/zoom-pan.ts`                                    | Чистая математика zoom/pan                                       | Fit, bounds, clamp, zoom-at-focus, pan и center-on                          |
 | `src/scripts/narrative-sequence.ts`                        | Изолированное DOM-управление narrative-компонентом               | Переключение слайдов, клавиатура и события завершения/пропуска              |
 | `src/scripts/narrative-route.ts`                           | Связь narrative-событий с completionPath через location.replace  | Изменение финального перехода и browser history                             |

@@ -1,5 +1,9 @@
 ---
-import artwork from "../../Kugach_picture_2.png";
+import DialogShell from "../common/DialogShell.astro";
+import { getHotspots } from "../../data/repository";
+
+const hotspots = getHotspots();
+const image = hotspots[0]?.image;
 ---
 
 <section class="zoom-preview" data-zoom-pan-preview>
@@ -12,16 +16,44 @@ import artwork from "../../Kugach_picture_2.png";
     <div class="zoom-preview__content" data-zoom-pan-content>
       <img
         data-zoom-pan-image
-        src={artwork.src}
-        alt="Фрагмент картины для технической проверки приближения деталей"
+        src={image.src}
+        alt={image.alt}
         draggable="false"
       />
+      {
+        hotspots.map((hotspot) => (
+          <button
+            type="button"
+            class="zoom-preview__hotspot"
+            style={`left: ${hotspot.position.x * 100}%; top: ${
+              hotspot.position.y * 100
+            }%;`}
+            data-zoom-pan-hotspot
+            data-zoom-pan-ignore
+            data-hotspot-id={hotspot.id}
+            data-hotspot-x={hotspot.position.x}
+            data-hotspot-y={hotspot.position.y}
+            data-hotspot-scale={hotspot.targetScale}
+            data-hotspot-label={hotspot.label}
+            data-hotspot-title={hotspot.title}
+            data-hotspot-text={hotspot.text}
+            aria-label={`${hotspot.label}: ${hotspot.title}`}
+            aria-pressed="false"
+          >
+            <span>{hotspot.order}</span>
+          </button>
+        ))
+      }
     </div>
   </div>
 
   <div class="zoom-preview__status" aria-live="polite">
     <span>Масштаб: <strong data-zoom-pan-scale>0%</strong></span>
     <span>Позиция: <strong data-zoom-pan-position>0, 0</strong></span>
+    <span
+      >Точки: <strong data-zoom-pan-progress>0 из {hotspots.length}</strong
+      ></span
+    >
     <span>Состояние: <strong data-zoom-pan-status>active</strong></span>
   </div>
 
@@ -32,6 +64,19 @@ import artwork from "../../Kugach_picture_2.png";
     <button type="button" data-zoom-pan-remount>Перезапустить стенд</button>
     <button type="button" data-zoom-pan-destroy>Отключить стенд</button>
   </div>
+
+  <DialogShell
+    id="zoom-preview-hotspot-dialog"
+    title="Деталь картины"
+    description="Техническая карточка выбранной hotspot-точки."
+  >
+    <p class="zoom-preview__dialog-label" data-hotspot-dialog-label></p>
+    <h3 data-hotspot-dialog-title></h3>
+    <p data-hotspot-dialog-text></p>
+    <div slot="actions">
+      <button type="button" data-hotspot-dialog-close>Закрыть</button>
+    </div>
+  </DialogShell>
 </section>
 
 <script>
@@ -76,6 +121,38 @@ import artwork from "../../Kugach_picture_2.png";
     user-select: none;
   }
 
+  .zoom-preview__hotspot {
+    position: absolute;
+    z-index: 2;
+    display: grid;
+    width: 3rem;
+    height: 3rem;
+    margin: -1.5rem 0 0 -1.5rem;
+    place-items: center;
+    border: 2px solid rgb(255 255 255 / 82%);
+    border-radius: var(--radius-round);
+    color: #fff;
+    background: rgb(47 36 25 / 76%);
+    box-shadow:
+      0 0 0 0.45rem rgb(215 163 58 / 20%),
+      var(--shadow-surface);
+    font-family: var(--font-family-ui);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+  }
+
+  .zoom-preview__hotspot:hover,
+  .zoom-preview__hotspot:focus-visible,
+  .zoom-preview__hotspot[aria-pressed="true"] {
+    background: var(--color-accent-strong);
+    outline: 3px solid rgb(255 255 255 / 86%);
+    outline-offset: 0.2rem;
+  }
+
+  .zoom-preview__hotspot[data-viewed="true"] {
+    border-color: var(--color-success);
+  }
+
   .zoom-preview__status,
   .zoom-preview__actions {
     display: flex;
@@ -91,17 +168,51 @@ import artwork from "../../Kugach_picture_2.png";
   .zoom-preview__actions button {
     min-height: 2.5rem;
     padding: var(--space-2) var(--space-4);
-    border: 1px solid var(--color-border);
+    border: 1px solid rgb(255 255 255 / 32%);
     border-radius: var(--radius-pill);
+    color: #fff;
+    background: var(--color-wood-strong);
+    font-family: var(--font-family-ui);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+  }
+
+  .zoom-preview__actions button:hover:not(:disabled),
+  .zoom-preview__actions button:focus-visible {
+    background: var(--color-accent-strong);
+  }
+
+  .zoom-preview__dialog-label {
+    margin: 0 0 var(--space-2);
+    color: var(--color-accent-strong);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+  }
+
+  .zoom-preview :global(.dialog-shell h3) {
+    margin: 0 0 var(--space-3);
     color: var(--color-text);
-    background: var(--color-surface-strong);
+    font-size: var(--font-size-heading-sm);
+  }
+
+  .zoom-preview :global(.dialog-shell__actions button) {
+    min-height: 2.5rem;
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    color: #fff;
+    background: var(--color-accent-strong);
     font-family: var(--font-family-ui);
     font-weight: var(--font-weight-semibold);
     cursor: pointer;
   }
 
   .zoom-preview__actions button:disabled {
+    color: rgb(255 255 255 / 72%);
+    background: rgb(47 36 25 / 54%);
     cursor: not-allowed;
-    opacity: 0.48;
+    opacity: 1;
   }
 </style>
