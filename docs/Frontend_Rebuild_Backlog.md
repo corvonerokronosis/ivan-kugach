@@ -1571,7 +1571,7 @@ npm.cmd run verify
   `sizes`, карточки каталога — использовать варианты не шире 720 px, а смена
   картин в мастерской света — не обращаться к полноразмерным исходникам.
 
-### [ ] FRT-046. Разделить клиентские bundles интерактивов
+### [x] FRT-046. Разделить клиентские bundles интерактивов
 
 Приоритет: Must  
 Версия: Frontend v0.4  
@@ -1588,6 +1588,21 @@ npm.cmd run verify
 
 - страница каталога не загружает canvas/zoom/light код;
 - каждый интерактив имеет собственную клиентскую точку входа.
+
+Реализация:
+
+- продуктовые client entrypoints перенесены из
+  `src/components/experience/ColorRevealExperience.astro`,
+  `src/components/experience/DetailsExplorer.astro` и
+  `src/components/experience/LightWorkshop.astro` в route-страницы
+  `src/pages/experience/color-return.astro`,
+  `src/pages/experience/details.astro` и `src/pages/experience/light.astro`;
+- компоненты интерактивов остались статической разметкой и больше не подключают
+  клиентский код при переиспользовании вне продуктовой страницы;
+- проверить: выполнить `npm.cmd run build`, убедиться, что `/works/` не
+  подключает внешние canvas/zoom/light chunks, а `/experience/color-return/`,
+  `/experience/details/` и `/experience/light/` получают отдельные page-level
+  JS entrypoints.
 
 ### [ ] FRT-047. Установить performance-бюджет
 
