@@ -97,35 +97,37 @@
 
 Запуск Astro-каркаса: `npm.cmd install`, затем `npm.cmd run dev`.
 
-Проверки и production-сборка: `npm.cmd run verify`. Отдельно доступны `check`, `lint`, `test:unit`, `format`, `format:check`, `build` и `preview`.
+Проверки и production-сборка: `npm.cmd run verify`. Отдельно доступны `check`, `lint`, `test:unit`, `performance:budget`, `format`, `format:check`, `build` и `preview`.
 
-ESLint проверяет новый Astro/TypeScript-код, unit-тесты и корневые конфиги. `test:unit` компилирует DOM-independent utilities для color reveal и zoom/pan во временный каталог и запускает оба Node test suites. Prettier форматирует Astro, TypeScript, тесты, CSS, JSON и активную Markdown-документацию. Legacy HTML, архивы, эксперименты и generated output исключены.
+ESLint проверяет новый Astro/TypeScript-код, unit-тесты, служебные scripts и корневые конфиги. `test:unit` компилирует DOM-independent utilities для color reveal и zoom/pan во временный каталог и запускает оба Node test suites. `performance:budget` проверяет production `dist/` после `build` и входит в `verify`. Prettier форматирует Astro, TypeScript, тесты, scripts, CSS, JSON и активную Markdown-документацию. Legacy HTML, архивы, эксперименты и generated output исключены.
 
 Запуск полнофункционального legacy-эталона: открыть `index_masterskaya.html` в браузере.
 
 ## 4. Основные директории
 
-| Директория                | Содержимое                                                     | Статус                                                                                        |
-| ------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `src/`                    | Astro-код и изображения актуального прототипа                  | Новая исходная директория; правила в `src/README.md`                                          |
-| `src/assets/`             | Импортируемые Astro web-ассеты                                 | `images/works` и `images/interactive` содержат production web-изображения FRT-044             |
-| `src/components/`         | Повторно используемые Astro-компоненты                         | Навигация, common UI, works-, narrative-, experience-компоненты и декор                       |
-| `src/content/`            | Записи Astro Content Collections                               | Пустой каркас                                                                                 |
-| `src/data/`               | Типизированные локальные данные и frontend-репозиторий         | `repository.ts` читает local-источники, включая narrative, hotspots и данные света            |
-| `src/layouts/`            | Общие Astro-layouts                                            | `BaseLayout.astro`: metadata, skip-link и page slots                                          |
-| `src/pages/`              | Файловые маршруты Astro                                        | Главная, художник, experience/story, каталог, архив, generated-страницы, 404 и `/ui-preview/` |
-| `src/scripts/`            | Изолированные клиентские DOM/Canvas/state-модули               | Форма, narrative, canvas/zoom-pan engines и контроллер света                                  |
-| `src/styles/`             | Токены и общие CSS-слои                                        | `global.css`, `tokens.css` и опциональный `studio.css`                                        |
-| `src/types/`              | Общие TypeScript-контракты                                     | Модели данных, narrative, hotspots, свет, canvas engine и zoom/pan                            |
-| `src/utils/`              | Чистые helpers и адаптеры                                      | Валидация заявки, coverage grid, zoom/pan math и frontend-only `inquiry-adapter.ts`           |
-| `tests/`                  | Unit-тесты чистой frontend-логики                              | Покрывает coverage, zoom/pan math и lifecycle контроллера света                               |
-| `public/`                 | Статические файлы без обработки Astro                          | Пустой каркас                                                                                 |
-| `docs/`                   | Требования, описание прототипа, дизайн-планы и frontend-бэклог | Читать выборочно по задаче                                                                    |
-| `docs/IMAGE_INVENTORY.md` | Инвентаризация production-изображений и ожидаемых вариантов    | Открывать перед задачами по image pipeline, SEO social image и визуальному QA                 |
-| `docs/visual-baseline/`   | Эталонные PNG актуального legacy-прототипа                     | Использовать для visual regression; не менять вручную                                         |
-| `experiments/`            | Самостоятельные HTML-эксперименты дизайна и механик            | Не production; только визуальные/исторические референсы                                       |
-| `archive/`                | Старые версии HTML, changelog и bug notes                      | История; не источник текущего поведения                                                       |
-| `scrns/`                  | Старые скриншоты                                               | Визуальный референс, не код                                                                   |
+| Директория                   | Содержимое                                                     | Статус                                                                                        |
+| ---------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `src/`                       | Astro-код и изображения актуального прототипа                  | Новая исходная директория; правила в `src/README.md`                                          |
+| `src/assets/`                | Импортируемые Astro web-ассеты                                 | `images/works` и `images/interactive` содержат production web-изображения FRT-044             |
+| `src/components/`            | Повторно используемые Astro-компоненты                         | Навигация, common UI, works-, narrative-, experience-компоненты и декор                       |
+| `src/content/`               | Записи Astro Content Collections                               | Пустой каркас                                                                                 |
+| `src/data/`                  | Типизированные локальные данные и frontend-репозиторий         | `repository.ts` читает local-источники, включая narrative, hotspots и данные света            |
+| `src/layouts/`               | Общие Astro-layouts                                            | `BaseLayout.astro`: metadata, skip-link и page slots                                          |
+| `src/pages/`                 | Файловые маршруты Astro                                        | Главная, художник, experience/story, каталог, архив, generated-страницы, 404 и `/ui-preview/` |
+| `src/scripts/`               | Изолированные клиентские DOM/Canvas/state-модули               | Форма, narrative, canvas/zoom-pan engines и контроллер света                                  |
+| `src/styles/`                | Токены и общие CSS-слои                                        | `global.css`, `tokens.css` и опциональный `studio.css`                                        |
+| `src/types/`                 | Общие TypeScript-контракты                                     | Модели данных, narrative, hotspots, свет, canvas engine и zoom/pan                            |
+| `src/utils/`                 | Чистые helpers и адаптеры                                      | Валидация заявки, coverage grid, zoom/pan math и frontend-only `inquiry-adapter.ts`           |
+| `scripts/`                   | Служебные Node-скрипты                                         | `check-performance-budget.mjs` проверяет статический budget production build                  |
+| `tests/`                     | Unit-тесты чистой frontend-логики                              | Покрывает coverage, zoom/pan math и lifecycle контроллера света                               |
+| `public/`                    | Статические файлы без обработки Astro                          | Пустой каркас                                                                                 |
+| `docs/`                      | Требования, описание прототипа, дизайн-планы и frontend-бэклог | Читать выборочно по задаче                                                                    |
+| `docs/IMAGE_INVENTORY.md`    | Инвентаризация production-изображений и ожидаемых вариантов    | Открывать перед задачами по image pipeline, SEO social image и визуальному QA                 |
+| `docs/PERFORMANCE_BUDGET.md` | Проверяемые лимиты первой загрузки, LCP и Lighthouse-ориентиры | Открывать перед задачами по производительности, image pipeline и visual QA                    |
+| `docs/visual-baseline/`      | Эталонные PNG актуального legacy-прототипа                     | Использовать для visual regression; не менять вручную                                         |
+| `experiments/`               | Самостоятельные HTML-эксперименты дизайна и механик            | Не production; только визуальные/исторические референсы                                       |
+| `archive/`                   | Старые версии HTML, changelog и bug notes                      | История; не источник текущего поведения                                                       |
+| `scrns/`                     | Старые скриншоты                                               | Визуальный референс, не код                                                                   |
 
 Image pipeline FRT-045:
 
@@ -133,6 +135,15 @@ Image pipeline FRT-045:
   intrinsic-размеры, lazy loading и hero priority;
 - `src/utils/image-assets.ts` — реестр production-изображений, который связывает
   URL из типизированных данных с Astro image metadata.
+
+Performance budget FRT-047:
+
+- `docs/PERFORMANCE_BUDGET.md` — допустимый вес первой загрузки, LCP image
+  limits, mobile throttling и Lighthouse-ориентиры;
+- `scripts/check-performance-budget.mjs` — static gate по `dist/` для главной,
+  каталога и трёх интерактивов;
+- `npm.cmd run performance:budget` — отдельная проверка после `npm.cmd run build`;
+  `npm.cmd run verify` запускает её автоматически.
 
 ## 5. Ключевые экраны и фичи
 

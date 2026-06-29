@@ -1604,7 +1604,7 @@ npm.cmd run verify
   `/experience/details/` и `/experience/light/` получают отдельные page-level
   JS entrypoints.
 
-### [ ] FRT-047. Установить performance-бюджет
+### [x] FRT-047. Установить performance-бюджет
 
 Приоритет: Should  
 Версия: Frontend v0.4  
@@ -1622,6 +1622,21 @@ npm.cmd run verify
 
 - бюджет записан и проверяем;
 - существенное превышение считается блокирующей регрессией.
+
+Реализация:
+
+- `docs/PERFORMANCE_BUDGET.md` фиксирует blocking budgets первой загрузки,
+  LCP-изображения, mobile throttling-профиль и Lighthouse-ориентиры для
+  каталога и трёх интерактивов;
+- `scripts/check-performance-budget.mjs` проверяет production `dist/`: HTML,
+  CSS, page-level JS со статическими импортами и high-priority/eager
+  LCP-кандидаты;
+- `package.json` добавляет `npm.cmd run performance:budget`, включает скрипт в
+  lint/format и запускает budget gate внутри `npm.cmd run verify` после build;
+- `docs/PROJECT_MAP.md` обновлена под новый script, документ и команду проверки;
+- проверить: выполнить `npm.cmd run build`, затем
+  `npm.cmd run performance:budget`; существенное превышение любого budget должно
+  завершать проверку с ошибкой.
 
 ---
 
