@@ -11,7 +11,7 @@
     "lint": "eslint \"src/**/*.{astro,js,mjs,ts}\" \"tests/**/*.{js,mjs,ts}\" \"*.{js,mjs}\" --max-warnings 0",
     "format": "prettier --write \"src/**/*.{astro,js,mjs,ts,css,md}\" \"tests/**/*.{js,mjs,ts}\" \"*.{json,js,mjs,md}\" \"docs/{Frontend_Rebuild_Backlog,PROJECT_MAP,LEGACY_MIGRATION_CHECKLIST,VISUAL_BASELINE,ENTRYPOINT_CUTOVER_PLAN}.md\"",
     "format:check": "prettier --check \"src/**/*.{astro,js,mjs,ts,css,md}\" \"tests/**/*.{js,mjs,ts}\" \"*.{json,js,mjs,md}\" \"docs/{Frontend_Rebuild_Backlog,PROJECT_MAP,LEGACY_MIGRATION_CHECKLIST,VISUAL_BASELINE,ENTRYPOINT_CUTOVER_PLAN}.md\"",
-    "test:unit": "tsc --ignoreConfig --outDir .tmp/unit-tests --rootDir src --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck src/utils/color-reveal-progress.ts && node --test tests/*.test.mjs",
+    "test:unit": "tsc --ignoreConfig --outDir .tmp/unit-tests --rootDir src --module ESNext --moduleResolution Bundler --target ES2022 --skipLibCheck src/utils/color-reveal-progress.ts src/utils/zoom-pan.ts && node --test tests/*.test.mjs",
     "verify": "npm run check && npm run lint && npm run test:unit && npm run format:check && npm run build"
   },
   "dependencies": {

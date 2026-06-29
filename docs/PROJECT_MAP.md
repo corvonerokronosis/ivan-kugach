@@ -21,7 +21,7 @@
 | Роутинг     | Legacy без URL; Astro имеет 13 route patterns и 20 static pages | Полная файловая карта Astro                                |
 | Данные      | Константы внутри `<script>`                                     | Типизированные локальные данные с заменяемым CMS-адаптером |
 | Сборка      | Astro dev, build и production preview                           | Astro production build                                     |
-| Тесты       | `test:unit` для чистой математики раскрытия цвета               | Полный unit-контур, content checks и browser smoke tests   |
+| Тесты       | `test:unit` для чистой математики color reveal и zoom/pan       | Полный unit-контур, content checks и browser smoke tests   |
 | Backend/API | Нет                                                             | Вне текущего frontend-этапа                                |
 
 ## 3. Входные точки
@@ -91,7 +91,7 @@
 
 Проверки и production-сборка: `npm.cmd run verify`. Отдельно доступны `check`, `lint`, `test:unit`, `format`, `format:check`, `build` и `preview`.
 
-ESLint проверяет новый Astro/TypeScript-код, unit-тесты и корневые конфиги. Prettier форматирует Astro, TypeScript, тесты, CSS, JSON и активную Markdown-документацию. Legacy HTML, архивы, эксперименты и generated output исключены.
+ESLint проверяет новый Astro/TypeScript-код, unit-тесты и корневые конфиги. `test:unit` компилирует DOM-independent utilities для color reveal и zoom/pan во временный каталог и запускает оба Node test suites. Prettier форматирует Astro, TypeScript, тесты, CSS, JSON и активную Markdown-документацию. Legacy HTML, архивы, эксперименты и generated output исключены.
 
 Запуск полнофункционального legacy-эталона: открыть `index_masterskaya.html` в браузере.
 
