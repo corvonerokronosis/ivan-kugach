@@ -84,7 +84,8 @@
 | `src/types/narrative-route.ts`                             | TypeScript-контракт URL, входов и history actions narrative              | Изменение структуры route-definition                                        |
 | `src/types/hotspot.ts`                                     | TypeScript-контракт hotspot-точек исследовательского интерактива         | Перед переносом zoom/pan и карточек точек                                   |
 | `src/types/light.ts`                                       | Контракты данных, snapshot и lifecycle контроллера света                 | Изменение работ, состояний, callbacks или controller API                    |
-| `src/layouts/BaseLayout.astro`                             | Общий layout новой версии с навигацией и optional-декором                | Общая оболочка Astro-страниц                                                |
+| `src/layouts/BaseLayout.astro`                             | Общий layout новой версии с навигацией, metadata и optional-декором      | Общая оболочка Astro-страниц                                                |
+| `src/components/common/PageMetadata.astro`                 | Единый компонент `<head>` metadata: title, canonical, OG, social, robots | Изменение SEO-основы страниц и безопасных значений по умолчанию             |
 | `src/README.md`                                            | Правила структуры, именования и границ модулей                           | Перед созданием новых Astro/TypeScript-файлов                               |
 | `README.md`                                                | Краткое описание продукта, маршрута, ассетов и способа запуска           | Первичная ориентация и проверка актуальной точки входа                      |
 | `docs/PROJECT_MAP.md`                                      | Навигация по проекту                                                     | Всегда первой в новой сессии                                                |
@@ -191,7 +192,7 @@ Performance budget FRT-047:
 | Astro color reveal    | `src/pages/experience/color-return.astro`                  | Продуктовый canvas-интерактив FRT-032                                     |
 | Astro details         | `src/pages/experience/details.astro`                       | Продуктовый zoom/pan и hotspot-интерактив FRT-036                         |
 | Astro light           | `src/pages/experience/light.astro`                         | Продуктовый интерактив света FRT-040                                      |
-| Common Astro UI       | `src/components/common/`                                   | Actions, headers, artwork, forms, dialog, state                           |
+| Common Astro UI       | `src/components/common/`                                   | Actions, metadata, headers, artwork, forms, dialog, state                 |
 | Narrative Astro UI    | `src/components/narrative/`                                | Слайды, метаданные, прогресс и действия                                   |
 | Color reveal Astro UI | `src/components/experience/ColorRevealExperience.astro`    | Stage, HUD, progress, reset и completion dialog                           |
 | Details Astro UI      | `src/components/experience/DetailsExplorer.astro`          | Viewport, hotspots, zoom HUD, progress и два dialog-состояния             |

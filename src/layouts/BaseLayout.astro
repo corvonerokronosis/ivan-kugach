@@ -1,15 +1,30 @@
 ---
 import StudioDecoration from "../components/StudioDecoration.astro";
+import PageMetadata from "../components/common/PageMetadata.astro";
 import SiteNavigation from "../components/SiteNavigation.astro";
 import "../styles/global.css";
 
 interface Props {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
+  canonical?: string;
+  robots?: string;
+  socialImage?: string;
+  socialImageAlt?: string;
+  openGraphType?: "website" | "article";
   studioDecoration?: boolean;
 }
 
-const { title, description, studioDecoration = false } = Astro.props;
+const {
+  title,
+  description,
+  canonical,
+  robots,
+  socialImage,
+  socialImageAlt,
+  openGraphType,
+  studioDecoration = false,
+} = Astro.props;
 const hasHeaderContent = Astro.slots.has("header");
 const hasFooter = Astro.slots.has("footer");
 ---
@@ -18,9 +33,16 @@ const hasFooter = Astro.slots.has("footer");
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width" />
-    <title>{title}</title>
+    <PageMetadata
+      title={title}
+      description={description}
+      canonical={canonical}
+      robots={robots}
+      socialImage={socialImage}
+      socialImageAlt={socialImageAlt}
+      openGraphType={openGraphType}
+    />
   </head>
   <body class:list={{ "has-studio-decoration": studioDecoration }}>
     <a class="skip-link" href="#main-content">Перейти к содержанию</a>

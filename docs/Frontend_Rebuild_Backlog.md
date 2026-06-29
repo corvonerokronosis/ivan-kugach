@@ -1642,7 +1642,7 @@ npm.cmd run verify
 
 ## EPIC F13. SEO-основа frontend
 
-### [ ] FRT-048. Реализовать компонент метаданных
+### [x] FRT-048. Реализовать компонент метаданных
 
 Приоритет: Must  
 Версия: Frontend v0.4  
@@ -1662,6 +1662,23 @@ npm.cmd run verify
 
 - каждая индексируемая страница может задать уникальные метаданные;
 - страницы работ получают title и description из данных.
+
+Реализовано:
+
+- добавлен `PageMetadata.astro` с title, description, canonical, Open Graph, social image, robots directive и безопасными дефолтами;
+- `BaseLayout.astro` подключает компонент метаданных и принимает опциональные SEO-поля без нарушения существующих страниц;
+- страницы работ передают title/description из данных и social image из `seo.image` или основного изображения работы.
+
+Где лежит:
+
+- `src/components/common/PageMetadata.astro`;
+- `src/layouts/BaseLayout.astro`;
+- `src/pages/works/[slug].astro`, `src/pages/series/[slug].astro`, `src/pages/404.astro`, `src/pages/ui-preview.astro`.
+
+Как проверить:
+
+- выполнить `npm.cmd run check`;
+- открыть detail-страницу работы и проверить в `<head>` уникальные title, description, canonical, Open Graph, twitter image и robots.
 
 ### [ ] FRT-049. Добавить sitemap и robots
 

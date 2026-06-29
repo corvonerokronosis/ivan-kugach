@@ -44,7 +44,13 @@ const pageTitle = artwork.seo?.title ?? `${artwork.title} — Иван Куга�
 const pageDescription = artwork.seo?.description ?? artwork.shortDescription;
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  socialImage={artwork.seo?.image ?? primaryImage.src}
+  socialImageAlt={primaryImage.alt}
+  openGraphType="article"
+>
   <SectionHeader
     level="h1"
     eyebrow="Работа"

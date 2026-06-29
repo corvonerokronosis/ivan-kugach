@@ -1,0 +1,72 @@
+---
+import defaultSocialImage from "../../assets/images/works/dor-3518.jpg";
+
+type OpenGraphType = "website" | "article";
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  robots?: string;
+  socialImage?: string;
+  socialImageAlt?: string;
+  openGraphType?: OpenGraphType;
+}
+
+const defaultTitle = "Иван Кугач";
+const defaultDescription =
+  "Интерактивный сайт о творчестве Ивана Кугача: мастерская, сюжетный маршрут и каталог работ.";
+const defaultRobots = "index, follow";
+const siteName = "Иван Кугач";
+
+const {
+  title,
+  description,
+  canonical,
+  robots,
+  socialImage,
+  socialImageAlt,
+  openGraphType = "website",
+} = Astro.props;
+
+function getMetadataValue(value: string | undefined, fallback: string): string {
+  const normalizedValue = value?.trim();
+
+  return normalizedValue && normalizedValue.length > 0
+    ? normalizedValue
+    : fallback;
+}
+
+function resolveMetadataUrl(value: string): string {
+  return new URL(value, Astro.url).toString();
+}
+
+const pageTitle = getMetadataValue(title, defaultTitle);
+const pageDescription = getMetadataValue(description, defaultDescription);
+const canonicalUrl = resolveMetadataUrl(canonical ?? Astro.url.pathname);
+const robotsDirective = getMetadataValue(robots, defaultRobots);
+const socialImageUrl = resolveMetadataUrl(
+  socialImage ?? defaultSocialImage.src,
+);
+const socialImageDescription = getMetadataValue(socialImageAlt, pageTitle);
+---
+
+<title>{pageTitle}</title>
+<meta name="description" content={pageDescription} />
+<link rel="canonical" href={canonicalUrl} />
+<meta name="robots" content={robotsDirective} />
+
+<meta property="og:locale" content="ru_RU" />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:type" content={openGraphType} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={pageDescription} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:image" content={socialImageUrl} />
+<meta property="og:image:alt" content={socialImageDescription} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={pageDescription} />
+<meta name="twitter:image" content={socialImageUrl} />
+<meta name="twitter:image:alt" content={socialImageDescription} />

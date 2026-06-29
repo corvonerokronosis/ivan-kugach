@@ -37,6 +37,8 @@ const availableCount = seriesArtworks.filter(
 const soldCount = seriesArtworks.length - availableCount;
 const pageTitle = series.seo?.title ?? `${series.title} — серия Ивана Кугача`;
 const pageDescription = series.seo?.description ?? series.description;
+const pageImage = series.seo?.image ?? series.cover?.src;
+const pageImageAlt = series.cover?.alt ?? series.title;
 
 function formatPrice(artwork: ArtworkSummary): string {
   return artwork.priceType === "request"
@@ -45,7 +47,12 @@ function formatPrice(artwork: ArtworkSummary): string {
 }
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  socialImage={pageImage}
+  socialImageAlt={pageImageAlt}
+>
   <SectionHeader
     level="h1"
     eyebrow="Серия"
