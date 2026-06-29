@@ -68,6 +68,7 @@
 | `src/data/series.ts`                                       | Локальный типизированный источник серий                          | Изменение серий, stable ID, slug, cover и связи с работами                  |
 | `src/data/narrative.ts`                                    | Локальный типизированный источник narrative-блоков               | Изменение story-слайдов, текстов, изображений и completionAction            |
 | `src/data/hotspots.ts`                                     | Локальный типизированный источник hotspot-точек                  | Изменение точек деталей, координат, масштаба и поясняющих текстов           |
+| `src/data/light.ts`                                        | Локальный типизированный источник работ и состояний света        | Изменение картин, порядка, подписей, CSS-параметров и начального состояния  |
 | `src/types/artwork.ts`                                     | Канонический TypeScript-контракт произведения                    | Перед переносом данных работ, карточек, страниц работ и серий               |
 | `src/types/color-reveal.ts`                                | Контракты options, lifecycle, phase и progress canvas engine     | Подключение движка к UI без page-global состояния                           |
 | `src/types/zoom-pan.ts`                                    | Контракты состояния, bounds и options zoom/pan engine            | Подключение исследовательского интерактива без глобального состояния        |
@@ -76,6 +77,7 @@
 | `src/types/narrative.ts`                                   | TypeScript-контракт narrative-последовательностей                | Перед переносом narrative UI и маршрутов между этапами                      |
 | `src/types/narrative-route.ts`                             | TypeScript-контракт URL, входов и history actions narrative      | Изменение структуры route-definition                                        |
 | `src/types/hotspot.ts`                                     | TypeScript-контракт hotspot-точек исследовательского интерактива | Перед переносом zoom/pan и карточек точек                                   |
+| `src/types/light.ts`                                       | Контракты работ, состояний и визуальных параметров света         | Перед реализацией контроллера и продуктовой страницы света                  |
 | `src/layouts/BaseLayout.astro`                             | Общий layout новой версии с навигацией и optional-декором        | Общая оболочка Astro-страниц                                                |
 | `src/README.md`                                            | Правила структуры, именования и границ модулей                   | Перед созданием новых Astro/TypeScript-файлов                               |
 | `README.md`                                                | Краткое описание продукта, маршрута, ассетов и способа запуска   | Первичная ориентация и проверка актуальной точки входа                      |
@@ -103,14 +105,14 @@ ESLint проверяет новый Astro/TypeScript-код, unit-тесты и
 | `src/assets/`               | Импортируемые Astro web-ассеты                                 | Пустой каркас; legacy-ассеты будут перенесены позже                                           |
 | `src/components/`           | Повторно используемые Astro-компоненты                         | Навигация, common UI, works-, narrative-, experience-компоненты и декор                       |
 | `src/content/`              | Записи Astro Content Collections                               | Пустой каркас                                                                                 |
-| `src/data/`                 | Типизированные локальные данные и frontend-репозиторий         | `repository.ts` читает local-источники, включая narrative-контент и route-contract            |
+| `src/data/`                 | Типизированные локальные данные и frontend-репозиторий         | `repository.ts` читает local-источники, включая narrative, hotspots и данные света            |
 | `src/layouts/`              | Общие Astro-layouts                                            | `BaseLayout.astro`: metadata, skip-link и page slots                                          |
 | `src/pages/`                | Файловые маршруты Astro                                        | Главная, художник, experience/story, каталог, архив, generated-страницы, 404 и `/ui-preview/` |
 | `src/scripts/`              | Изолированные клиентские DOM/Canvas-модули                     | Форма, narrative, lifecycle canvas-движка и zoom/pan engine                                   |
 | `src/styles/`               | Токены и общие CSS-слои                                        | `global.css`, `tokens.css` и опциональный `studio.css`                                        |
-| `src/types/`                | Общие TypeScript-контракты                                     | Модели данных, narrative, hotspot-точек, canvas engine и zoom/pan                             |
+| `src/types/`                | Общие TypeScript-контракты                                     | Модели данных, narrative, hotspots, свет, canvas engine и zoom/pan                            |
 | `src/utils/`                | Чистые helpers и адаптеры                                      | Валидация заявки, coverage grid, zoom/pan math и frontend-only `inquiry-adapter.ts`           |
-| `tests/`                    | Unit-тесты чистой frontend-логики                              | Сейчас покрывает progress/reset/threshold интерактива раскрытия цвета                         |
+| `tests/`                    | Unit-тесты чистой frontend-логики                              | Покрывает coverage раскрытия цвета и математику zoom/pan                                      |
 | `public/`                   | Статические файлы без обработки Astro                          | Пустой каркас                                                                                 |
 | `src/for_sales/`            | Legacy-изображения каталога работ                              | Временно сохраняет пути монолита                                                              |
 | `src/picture_light_shadow/` | Legacy-изображения интерактива света                           | Временно сохраняет пути монолита                                                              |

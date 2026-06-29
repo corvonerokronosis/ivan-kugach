@@ -17,6 +17,13 @@ import {
   getHotspots as getLocalHotspots,
 } from "./hotspots";
 import {
+  getLightExperienceDefaults as getLocalLightExperienceDefaults,
+  getLightStateById as getLocalLightStateById,
+  getLightStates as getLocalLightStates,
+  getLightWorkById as getLocalLightWorkById,
+  getLightWorks as getLocalLightWorks,
+} from "./light";
+import {
   getNarrativeSequence as getLocalNarrativeSequence,
   getNarrativeSequences as getLocalNarrativeSequences,
 } from "./narrative";
@@ -34,6 +41,11 @@ import {
 } from "./series";
 import type { Artwork, ArtworkSummary } from "../types/artwork";
 import type { Hotspot } from "../types/hotspot";
+import type {
+  LightExperienceDefaults,
+  LightState,
+  LightWork,
+} from "../types/light";
 import type { NarrativeSequence } from "../types/narrative";
 import type { NarrativeRouteDefinition } from "../types/narrative-route";
 import type { Series, SeriesRef, SeriesSummary } from "../types/series";
@@ -66,6 +78,11 @@ export interface FrontendDataRepository {
   ): NarrativeRouteDefinition | undefined;
   getHotspots(): Hotspot[];
   getHotspotById(id: string): Hotspot | undefined;
+  getLightWorks(): LightWork[];
+  getLightWorkById(id: string): LightWork | undefined;
+  getLightStates(): LightState[];
+  getLightStateById(id: string): LightState | undefined;
+  getLightExperienceDefaults(): LightExperienceDefaults;
 }
 
 const localDataRepository = {
@@ -90,6 +107,11 @@ const localDataRepository = {
   getNarrativeRouteByPathname: getLocalNarrativeRouteByPathname,
   getHotspots: getLocalHotspots,
   getHotspotById: getLocalHotspotById,
+  getLightWorks: getLocalLightWorks,
+  getLightWorkById: getLocalLightWorkById,
+  getLightStates: getLocalLightStates,
+  getLightStateById: getLocalLightStateById,
+  getLightExperienceDefaults: getLocalLightExperienceDefaults,
 } satisfies FrontendDataRepository;
 
 export function getDataRepository(): FrontendDataRepository {
@@ -183,4 +205,24 @@ export function getHotspots(): Hotspot[] {
 
 export function getHotspotById(id: string): Hotspot | undefined {
   return getDataRepository().getHotspotById(id);
+}
+
+export function getLightWorks(): LightWork[] {
+  return getDataRepository().getLightWorks();
+}
+
+export function getLightWorkById(id: string): LightWork | undefined {
+  return getDataRepository().getLightWorkById(id);
+}
+
+export function getLightStates(): LightState[] {
+  return getDataRepository().getLightStates();
+}
+
+export function getLightStateById(id: string): LightState | undefined {
+  return getDataRepository().getLightStateById(id);
+}
+
+export function getLightExperienceDefaults(): LightExperienceDefaults {
+  return getDataRepository().getLightExperienceDefaults();
 }
