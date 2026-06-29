@@ -29,7 +29,7 @@ const { bridgePath } = Astro.props;
     </div>
   </div>
 
-  <div class="color-reveal__hud" aria-live="polite">
+  <div class="color-reveal__hud">
     <div class="color-reveal__copy">
       <h2>Возвращение цвета</h2>
       <p>Большая мягкая кисть и ускоренное раскрытие рядом с мазком.</p>
@@ -53,7 +53,12 @@ const { bridgePath } = Astro.props;
     </button>
   </div>
 
-  <p id="color-reveal-hint" class="color-reveal__hint" data-reveal-status>
+  <p
+    id="color-reveal-hint"
+    class="color-reveal__hint"
+    data-reveal-status
+    aria-live="polite"
+  >
     Зажмите и ведите курсором или пальцем по картине.
   </p>
 

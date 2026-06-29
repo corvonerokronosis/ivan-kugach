@@ -1435,7 +1435,7 @@ npm.cmd run verify
 - `DialogShell.astro` сохраняет `aria-labelledby/aria-describedby`, добавляет `aria-modal` для modal-режима и остаётся общей семантической оболочкой;
 - проверить: выполнить `npm.cmd run verify`, открыть `http://127.0.0.1:4322/ui-preview/`, нажать «Открыть dialog», пройти `Tab`/`Shift+Tab`, закрыть по `Escape` и убедиться, что фокус вернулся на кнопку открытия; на `/experience/details/` открыть hotspot и повторить Escape-проверку.
 
-### [ ] FRT-042. Провести аудит семантики страниц
+### [x] FRT-042. Провести аудит семантики страниц
 
 Приоритет: Must  
 Версия: Frontend v0.4  
@@ -1455,6 +1455,15 @@ npm.cmd run verify
 
 - автоматический accessibility scan не показывает критических ошибок;
 - ручной keyboard-only сценарий проходим.
+
+Выполнено 2026-06-29:
+
+- на главной добавлены скрытые семантические заголовки секций и выровнен порядок `h1` → `h2` → `h3` в `src/pages/index.astro`;
+- форма интереса получила доступное имя через `aria-labelledby` в `src/components/works/InterestForm.astro`, `src/pages/works/index.astro` и `src/pages/works/[slug].astro`;
+- live-region интерактива возврата цвета сужен до статусной подсказки в `src/components/experience/ColorRevealExperience.astro`;
+- общий helper `.visually-hidden` добавлен в `src/styles/global.css`;
+- проверено: автоматический DOM/accessibility scan страниц `/`, `/works/`, `/works/dor-3518/`, `/experience/color-return/`, `/experience/details/`, `/experience/light/` не нашёл критических ошибок; keyboard-only сценарий формы `/works/` проходит через `Tab` до submit, `Enter` показывает ошибки и переводит фокус на первое невалидное поле;
+- как проверить: выполнить `npm.cmd run verify`, открыть production preview и на `/works/` пройти клавиатурой до кнопки «Подготовить заявку», нажать `Enter`, убедиться, что появились ошибки формы и фокус стоит в поле «Имя».
 
 ### [ ] FRT-043. Реализовать reduced motion и альтернативы жестам
 

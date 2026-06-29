@@ -59,10 +59,14 @@ if (!introRoute) {
   <section
     id="interactive-entries"
     class="home-launch-grid"
-    aria-label="Интерактивы и каталог"
+    aria-labelledby="interactive-entries-title"
   >
+    <h2 id="interactive-entries-title" class="visually-hidden">
+      Интерактивы и каталог
+    </h2>
+
     <InteractiveLaunchCard
-      headingLevel="h2"
+      headingLevel="h3"
       layout="stacked"
       eyebrow="Первый этап"
       title="Возвращение цвета"
@@ -90,7 +94,7 @@ if (!introRoute) {
     </InteractiveLaunchCard>
 
     <InteractiveLaunchCard
-      headingLevel="h2"
+      headingLevel="h3"
       layout="stacked"
       eyebrow="Второй этап"
       title="Приблизить детали"
@@ -118,7 +122,7 @@ if (!introRoute) {
     </InteractiveLaunchCard>
 
     <InteractiveLaunchCard
-      headingLevel="h2"
+      headingLevel="h3"
       layout="stacked"
       eyebrow="Третий этап"
       title="Свет в мастерской"
@@ -146,7 +150,7 @@ if (!introRoute) {
     </InteractiveLaunchCard>
 
     <InteractiveLaunchCard
-      headingLevel="h2"
+      headingLevel="h3"
       layout="stacked"
       eyebrow="Отдельный раздел"
       title="Работы для покупки"
@@ -174,9 +178,12 @@ if (!introRoute) {
     </InteractiveLaunchCard>
   </section>
 
-  <section class="home-facts" aria-label="Краткое описание проекта">
-    <article>
-      <strong>О художнике</strong>
+  <section class="home-facts" aria-labelledby="home-facts-title">
+    <h2 id="home-facts-title" class="visually-hidden">
+      Краткое описание проекта
+    </h2>
+    <article aria-labelledby="home-fact-artist-title">
+      <h3 id="home-fact-artist-title">О художнике</h3>
       <p>
         Иван Кугач известен вниманием к тихим сюжетам, человеческому масштабу и
         мягкой живописной атмосфере.
@@ -185,15 +192,15 @@ if (!introRoute) {
         Узнать о художнике
       </Action>
     </article>
-    <article>
-      <strong>О прототипе</strong>
+    <article aria-labelledby="home-fact-prototype-title">
+      <h3 id="home-fact-prototype-title">О прототипе</h3>
       <p>
         Пользователь не просто смотрит на произведение, а постепенно раскрывает
         его цвет, словно участвуя в деликатной реставрации.
       </p>
     </article>
-    <article>
-      <strong>О входе</strong>
+    <article aria-labelledby="home-fact-entry-title">
+      <h3 id="home-fact-entry-title">О входе</h3>
       <p>
         Каждый сценарий имеет самостоятельный адрес, поэтому его можно открыть
         напрямую и сохранить как обычную ссылку.
@@ -375,7 +382,7 @@ if (!introRoute) {
     box-shadow: var(--shadow-surface);
   }
 
-  .home-facts strong {
+  .home-facts h3 {
     color: var(--color-text-muted);
     font-family: var(--font-family-ui);
     font-size: var(--font-size-100);

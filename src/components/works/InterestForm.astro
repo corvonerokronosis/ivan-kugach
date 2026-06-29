@@ -9,6 +9,8 @@ interface Props {
   availabilityLabels: ArtworkAvailabilityLabels;
   selectedWorkId?: string;
   idPrefix?: string;
+  labelledBy?: string;
+  describedBy?: string;
 }
 
 const {
@@ -16,6 +18,8 @@ const {
   availabilityLabels,
   selectedWorkId = artworks[0]?.id,
   idPrefix = "interest",
+  labelledBy,
+  describedBy,
 } = Astro.props;
 const selectedWork = artworks.find((artwork) => artwork.id === selectedWorkId);
 const initialComment =
@@ -34,6 +38,8 @@ function formatPrice(artwork: ArtworkSummary): string {
   class="interest-form"
   data-interest-form
   data-form-status="idle"
+  aria-labelledby={labelledBy}
+  aria-describedby={describedBy}
   novalidate
 >
   <div class="interest-form__grid">
