@@ -420,6 +420,25 @@ export function mountColorRevealEngine(
     setBrushOpacity(isPointerInside ? 0.9 : 0);
     emitProgress();
 
+    if (prefersReducedMotion(engineView)) {
+      revealContext.clearRect(
+        0,
+        0,
+        options.revealCanvas.width,
+        options.revealCanvas.height,
+      );
+      rawProgress = 100;
+      setPhase("complete");
+      emitProgress();
+      completionTimer = engineView.setTimeout(() => {
+        completionTimer = null;
+        if (!destroyed && phase === "complete") {
+          options.onComplete?.();
+        }
+      }, completionDelay);
+      return;
+    }
+
     const width = options.revealCanvas.width;
     const height = options.revealCanvas.height;
     const anchor = lastPaintPoint ?? { x: width / 2, y: height / 2 };
@@ -641,4 +660,8 @@ function boundedNumber(
     value <= maximum
     ? value
     : fallback;
+}
+
+function prefersReducedMotion(view: Window): boolean {
+  return view.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }

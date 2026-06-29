@@ -51,6 +51,14 @@ const { bridgePath } = Astro.props;
     >
       Сбросить
     </button>
+    <button
+      class="color-reveal__complete"
+      type="button"
+      data-reveal-complete
+      aria-label="Раскрыть картину полностью без жеста"
+    >
+      Показать полностью
+    </button>
   </div>
 
   <p
@@ -59,7 +67,8 @@ const { bridgePath } = Astro.props;
     data-reveal-status
     aria-live="polite"
   >
-    Зажмите и ведите курсором или пальцем по картине.
+    Зажмите и ведите курсором или пальцем по картине либо нажмите «Показать
+    полностью».
   </p>
 
   <DialogShell
@@ -258,6 +267,7 @@ const { bridgePath } = Astro.props;
   }
 
   .color-reveal__reset,
+  .color-reveal__complete,
   .color-reveal__dialog-action {
     display: inline-flex;
     min-height: 2.5rem;
@@ -277,6 +287,17 @@ const { bridgePath } = Astro.props;
     border-color: rgb(255 248 236 / 22%);
     color: var(--color-text-on-accent);
     background: rgb(255 248 236 / 14%);
+  }
+
+  .color-reveal__complete {
+    border-color: rgb(255 248 236 / 28%);
+    color: var(--color-text-on-accent);
+    background: var(--color-accent-strong);
+  }
+
+  .color-reveal__complete:disabled {
+    cursor: not-allowed;
+    opacity: 0.62;
   }
 
   .color-reveal__dialog-action {
@@ -312,7 +333,7 @@ const { bridgePath } = Astro.props;
 
   @media (min-width: 48rem) {
     .color-reveal__hud {
-      grid-template-columns: minmax(11rem, 0.34fr) minmax(0, 1fr) auto;
+      grid-template-columns: minmax(11rem, 0.34fr) minmax(0, 1fr) auto auto;
     }
   }
 
@@ -334,6 +355,7 @@ const { bridgePath } = Astro.props;
 
     .color-reveal__hud,
     .color-reveal__reset,
+    .color-reveal__complete,
     .color-reveal__dialog-action {
       width: 100%;
     }

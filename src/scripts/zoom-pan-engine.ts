@@ -23,6 +23,7 @@ export function mountZoomPanEngine(
   if (!view) {
     throw new Error("Zoom/pan engine: Window недоступен");
   }
+  const engineView = view;
 
   const zoomStep = positiveNumber(options.zoomStep, 0.14);
   const minScaleRatio = positiveNumber(options.minScaleRatio, 0.72);
@@ -83,8 +84,10 @@ export function mountZoomPanEngine(
       options.content.style.height = `${contentSize.height}px`;
     }
 
+    const shouldTransition = useTransition && !prefersReducedMotion(engineView);
+
     options.content.style.transformOrigin = "0 0";
-    options.content.style.transition = useTransition ? transition : "none";
+    options.content.style.transition = shouldTransition ? transition : "none";
     options.content.style.transform = `translate3d(${state.x}px, ${state.y}px, 0) scale(${state.scale})`;
     options.viewport.dataset.zoomPanDragging = state.isDragging
       ? "true"
@@ -344,8 +347,8 @@ export function mountZoomPanEngine(
   options.viewport.addEventListener("wheel", handleWheel, { passive: false });
   options.imageElement?.addEventListener("load", handleImageLoad);
 
-  if (options.observeResize !== false && "ResizeObserver" in view) {
-    resizeObserver = new view.ResizeObserver(() => fit());
+  if (options.observeResize !== false && "ResizeObserver" in engineView) {
+    resizeObserver = new engineView.ResizeObserver(() => fit());
     resizeObserver.observe(options.viewport);
   }
 
@@ -362,4 +365,8 @@ function positiveNumber(value: number | undefined, fallback: number): number {
   return typeof value === "number" && Number.isFinite(value) && value > 0
     ? value
     : fallback;
+}
+
+function prefersReducedMotion(view: Window): boolean {
+  return view.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }

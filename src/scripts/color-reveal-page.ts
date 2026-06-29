@@ -1,11 +1,14 @@
 import { mountColorRevealEngine } from "./color-reveal-engine";
 import { createAccessibleDialogController } from "./dialog-controller";
-import type { ColorRevealEngine } from "../types/color-reveal";
+import type {
+  ColorRevealEngine,
+  ColorRevealPhase,
+} from "../types/color-reveal";
 
 const initializedPages = new WeakSet<HTMLElement>();
 
 const statusByPhase = {
-  idle: "Зажмите и ведите курсором или пальцем по картине.",
+  idle: "Зажмите и ведите курсором или пальцем по картине либо нажмите «Показать полностью».",
   painting: "Цвет возвращается вслед за движением кисти.",
   completing: "Картина раскрывается полностью.",
   complete: "Картина раскрыта. Можно продолжить историю.",
@@ -37,6 +40,9 @@ function setupColorRevealPage(root: HTMLElement): void {
   const resetButton = root.querySelector<HTMLButtonElement>(
     "[data-reveal-reset]",
   );
+  const completeButton = root.querySelector<HTMLButtonElement>(
+    "[data-reveal-complete]",
+  );
   const dialog = root.querySelector<HTMLDialogElement>("dialog");
   const dialogResetButton = root.querySelector<HTMLButtonElement>(
     "[data-reveal-dialog-reset]",
@@ -56,6 +62,7 @@ function setupColorRevealPage(root: HTMLElement): void {
     !progressText ||
     !statusElement ||
     !resetButton ||
+    !completeButton ||
     !dialog ||
     !dialogResetButton ||
     !dialogCloseButton
@@ -65,6 +72,8 @@ function setupColorRevealPage(root: HTMLElement): void {
 
   const progressBar = progressElement;
   const progressLabel = progressText;
+  const status = statusElement;
+  const revealCompleteButton = completeButton;
   const completionDialog = dialog;
   const completionDialogController =
     createAccessibleDialogController(completionDialog);
@@ -76,6 +85,11 @@ function setupColorRevealPage(root: HTMLElement): void {
     progressLabel.textContent = `${displayPercent}%`;
   }
 
+  function updateCompleteButton(phase: ColorRevealPhase): void {
+    revealCompleteButton.disabled =
+      phase === "completing" || phase === "complete";
+  }
+
   function closeDialog(): void {
     completionDialogController.close();
   }
@@ -83,6 +97,15 @@ function setupColorRevealPage(root: HTMLElement): void {
   function reset(): void {
     closeDialog();
     engine?.reset();
+  }
+
+  function completeWithoutGesture(): void {
+    if (!engine) {
+      return;
+    }
+
+    status.textContent = statusByPhase.completing;
+    engine.startAutoReveal();
   }
 
   function openCompletionDialog(): void {
@@ -96,16 +119,19 @@ function setupColorRevealPage(root: HTMLElement): void {
     sourceImage,
     brushElement,
     onPhaseChange: (phase) => {
-      statusElement.textContent = statusByPhase[phase];
+      status.textContent = statusByPhase[phase];
+      updateCompleteButton(phase);
     },
     onProgress: ({ displayPercent, phase }) => {
       updateProgress(displayPercent);
-      statusElement.textContent = statusByPhase[phase];
+      status.textContent = statusByPhase[phase];
+      updateCompleteButton(phase);
     },
     onComplete: openCompletionDialog,
   });
 
   resetButton.addEventListener("click", reset);
+  revealCompleteButton.addEventListener("click", completeWithoutGesture);
   dialogResetButton.addEventListener("click", reset);
   dialogCloseButton.addEventListener("click", closeDialog);
   root.ownerDocument.defaultView?.addEventListener(

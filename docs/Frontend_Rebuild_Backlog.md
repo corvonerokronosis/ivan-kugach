@@ -1465,7 +1465,7 @@ npm.cmd run verify
 - проверено: автоматический DOM/accessibility scan страниц `/`, `/works/`, `/works/dor-3518/`, `/experience/color-return/`, `/experience/details/`, `/experience/light/` не нашёл критических ошибок; keyboard-only сценарий формы `/works/` проходит через `Tab` до submit, `Enter` показывает ошибки и переводит фокус на первое невалидное поле;
 - как проверить: выполнить `npm.cmd run verify`, открыть production preview и на `/works/` пройти клавиатурой до кнопки «Подготовить заявку», нажать `Enter`, убедиться, что появились ошибки формы и фокус стоит в поле «Имя».
 
-### [ ] FRT-043. Реализовать reduced motion и альтернативы жестам
+### [x] FRT-043. Реализовать reduced motion и альтернативы жестам
 
 Приоритет: Must  
 Версия: Frontend v0.4  
@@ -1483,6 +1483,15 @@ npm.cmd run verify
 
 - основные сценарии доступны без drag, wheel и hover;
 - reduced-motion не мешает понять изменение состояния.
+
+Реализация:
+
+- в `src/components/experience/ColorRevealExperience.astro` добавлена кнопка «Показать полностью» как доступная альтернатива canvas-жесту;
+- `src/scripts/color-reveal-page.ts` подключает кнопку к `startAutoReveal`, обновляет статус и блокирует повторный запуск во время завершения;
+- `src/scripts/color-reveal-engine.ts` завершает auto-reveal без покадровой анимации при `prefers-reduced-motion: reduce`;
+- `src/scripts/zoom-pan-engine.ts` отключает inline transition zoom/pan при `prefers-reduced-motion: reduce`;
+- `src/components/experience/DetailsExplorer.astro` и `src/scripts/details-explorer-page.ts` уточняют подсказки: точки, zoom и pan доступны кнопками и клавиатурой, а drag/wheel остаются дополнительными способами;
+- проверить: выполнить `npm.cmd run verify`, открыть `/experience/color-return/`, нажать «Показать полностью» без рисования и убедиться, что прогресс доходит до 100% и открывается dialog; открыть `/experience/details/`, пройти точки кнопками, менять масштаб кнопками и двигать вид стрелками; открыть `/experience/light/`, пройти состояния ползунком с клавиатуры.
 
 ---
 

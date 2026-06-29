@@ -119,6 +119,11 @@ function setupDetailsExplorer(root: HTMLElement): void {
       return;
     }
 
+    if (prefersReducedMotion(view)) {
+      callback();
+      return;
+    }
+
     const timer = view.setTimeout(() => {
       timers.delete(timer);
       callback();
@@ -145,7 +150,7 @@ function setupDetailsExplorer(root: HTMLElement): void {
       return;
     }
 
-    progressElement.textContent = `Открыто точек: ${viewedIds.size} из ${hotspots.length}. Перетаскивайте картину мышью или пальцем и исследуйте оставшиеся детали.`;
+    progressElement.textContent = `Открыто точек: ${viewedIds.size} из ${hotspots.length}. Выбирайте точки кнопками, меняйте масштаб кнопками и двигайте вид стрелками клавиатуры.`;
     nextStageLink.hidden = true;
   }
 
@@ -302,6 +307,10 @@ function requiredNumber(value: string | undefined, label: string): number {
   }
 
   return parsed;
+}
+
+function prefersReducedMotion(view: Window): boolean {
+  return view.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 document
