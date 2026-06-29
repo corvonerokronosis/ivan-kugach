@@ -1,4 +1,4 @@
-import detailsArtwork from "../Kugach_picture_2.png";
+import detailsArtwork from "../assets/images/interactive/details/kugach-picture-2.png";
 import type { Hotspot } from "../types/hotspot";
 
 const hotspotImage = {

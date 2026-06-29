@@ -1497,7 +1497,7 @@ npm.cmd run verify
 
 ## EPIC F12. Изображения и производительность
 
-### [ ] FRT-044. Провести инвентаризацию изображений
+### [x] FRT-044. Провести инвентаризацию изображений
 
 Приоритет: Must  
 Версия: Frontend v0.4
@@ -1514,6 +1514,23 @@ npm.cmd run verify
 - каждый production-ассет используется;
 - пути имеют единый регистр и безопасные имена;
 - оригиналы не загружаются в браузер без необходимости.
+
+Реализация:
+
+- 10 активных изображений перенесены в `src/assets/images/` с lowercase
+  kebab-case путями: `works/`, `interactive/color-reveal/`,
+  `interactive/details/`, `interactive/light/`;
+- Astro-импорты и строковые asset-ссылки legacy `index_masterskaya.html`
+  обновлены на новые пути;
+- назначение, размеры, вес, текущие поверхности и ожидаемые hero/thumbnail/detail/interactive/social-варианты
+  зафиксированы в `docs/IMAGE_INVENTORY.md`;
+- `docs/PROJECT_MAP.md` и `src/README.md` обновлены под новую реальную
+  asset-структуру;
+- проверить: выполнить `npm.cmd run verify`, затем открыть
+  `index_masterskaya.html` и Astro routes `/`, `/experience/color-return/`,
+  `/experience/details/`, `/experience/light/`, `/works/`; изображения должны
+  отображаться, а `rg -n 'for_sales|picture_light_shadow|Kugach_picture|_DOR62'`
+  должен находить только исторические упоминания в документации инвентаризации.
 
 ### [ ] FRT-045. Подключить Astro image pipeline
 

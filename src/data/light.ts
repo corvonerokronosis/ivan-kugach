@@ -1,6 +1,6 @@
-import light6254Url from "../picture_light_shadow/_DOR6254.JPG?url";
-import light6258Url from "../picture_light_shadow/_DOR6258.JPG?url";
-import light6263Url from "../picture_light_shadow/_DOR6263.JPG?url";
+import light6254Url from "../assets/images/interactive/light/dor-6254.jpg?url";
+import light6258Url from "../assets/images/interactive/light/dor-6258.jpg?url";
+import light6263Url from "../assets/images/interactive/light/dor-6263.jpg?url";
 import type {
   LightExperienceDefaults,
   LightState,

@@ -1,6 +1,6 @@
-import colorArtwork from "../Kugach_picture_1.png";
-import detailsArtwork from "../Kugach_picture_2.png";
-import lightArtworkUrl from "../picture_light_shadow/_DOR6258.JPG?url";
+import colorArtwork from "../assets/images/interactive/color-reveal/kugach-picture-1.png";
+import detailsArtwork from "../assets/images/interactive/details/kugach-picture-2.png";
+import lightArtworkUrl from "../assets/images/interactive/light/dor-6258.jpg?url";
 import {
   isNarrativeCompletionAction,
   isNarrativeContentStatus,

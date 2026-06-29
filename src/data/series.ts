@@ -1,4 +1,4 @@
-import dor3518Image from "../for_sales/DOR_3518.jpg";
+import dor3518Image from "../assets/images/works/dor-3518.jpg";
 import type { Series, SeriesRef, SeriesSummary } from "../types/series";
 
 const series = validateSeries([

@@ -1,8 +1,8 @@
-import dor3518Image from "../for_sales/DOR_3518.jpg";
-import dor3571Image from "../for_sales/DOR_3571.jpg";
-import dsc8578Image from "../for_sales/DSC_8578 1.jpg";
-import dsc8599Image from "../for_sales/DSC_8599 1.jpg";
-import dsc8602Image from "../for_sales/DSC_8602 1.jpg";
+import dor3518Image from "../assets/images/works/dor-3518.jpg";
+import dor3571Image from "../assets/images/works/dor-3571.jpg";
+import dsc8578Image from "../assets/images/works/dsc-8578.jpg";
+import dsc8599Image from "../assets/images/works/dsc-8599.jpg";
+import dsc8602Image from "../assets/images/works/dsc-8602.jpg";
 import { getSeriesById, getSeriesRefById } from "./series";
 import {
   isArtworkAvailability,
