@@ -1,6 +1,7 @@
 ---
 import type { Hotspot } from "../../types/hotspot";
 import DialogShell from "../common/DialogShell.astro";
+import OptimizedImage from "../common/OptimizedImage.astro";
 
 interface Props {
   hotspots: Hotspot[];
@@ -28,10 +29,12 @@ if (!artwork) {
         aria-describedby="details-explorer-instructions"
       >
         <div class="details-explorer__canvas" data-details-content>
-          <img
+          <OptimizedImage
             data-details-image
             src={artwork.src}
             alt={artwork.alt}
+            variant="interactive"
+            priority
             draggable="false"
           />
           {

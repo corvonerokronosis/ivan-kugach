@@ -1,6 +1,6 @@
 import colorArtwork from "../assets/images/interactive/color-reveal/kugach-picture-1.png";
 import detailsArtwork from "../assets/images/interactive/details/kugach-picture-2.png";
-import lightArtworkUrl from "../assets/images/interactive/light/dor-6258.jpg?url";
+import lightArtwork from "../assets/images/interactive/light/dor-6258.jpg";
 import {
   isNarrativeCompletionAction,
   isNarrativeContentStatus,
@@ -151,7 +151,7 @@ const narrativeSequences = validateNarrativeSequences([
         meta: ["Интерлюдия", "Окно 2", "Свет"],
         title: "Свет показывает не новую картину, а новое состояние",
         image: {
-          src: lightArtworkUrl,
+          src: lightArtwork.src,
           alt: "Свет показывает не новую картину, а новое состояние",
           caption: "Одна из экспериментальных работ для интерактива света.",
         },

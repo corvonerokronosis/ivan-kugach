@@ -1532,7 +1532,7 @@ npm.cmd run verify
   отображаться, а `rg -n 'for_sales|picture_light_shadow|Kugach_picture|_DOR62'`
   должен находить только исторические упоминания в документации инвентаризации.
 
-### [ ] FRT-045. Подключить Astro image pipeline
+### [x] FRT-045. Подключить Astro image pipeline
 
 Приоритет: Must  
 Версия: Frontend v0.4  
@@ -1551,6 +1551,25 @@ npm.cmd run verify
 - каталог не загружает полноразмерные оригиналы для миниатюр;
 - layout shift от изображений минимизирован;
 - изображения корректно собираются в production.
+
+Реализация:
+
+- `src/components/common/OptimizedImage.astro` создаёт ограниченные по назначению
+  AVIF/WebP и fallback-варианты с `srcset`, `sizes`, intrinsic-размерами,
+  lazy loading по умолчанию и приоритетом только для hero/interactive-stage;
+- `src/utils/image-assets.ts` связывает URL типизированных данных с импортированными
+  Astro image metadata; общий `FramedArtwork`, narrative и интерактивы переведены
+  на этот pipeline, а локальные ссылки используют `ImageMetadata.src` без `?url`,
+  чтобы одинаково разрешаться в dev и production;
+- динамические stage-изображения `LightWorkshop.astro` получают WebP шириной не
+  более 1600 px при сборке, а миниатюры selector — responsive AVIF/WebP с
+  фиксированной landscape-рамкой, не зависящей от intrinsic height исходника;
+- проверить: выполнить `npm.cmd run verify`, открыть `/works/`,
+  `/works/dor-3518/`, `/series/demo-series-needs-title/`,
+  `/experience/color-return/`, `/experience/details/` и `/experience/light/`;
+  в production HTML у изображений должны быть `width`, `height`, `srcset` и
+  `sizes`, карточки каталога — использовать варианты не шире 720 px, а смена
+  картин в мастерской света — не обращаться к полноразмерным исходникам.
 
 ### [ ] FRT-046. Разделить клиентские bundles интерактивов
 

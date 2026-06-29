@@ -1,5 +1,6 @@
 ---
 import type { NarrativeSequence } from "../../types/narrative";
+import OptimizedImage from "../common/OptimizedImage.astro";
 
 interface Props {
   id: string;
@@ -53,7 +54,11 @@ const Heading = headingLevel;
           hidden={index !== safeInitialIndex}
         >
           <div class="narrative-slide__media">
-            <img src={slide.image.src} alt={slide.image.alt} />
+            <OptimizedImage
+              src={slide.image.src}
+              alt={slide.image.alt}
+              variant="detail"
+            />
             <p>{slide.image.caption}</p>
           </div>
 

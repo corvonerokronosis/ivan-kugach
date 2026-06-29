@@ -59,7 +59,8 @@ const pageDescription = artwork.seo?.description ?? artwork.shortDescription;
         alt={primaryImage.alt}
         caption={primaryImage.caption ?? artwork.series?.title}
         fit="cover"
-        loading="eager"
+        priority
+        variant="hero"
         aspectRatio="1 / 1"
       />
     </div>
@@ -136,6 +137,7 @@ const pageDescription = artwork.seo?.description ?? artwork.shortDescription;
             <FramedArtwork
               src={image.src}
               alt={image.alt}
+              variant="detail"
               caption={
                 image.caption ?? (index === 0 ? "Основной вид" : undefined)
               }

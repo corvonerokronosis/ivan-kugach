@@ -1,9 +1,13 @@
 ---
+import OptimizedImage from "./OptimizedImage.astro";
+
 interface Props {
   src: string;
   alt: string;
   caption?: string;
   loading?: "eager" | "lazy";
+  priority?: boolean;
+  variant?: "hero" | "thumbnail" | "detail";
   fit?: "cover" | "contain";
   aspectRatio?: string;
 }
@@ -13,6 +17,8 @@ const {
   alt,
   caption,
   loading = "lazy",
+  priority = false,
+  variant = "thumbnail",
   fit = "cover",
   aspectRatio = "4 / 3",
 } = Astro.props;
@@ -24,7 +30,13 @@ const {
 >
   <div class="framed-artwork__frame">
     <div class="framed-artwork__mat">
-      <img src={src} alt={alt} loading={loading} decoding="async" />
+      <OptimizedImage
+        src={src}
+        alt={alt}
+        variant={variant}
+        loading={loading}
+        priority={priority}
+      />
     </div>
   </div>
   {caption && <figcaption>{caption}</figcaption>}

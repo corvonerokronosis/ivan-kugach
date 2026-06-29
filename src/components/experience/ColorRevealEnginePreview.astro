@@ -1,14 +1,16 @@
 ---
 import artwork from "../../assets/images/interactive/color-reveal/kugach-picture-1.png";
+import OptimizedImage from "../common/OptimizedImage.astro";
 ---
 
 <section class="reveal-preview" data-color-reveal-preview>
   <div class="reveal-preview__stage" data-reveal-container>
     <canvas data-reveal-base aria-hidden="true"></canvas>
-    <img
+    <OptimizedImage
       data-reveal-source
       src={artwork.src}
       alt=""
+      variant="interactive"
       hidden
       crossorigin="anonymous"
     />

@@ -1,6 +1,7 @@
 ---
 import artwork from "../../assets/images/interactive/color-reveal/kugach-picture-1.png";
 import DialogShell from "../common/DialogShell.astro";
+import OptimizedImage from "../common/OptimizedImage.astro";
 
 interface Props {
   bridgePath: string;
@@ -13,10 +14,12 @@ const { bridgePath } = Astro.props;
   <div class="color-reveal__frame" aria-describedby="color-reveal-hint">
     <div class="color-reveal__stage" data-reveal-container>
       <canvas data-reveal-base aria-hidden="true"></canvas>
-      <img
+      <OptimizedImage
         data-reveal-source
         src={artwork.src}
         alt=""
+        variant="interactive"
+        priority
         hidden
         crossorigin="anonymous"
       />

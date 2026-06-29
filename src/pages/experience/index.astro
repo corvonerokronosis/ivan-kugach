@@ -1,7 +1,7 @@
 ---
 import colorArtwork from "../../assets/images/interactive/color-reveal/kugach-picture-1.png";
 import detailsArtwork from "../../assets/images/interactive/details/kugach-picture-2.png";
-import lightArtworkUrl from "../../assets/images/interactive/light/dor-6258.jpg?url";
+import lightArtwork from "../../assets/images/interactive/light/dor-6258.jpg";
 import Action from "../../components/common/Action.astro";
 import FramedArtwork from "../../components/common/FramedArtwork.astro";
 import MetaBadge from "../../components/common/MetaBadge.astro";
@@ -136,7 +136,7 @@ if (!introRoute) {
         </div>
         <div class="route-stage__media">
           <FramedArtwork
-            src={lightArtworkUrl}
+            src={lightArtwork.src}
             alt="Пейзаж с водой и деревьями для интерактива света"
             caption="Третий взгляд: один мотив меняется вместе с освещением."
             aspectRatio="1.08 / 1"

@@ -1,10 +1,13 @@
 ---
+import { getImage } from "astro:assets";
 import type {
   LightExperienceDefaults,
   LightState,
   LightWork,
 } from "../../types/light";
+import { getProductionImageAsset } from "../../utils/image-assets";
 import DialogShell from "../common/DialogShell.astro";
+import OptimizedImage from "../common/OptimizedImage.astro";
 
 interface Props {
   works: LightWork[];
@@ -25,10 +28,36 @@ if (!initialWork || !initialState || initialStateIndex < 0) {
   throw new Error("Light workshop: начальные данные не найдены");
 }
 
-const serializedConfig = JSON.stringify({ works, states, defaults }).replaceAll(
-  "<",
-  "\\u003c",
+const runtimeWorks = await Promise.all(
+  works.map(async (work) => {
+    const asset = getProductionImageAsset(work.image.src);
+    const optimizedImage = await getImage({
+      src: asset,
+      width: Math.min(asset.width, 1600),
+      format: "webp",
+      quality: 82,
+    });
+
+    return {
+      ...work,
+      image: { ...work.image, src: optimizedImage.src },
+    };
+  }),
 );
+const initialRuntimeWork = runtimeWorks.find(
+  (work) => work.id === defaults.workId,
+);
+const initialWorkAsset = getProductionImageAsset(initialWork.image.src);
+
+if (!initialRuntimeWork) {
+  throw new Error("Light workshop: optimized initial work not found");
+}
+
+const serializedConfig = JSON.stringify({
+  works: runtimeWorks,
+  states,
+  defaults,
+}).replaceAll("<", "\\u003c");
 const initialVisual = initialState.visual;
 ---
 
@@ -41,8 +70,10 @@ const initialVisual = initialState.visual;
     >
       <img
         data-light-image
-        src={initialWork.image.src}
+        src={initialRuntimeWork.image.src}
         alt={initialWork.image.alt}
+        width={initialWorkAsset.width}
+        height={initialWorkAsset.height}
         draggable="false"
         loading="eager"
         fetchpriority="high"
@@ -70,7 +101,7 @@ const initialVisual = initialState.visual;
               aria-label={`Выбрать ${work.title}`}
               aria-pressed={work.id === defaults.workId}
             >
-              <img src={work.image.src} alt="" loading="lazy" />
+              <OptimizedImage src={work.image.src} alt="" variant="thumbnail" />
               <span>{work.title}</span>
             </button>
           ))
@@ -344,6 +375,7 @@ const initialVisual = initialState.visual;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--space-2);
+    align-items: start;
   }
 
   .light-workshop__work {
@@ -358,12 +390,20 @@ const initialVisual = initialState.visual;
     font: inherit;
     text-align: left;
     cursor: pointer;
+    align-content: start;
+  }
+
+  .light-workshop__work picture {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1.25 / 1;
+    overflow: hidden;
   }
 
   .light-workshop__work img {
     display: block;
     width: 100%;
-    aspect-ratio: 1.25 / 1;
+    height: 100%;
     object-fit: cover;
     border: 1px solid var(--color-border);
     border-radius: calc(var(--radius-sm) / 2);

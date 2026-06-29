@@ -14,8 +14,20 @@
 - Отдельных master/original-файлов в активном frontend-контуре нет. Текущие
   файлы считаются web-источниками для Astro и legacy baseline; если появятся
   исходники большего качества, их нельзя импортировать напрямую в UI.
-- FRT-045 должен строить hero, thumbnail, detail и interactive-варианты от
-  этих web-источников через Astro image pipeline.
+- FRT-045 строит hero, thumbnail, detail и interactive-варианты от этих
+  web-источников через Astro image pipeline.
+
+## Реализация FRT-045
+
+- `src/components/common/OptimizedImage.astro` создаёт AVIF, WebP и fallback с
+  intrinsic `width`/`height`, `srcset` и `sizes`.
+- Профиль `thumbnail` ограничен 720 px, остальные responsive-профили — 1920 px;
+  исходная ширина добавляется только для файлов, которые меньше лимита профиля.
+- Изображения загружаются лениво по умолчанию. `fetchpriority="high"` и eager
+  loading используются только для hero и основных stage интерактивов.
+- Динамические stage-изображения света собираются в WebP шириной до 1600 px;
+  selector использует responsive thumbnail-профиль и landscape-рамку 1.25:1.
+- Реестр `src/utils/image-assets.ts` должен обновляться вместе с этой таблицей.
 
 ## Production Assets
 

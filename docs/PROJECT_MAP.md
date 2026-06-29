@@ -127,6 +127,13 @@ ESLint проверяет новый Astro/TypeScript-код, unit-тесты и
 | `archive/`                | Старые версии HTML, changelog и bug notes                      | История; не источник текущего поведения                                                       |
 | `scrns/`                  | Старые скриншоты                                               | Визуальный референс, не код                                                                   |
 
+Image pipeline FRT-045:
+
+- `src/components/common/OptimizedImage.astro` — AVIF/WebP, responsive-профили,
+  intrinsic-размеры, lazy loading и hero priority;
+- `src/utils/image-assets.ts` — реестр production-изображений, который связывает
+  URL из типизированных данных с Astro image metadata.
+
 ## 5. Ключевые экраны и фичи
 
 Все указанные блоки сейчас находятся в `index_masterskaya.html`.

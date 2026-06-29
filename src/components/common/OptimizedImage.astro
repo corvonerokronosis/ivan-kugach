@@ -1,0 +1,69 @@
+---
+import { Picture } from "astro:assets";
+import { getProductionImageAsset } from "../../utils/image-assets";
+
+type ImageVariant = "hero" | "thumbnail" | "detail" | "interactive";
+
+interface Props {
+  src: string;
+  alt: string;
+  variant: ImageVariant;
+  priority?: boolean;
+  loading?: "eager" | "lazy";
+  class?: string;
+  [attribute: string]: unknown;
+}
+
+const variantProfiles: Record<
+  ImageVariant,
+  { widths: number[]; sizes: string }
+> = {
+  hero: {
+    widths: [480, 768, 1024, 1440, 1920],
+    sizes: "(min-width: 72rem) 70rem, 100vw",
+  },
+  thumbnail: {
+    widths: [240, 360, 540, 720],
+    sizes: "(min-width: 72rem) 22rem, (min-width: 48rem) 45vw, 100vw",
+  },
+  detail: {
+    widths: [480, 768, 1024, 1440, 1920],
+    sizes: "(min-width: 72rem) 56rem, 100vw",
+  },
+  interactive: {
+    widths: [480, 768, 1024, 1440, 1920],
+    sizes: "(min-width: 72rem) 72rem, 100vw",
+  },
+};
+
+const {
+  src,
+  alt,
+  variant,
+  priority = false,
+  loading = "lazy",
+  ...attributes
+} = Astro.props;
+const asset = getProductionImageAsset(src);
+const profile = variantProfiles[variant];
+const widths = profile.widths.filter((width) => width <= asset.width);
+
+if (
+  widths.length === 0 ||
+  (asset.width < profile.widths.at(-1)! && !widths.includes(asset.width))
+) {
+  widths.push(asset.width);
+}
+---
+
+<Picture
+  src={asset}
+  formats={["avif", "webp"]}
+  widths={widths}
+  sizes={profile.sizes}
+  alt={alt}
+  loading={priority ? "eager" : loading}
+  fetchpriority={priority ? "high" : "auto"}
+  decoding="async"
+  {...attributes}
+/>

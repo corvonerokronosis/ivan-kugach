@@ -1,6 +1,6 @@
-import light6254Url from "../assets/images/interactive/light/dor-6254.jpg?url";
-import light6258Url from "../assets/images/interactive/light/dor-6258.jpg?url";
-import light6263Url from "../assets/images/interactive/light/dor-6263.jpg?url";
+import light6254Image from "../assets/images/interactive/light/dor-6254.jpg";
+import light6258Image from "../assets/images/interactive/light/dor-6258.jpg";
+import light6263Image from "../assets/images/interactive/light/dor-6263.jpg";
 import type {
   LightExperienceDefaults,
   LightState,
@@ -13,7 +13,7 @@ const lightWorks = validateLightWorks([
     order: 1,
     title: "Работа 1",
     image: {
-      src: light6258Url,
+      src: light6258Image.src,
       alt: "Первая картина Ивана Кугача для опыта со светом",
     },
   },
@@ -22,7 +22,7 @@ const lightWorks = validateLightWorks([
     order: 2,
     title: "Работа 2",
     image: {
-      src: light6254Url,
+      src: light6254Image.src,
       alt: "Вторая картина Ивана Кугача для опыта со светом",
     },
   },
@@ -31,7 +31,7 @@ const lightWorks = validateLightWorks([
     order: 3,
     title: "Работа 3",
     image: {
-      src: light6263Url,
+      src: light6263Image.src,
       alt: "Третья картина Ивана Кугача для опыта со светом",
     },
   },

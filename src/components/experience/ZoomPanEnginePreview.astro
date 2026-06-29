@@ -1,6 +1,7 @@
 ---
 import DialogShell from "../common/DialogShell.astro";
 import { getHotspots } from "../../data/repository";
+import OptimizedImage from "../common/OptimizedImage.astro";
 
 const hotspots = getHotspots();
 const image = hotspots[0]?.image;
@@ -14,10 +15,11 @@ const image = hotspots[0]?.image;
     role="application"
   >
     <div class="zoom-preview__content" data-zoom-pan-content>
-      <img
+      <OptimizedImage
         data-zoom-pan-image
         src={image.src}
         alt={image.alt}
+        variant="interactive"
         draggable="false"
       />
       {
