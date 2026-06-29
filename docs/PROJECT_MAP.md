@@ -58,6 +58,7 @@
 | `src/scripts/zoom-pan-engine.ts`                           | Изолированный DOM-движок zoom/pan для исследования деталей       | Buttons, wheel, pointer drag, fit/reset, bounds и lifecycle                 |
 | `src/scripts/details-explorer-page.ts`                     | Инициализация продуктовой страницы исследования деталей          | Hotspots, keyboard, progress, dialogs, completion и pagehide cleanup        |
 | `src/scripts/zoom-pan-preview.ts`                          | Инициализация технического стенда zoom/pan и hotspot-поведения   | Только `/ui-preview/`; viewed IDs, центрирование точки и dialog             |
+| `src/scripts/light-controller.ts`                          | Изолированный state-controller интерактива света                 | Active work/state, range, viewed progress, reset, completion и destroy      |
 | `src/utils/zoom-pan.ts`                                    | Чистая математика zoom/pan                                       | Fit, bounds, clamp, zoom-at-focus, pan и center-on                          |
 | `src/scripts/narrative-sequence.ts`                        | Изолированное DOM-управление narrative-компонентом               | Переключение слайдов, клавиатура и события завершения/пропуска              |
 | `src/scripts/narrative-route.ts`                           | Связь narrative-событий с completionPath через location.replace  | Изменение финального перехода и browser history                             |
@@ -77,7 +78,7 @@
 | `src/types/narrative.ts`                                   | TypeScript-контракт narrative-последовательностей                | Перед переносом narrative UI и маршрутов между этапами                      |
 | `src/types/narrative-route.ts`                             | TypeScript-контракт URL, входов и history actions narrative      | Изменение структуры route-definition                                        |
 | `src/types/hotspot.ts`                                     | TypeScript-контракт hotspot-точек исследовательского интерактива | Перед переносом zoom/pan и карточек точек                                   |
-| `src/types/light.ts`                                       | Контракты работ, состояний и визуальных параметров света         | Перед реализацией контроллера и продуктовой страницы света                  |
+| `src/types/light.ts`                                       | Контракты данных, snapshot и lifecycle контроллера света         | Изменение работ, состояний, callbacks или controller API                    |
 | `src/layouts/BaseLayout.astro`                             | Общий layout новой версии с навигацией и optional-декором        | Общая оболочка Astro-страниц                                                |
 | `src/README.md`                                            | Правила структуры, именования и границ модулей                   | Перед созданием новых Astro/TypeScript-файлов                               |
 | `README.md`                                                | Краткое описание продукта, маршрута, ассетов и способа запуска   | Первичная ориентация и проверка актуальной точки входа                      |
@@ -108,11 +109,11 @@ ESLint проверяет новый Astro/TypeScript-код, unit-тесты и
 | `src/data/`                 | Типизированные локальные данные и frontend-репозиторий         | `repository.ts` читает local-источники, включая narrative, hotspots и данные света            |
 | `src/layouts/`              | Общие Astro-layouts                                            | `BaseLayout.astro`: metadata, skip-link и page slots                                          |
 | `src/pages/`                | Файловые маршруты Astro                                        | Главная, художник, experience/story, каталог, архив, generated-страницы, 404 и `/ui-preview/` |
-| `src/scripts/`              | Изолированные клиентские DOM/Canvas-модули                     | Форма, narrative, lifecycle canvas-движка и zoom/pan engine                                   |
+| `src/scripts/`              | Изолированные клиентские DOM/Canvas/state-модули               | Форма, narrative, canvas/zoom-pan engines и контроллер света                                  |
 | `src/styles/`               | Токены и общие CSS-слои                                        | `global.css`, `tokens.css` и опциональный `studio.css`                                        |
 | `src/types/`                | Общие TypeScript-контракты                                     | Модели данных, narrative, hotspots, свет, canvas engine и zoom/pan                            |
 | `src/utils/`                | Чистые helpers и адаптеры                                      | Валидация заявки, coverage grid, zoom/pan math и frontend-only `inquiry-adapter.ts`           |
-| `tests/`                    | Unit-тесты чистой frontend-логики                              | Покрывает coverage раскрытия цвета и математику zoom/pan                                      |
+| `tests/`                    | Unit-тесты чистой frontend-логики                              | Покрывает coverage, zoom/pan math и lifecycle контроллера света                               |
 | `public/`                   | Статические файлы без обработки Astro                          | Пустой каркас                                                                                 |
 | `src/for_sales/`            | Legacy-изображения каталога работ                              | Временно сохраняет пути монолита                                                              |
 | `src/picture_light_shadow/` | Legacy-изображения интерактива света                           | Временно сохраняет пути монолита                                                              |
