@@ -142,6 +142,7 @@ function createState(id, order) {
     id,
     order,
     label: id,
+    scaleLabel: id,
     title: id,
     text: id,
     visual: {

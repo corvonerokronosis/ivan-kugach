@@ -30,6 +30,7 @@ export interface LightState {
   id: string;
   order: number;
   label: string;
+  scaleLabel: string;
   title: string;
   text: string;
   visual: LightStateVisual;

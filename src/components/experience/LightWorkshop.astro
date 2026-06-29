@@ -1,0 +1,554 @@
+---
+import type {
+  LightExperienceDefaults,
+  LightState,
+  LightWork,
+} from "../../types/light";
+import DialogShell from "../common/DialogShell.astro";
+
+interface Props {
+  works: LightWork[];
+  states: LightState[];
+  defaults: LightExperienceDefaults;
+  finalePath: string;
+  catalogPath: string;
+}
+
+const { works, states, defaults, finalePath, catalogPath } = Astro.props;
+const initialWork = works.find((work) => work.id === defaults.workId);
+const initialStateIndex = states.findIndex(
+  (state) => state.id === defaults.stateId,
+);
+const initialState = states[initialStateIndex];
+
+if (!initialWork || !initialState || initialStateIndex < 0) {
+  throw new Error("Light workshop: начальные данные не найдены");
+}
+
+const serializedConfig = JSON.stringify({ works, states, defaults }).replaceAll(
+  "<",
+  "\\u003c",
+);
+const initialVisual = initialState.visual;
+---
+
+<section class="light-workshop" data-light-workshop>
+  <div class="light-workshop__workspace">
+    <div
+      class="light-workshop__stage"
+      data-light-stage
+      style={`--light-filter: ${initialVisual.filter}; --light-overlay: ${initialVisual.overlay}; --light-overlay-opacity: ${initialVisual.overlayOpacity}; --light-beam: ${initialVisual.beam}; --light-beam-opacity: ${initialVisual.beamOpacity}; --light-shadow: ${initialVisual.shadow}; --light-side-shadow: ${initialVisual.sideShadow}; --light-focus-x: ${initialVisual.focusX}; --light-focus-y: ${initialVisual.focusY}; --light-shadow-angle: ${initialVisual.shadowAngle};`}
+    >
+      <img
+        data-light-image
+        src={initialWork.image.src}
+        alt={initialWork.image.alt}
+        draggable="false"
+        loading="eager"
+        fetchpriority="high"
+      />
+      <div class="light-workshop__color-layer" aria-hidden="true"></div>
+      <div class="light-workshop__shadow-layer" aria-hidden="true"></div>
+      <div class="light-workshop__beam" aria-hidden="true"></div>
+      <div class="light-workshop__label" data-light-label>
+        {initialState.label}
+      </div>
+    </div>
+
+    <aside class="light-workshop__panel" aria-label="Управление светом">
+      <div
+        class="light-workshop__selector"
+        aria-label="Выбор картины"
+        data-light-work-selector
+      >
+        {
+          works.map((work) => (
+            <button
+              type="button"
+              class="light-workshop__work"
+              data-light-work-id={work.id}
+              aria-label={`Выбрать ${work.title}`}
+              aria-pressed={work.id === defaults.workId}
+            >
+              <img src={work.image.src} alt="" loading="lazy" />
+              <span>{work.title}</span>
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="light-workshop__control">
+        <label for="light-workshop-range">Состояние света</label>
+        <input
+          id="light-workshop-range"
+          data-light-range
+          type="range"
+          min="0"
+          max={states.length - 1}
+          step="0.01"
+          value={initialStateIndex}
+          aria-describedby="light-workshop-note light-workshop-progress"
+          aria-valuetext={initialState.label}
+        />
+        <div
+          class="light-workshop__scale"
+          style={`--light-state-count: ${states.length}`}
+          aria-hidden="true"
+        >
+          {states.map((state) => <span>{state.scaleLabel}</span>)}
+        </div>
+      </div>
+
+      <article
+        id="light-workshop-note"
+        class="light-workshop__note"
+        aria-live="polite"
+      >
+        <span class="light-workshop__note-kicker" data-light-note-kicker>
+          Состояние {initialStateIndex + 1} из {states.length}
+        </span>
+        <h2 data-light-note-title>{initialState.title}</h2>
+        <p data-light-note-text>{initialState.text}</p>
+      </article>
+
+      <div
+        id="light-workshop-progress"
+        class="light-workshop__progress"
+        aria-live="polite"
+      >
+        <strong>Маршрут света</strong>
+        <div
+          class="light-workshop__dots"
+          style={`--light-state-count: ${states.length}`}
+          aria-hidden="true"
+        >
+          {
+            states.map((state) => (
+              <span
+                class="light-workshop__dot"
+                data-light-progress-id={state.id}
+                data-viewed={String(state.id === defaults.stateId)}
+              />
+            ))
+          }
+        </div>
+        <p data-light-progress-text>
+          Открыто состояний: 1 из {states.length}.
+        </p>
+      </div>
+
+      <div class="light-workshop__actions">
+        <a
+          class="light-workshop__action light-workshop__action--primary"
+          data-light-continue
+          href={finalePath}
+          hidden
+        >
+          Продолжить историю
+        </a>
+        <button
+          class="light-workshop__action light-workshop__action--secondary"
+          type="button"
+          data-light-reset
+        >
+          Сбросить свет
+        </button>
+      </div>
+    </aside>
+  </div>
+
+  <p class="light-workshop__instructions">
+    Выберите картину кнопками, затем перемещайте ползунок мышью, клавишами или
+    касанием. Для завершения маршрута откройте все состояния света.
+  </p>
+
+  <DialogShell
+    id="light-workshop-complete-dialog"
+    title="Картина просмотрена в четырёх состояниях"
+    description="Свет собран"
+  >
+    <p>
+      Теперь маршрут складывается из жеста, взгляда и света. Можно перейти к
+      финальной сюжетной вставке, открыть каталог или остаться в мастерской и
+      ещё раз изменить освещение.
+    </p>
+
+    <Fragment slot="actions">
+      <a
+        class="light-workshop__dialog-action"
+        data-light-complete-primary
+        href={finalePath}
+      >
+        Открыть финальную вставку
+      </a>
+      <button
+        class="light-workshop__dialog-action light-workshop__dialog-action--secondary"
+        type="button"
+        data-light-complete-close
+      >
+        Остаться в мастерской
+      </button>
+      <a
+        class="light-workshop__dialog-action light-workshop__dialog-action--quiet"
+        href={catalogPath}
+      >
+        Открыть каталог
+      </a>
+    </Fragment>
+  </DialogShell>
+
+  <script
+    is:inline
+    type="application/json"
+    data-light-config
+    set:html={serializedConfig}
+  />
+</section>
+
+<script>
+  import "../../scripts/light-workshop-page";
+</script>
+
+<style>
+  .light-workshop {
+    display: grid;
+    min-width: 0;
+    gap: var(--space-4);
+  }
+
+  .light-workshop__workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(19rem, 0.75fr);
+    min-width: 0;
+    gap: clamp(var(--space-4), 2.4vw, var(--space-7));
+    align-items: stretch;
+    padding: clamp(var(--space-3), 2.3vw, var(--space-6));
+    overflow: hidden;
+    border-radius: var(--radius-2xl);
+    background:
+      radial-gradient(
+        circle at top left,
+        rgb(255 255 255 / 56%),
+        transparent 34%
+      ),
+      linear-gradient(180deg, rgb(255 249 241 / 82%), rgb(235 214 186 / 94%));
+    box-shadow: var(--shadow-raised);
+  }
+
+  .light-workshop__stage {
+    position: relative;
+    display: grid;
+    min-width: 0;
+    min-height: clamp(30rem, 68vh, 45rem);
+    place-items: center;
+    overflow: hidden;
+    border: clamp(0.65rem, 1.2vw, 0.9rem) solid var(--color-wood);
+    border-radius: var(--radius-sm);
+    background: linear-gradient(145deg, #7d5534, #4c2e1e 42%, #2c180f 100%);
+    box-shadow:
+      inset 0 0 0 2px rgb(235 194 110 / 42%),
+      0 28px 56px rgb(34 20 12 / 28%);
+    isolation: isolate;
+  }
+
+  .light-workshop__stage img {
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 78vh;
+    object-fit: contain;
+    background: var(--palette-sand-300);
+    filter: var(--light-filter);
+    transition: filter var(--motion-duration-base) var(--motion-easing-standard);
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .light-workshop__color-layer,
+  .light-workshop__shadow-layer,
+  .light-workshop__beam {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    pointer-events: none;
+    transition:
+      background var(--motion-duration-base) var(--motion-easing-standard),
+      opacity var(--motion-duration-base) var(--motion-easing-standard);
+  }
+
+  .light-workshop__color-layer {
+    background: var(--light-overlay);
+    mix-blend-mode: soft-light;
+    opacity: var(--light-overlay-opacity);
+  }
+
+  .light-workshop__shadow-layer {
+    background:
+      radial-gradient(
+        circle at var(--light-focus-x) var(--light-focus-y),
+        transparent 0 28%,
+        rgb(22 14 9 / var(--light-shadow)) 72%
+      ),
+      linear-gradient(
+        var(--light-shadow-angle),
+        rgb(21 13 8 / var(--light-side-shadow)),
+        transparent 52%
+      );
+    mix-blend-mode: multiply;
+    opacity: 0.96;
+  }
+
+  .light-workshop__beam {
+    z-index: 3;
+    background: var(--light-beam);
+    mix-blend-mode: screen;
+    opacity: var(--light-beam-opacity);
+  }
+
+  .light-workshop__label {
+    position: absolute;
+    z-index: 4;
+    bottom: var(--space-5);
+    left: var(--space-5);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid rgb(235 207 156 / 28%);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-on-accent);
+    background: rgb(42 27 18 / 84%);
+    box-shadow: 0 14px 26px rgb(20 12 7 / 24%);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .light-workshop__panel {
+    display: grid;
+    min-width: 0;
+    gap: var(--space-4);
+    align-content: start;
+    padding: clamp(var(--space-4), 2vw, var(--space-6));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: linear-gradient(
+      180deg,
+      rgb(255 249 232 / 92%),
+      rgb(230 207 169 / 82%)
+    );
+    box-shadow: var(--shadow-surface);
+  }
+
+  .light-workshop__selector {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .light-workshop__work {
+    display: grid;
+    min-width: 0;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    color: inherit;
+    background: var(--color-surface-muted);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .light-workshop__work img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1.25 / 1;
+    object-fit: cover;
+    border: 1px solid var(--color-border);
+    border-radius: calc(var(--radius-sm) / 2);
+    background: var(--palette-sand-300);
+  }
+
+  .light-workshop__work span {
+    overflow: hidden;
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .light-workshop__work[aria-pressed="true"] {
+    border-color: var(--color-accent);
+    background: var(--palette-parchment-100);
+    box-shadow: inset 0 0 0 1px var(--color-accent-muted);
+  }
+
+  .light-workshop__control,
+  .light-workshop__progress {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .light-workshop__control label,
+  .light-workshop__progress strong,
+  .light-workshop__note-kicker {
+    color: var(--color-text-muted);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  .light-workshop__control input[type="range"] {
+    width: 100%;
+    min-height: 2rem;
+    margin: 0;
+    accent-color: var(--color-accent);
+    touch-action: pan-x;
+    cursor: pointer;
+  }
+
+  .light-workshop__scale,
+  .light-workshop__dots {
+    display: grid;
+    grid-template-columns: repeat(var(--light-state-count), minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .light-workshop__scale {
+    color: var(--color-text-muted);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+  }
+
+  .light-workshop__scale span {
+    min-width: 0;
+    text-align: center;
+  }
+
+  .light-workshop__note {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding: var(--space-4);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    background: rgb(255 253 248 / 78%);
+  }
+
+  .light-workshop__note h2 {
+    margin: 0;
+    font-size: var(--font-size-heading-sm);
+    line-height: var(--line-height-tight);
+  }
+
+  .light-workshop__note p,
+  .light-workshop__progress p,
+  .light-workshop__instructions {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .light-workshop__dot {
+    height: 0.625rem;
+    overflow: hidden;
+    border-radius: var(--radius-pill);
+    background: rgb(47 36 25 / 16%);
+  }
+
+  .light-workshop__dot[data-viewed="true"] {
+    background: linear-gradient(90deg, var(--color-accent), #f3cf87);
+    box-shadow: 0 0 16px rgb(214 147 68 / 28%);
+  }
+
+  .light-workshop__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .light-workshop__action,
+  .light-workshop__dialog-action {
+    display: inline-flex;
+    width: fit-content;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3) var(--space-5);
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .light-workshop__action--primary,
+  .light-workshop__dialog-action {
+    color: var(--color-text-on-accent);
+    background: var(--color-accent-strong);
+  }
+
+  .light-workshop__action--secondary,
+  .light-workshop__dialog-action--secondary {
+    border-color: var(--color-border);
+    color: var(--color-text);
+    background: var(--color-surface-strong);
+  }
+
+  .light-workshop__dialog-action--quiet {
+    color: var(--color-accent-strong);
+    background: transparent;
+  }
+
+  .light-workshop__instructions {
+    max-width: 56rem;
+    font-size: var(--font-size-200);
+  }
+
+  @media (max-width: 60rem) {
+    .light-workshop__workspace {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .light-workshop__stage {
+      min-height: clamp(28rem, 62vh, 40rem);
+    }
+  }
+
+  @media (max-width: 36rem) {
+    .light-workshop__workspace {
+      padding: var(--space-3);
+      border-radius: var(--radius-xl);
+    }
+
+    .light-workshop__stage {
+      min-height: 31rem;
+    }
+
+    .light-workshop__panel {
+      padding: var(--space-4);
+    }
+
+    .light-workshop__actions,
+    .light-workshop__action,
+    .light-workshop__dialog-action {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .light-workshop__stage img,
+    .light-workshop__color-layer,
+    .light-workshop__shadow-layer,
+    .light-workshop__beam {
+      transition: none;
+    }
+  }
+</style>

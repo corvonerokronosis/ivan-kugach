@@ -1,20 +1,115 @@
 ---
-import MessageState from "../../components/common/MessageState.astro";
-import SectionHeader from "../../components/common/SectionHeader.astro";
+import Action from "../../components/common/Action.astro";
+import LightWorkshop from "../../components/experience/LightWorkshop.astro";
+import {
+  getLightExperienceDefaults,
+  getLightStates,
+  getLightWorks,
+  getNarrativeRouteBySequenceId,
+} from "../../data/repository";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const works = getLightWorks();
+const states = getLightStates();
+const defaults = getLightExperienceDefaults();
+const finaleRoute = getNarrativeRouteBySequenceId("finale");
+
+if (!finaleRoute) {
+  throw new Error('Narrative route "finale" не найден');
+}
 ---
 
 <BaseLayout
   title="Свет в мастерской — Иван Кугач"
-  description="Технический маршрут будущего интерактива света."
+  description="Меняйте освещение работ Ивана Кугача и откройте четыре состояния мастерской: утро, холодный день, вечер и лампу."
+  studioDecoration
 >
-  <SectionHeader
-    level="h1"
-    eyebrow="Интерактив готовится"
-    title="Свет в мастерской"
-    description="Полный интерактив управления светом будет перенесён в FRT-040."
-  />
-  <MessageState title="Маршрут уже доступен">
-    <p>Прямой вход и обновление URL работают независимо от главной страницы.</p>
-  </MessageState>
+  <section class="light-page" aria-labelledby="light-page-title">
+    <div class="light-page__topbar">
+      <div class="light-page__title">
+        <p class="light-page__eyebrow">Интерактив света</p>
+        <h1 id="light-page-title">Свет в мастерской</h1>
+        <p>
+          Выберите работу и проведите свет через несколько состояний мастерской:
+          утро, холодный день, вечер и лампу.
+        </p>
+      </div>
+
+      <Action href="/experience/" variant="secondary">К маршруту</Action>
+    </div>
+
+    <LightWorkshop
+      {works}
+      {states}
+      {defaults}
+      finalePath={finaleRoute.pathname}
+      catalogPath="/works/"
+    />
+  </section>
+
+  <p slot="footer">
+    После открытия всех состояний можно перейти к финальной сюжетной вставке,
+    открыть каталог или остаться в мастерской и продолжить работу со светом.
+  </p>
 </BaseLayout>
+
+<style>
+  .light-page {
+    display: grid;
+    min-width: 0;
+    gap: var(--space-5);
+    overflow-x: clip;
+  }
+
+  .light-page__topbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: start;
+    justify-content: space-between;
+  }
+
+  .light-page__title {
+    display: grid;
+    max-width: 48rem;
+    gap: var(--space-2);
+  }
+
+  .light-page__eyebrow {
+    width: 100%;
+    margin: 0;
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid rgb(255 255 255 / 36%);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    background: linear-gradient(
+      90deg,
+      rgb(255 248 236 / 82%),
+      rgb(255 245 224 / 48%)
+    );
+    box-shadow: var(--shadow-surface);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  .light-page h1 {
+    margin: 0;
+    font-size: var(--font-size-heading-lg);
+  }
+
+  .light-page__title > p:last-child {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-400);
+  }
+
+  @media (max-width: 45rem) {
+    .light-page__topbar,
+    .light-page__topbar :global(.action) {
+      width: 100%;
+    }
+  }
+</style>

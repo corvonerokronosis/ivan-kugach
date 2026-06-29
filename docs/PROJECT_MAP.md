@@ -39,6 +39,7 @@
 | `src/pages/experience/index.astro`                         | Landing маршрута: порядок трёх этапов и прямые входы             | Изменение последовательности, описаний и CTA интерактивного опыта           |
 | `src/pages/experience/color-return.astro`                  | Продуктовая страница интерактива возвращения цвета               | Canvas-stage, HUD, reset, completion dialog и переход к `bridge`            |
 | `src/pages/experience/details.astro`                       | Продуктовая страница исследования деталей                        | Zoom/pan viewport, hotspots, progress, dialogs и переход к `lightBridge`    |
+| `src/pages/experience/light.astro`                         | Продуктовая страница интерактива света                           | Stage, selector, range, progress, dialog и переход к `finale`               |
 | `src/pages/experience/story/[sequence].astro`              | Generated-страницы четырёх narrative-блоков                      | Изменение композиции story-страницы и связи с route-contract                |
 | `src/pages/works/index.astro`                              | Каталог доступных работ и frontend-форма интереса                | Изменение композиции каталога, CTA карточек, формы и разделения статусов    |
 | `src/pages/works/[slug].astro`                             | Generated-страница работы с предвыбранной формой интереса        | Изменение detail-layout, параметров, CTA заявки, галереи и связи с серией   |
@@ -48,6 +49,7 @@
 | `src/pages/ui-preview.astro`                               | Техническая проверка common UI, narrative, canvas и zoom/hotspot | Ручная проверка переиспользуемых модулей до продуктового подключения        |
 | `src/components/experience/ColorRevealExperience.astro`    | Продуктовый UI интерактива возвращения цвета                     | Stage, HUD, progress, reset, подсказка и dialog завершения                  |
 | `src/components/experience/DetailsExplorer.astro`          | Продуктовый UI исследования деталей                              | Рама, viewport, data-driven hotspots, zoom HUD, progress и dialogs          |
+| `src/components/experience/LightWorkshop.astro`            | Продуктовый UI мастерской света                                  | Картина, visual layers, selector, range, note, progress и completion dialog |
 | `src/components/experience/ColorRevealEnginePreview.astro` | Технический canvas-стенд FRT-031                                 | Ручная проверка paint, progress, remount, reset и destroy                   |
 | `src/components/experience/ZoomPanEnginePreview.astro`     | Технический стенд zoom/pan и hotspot-данных FRT-034/FRT-035      | Ручная проверка buttons, wheel, drag, reset, remount, destroy и dialog      |
 | `src/components/narrative/NarrativeSequence.astro`         | Универсальный UI narrative-последовательности                    | Изменение разметки слайда, счётчика и кнопок без встраивания story-контента |
@@ -59,6 +61,7 @@
 | `src/scripts/details-explorer-page.ts`                     | Инициализация продуктовой страницы исследования деталей          | Hotspots, keyboard, progress, dialogs, completion и pagehide cleanup        |
 | `src/scripts/zoom-pan-preview.ts`                          | Инициализация технического стенда zoom/pan и hotspot-поведения   | Только `/ui-preview/`; viewed IDs, центрирование точки и dialog             |
 | `src/scripts/light-controller.ts`                          | Изолированный state-controller интерактива света                 | Active work/state, range, viewed progress, reset, completion и destroy      |
+| `src/scripts/light-workshop-page.ts`                       | Инициализация продуктовой страницы света                         | DOM render, selector/range events, dialog, reset и pagehide cleanup         |
 | `src/utils/zoom-pan.ts`                                    | Чистая математика zoom/pan                                       | Fit, bounds, clamp, zoom-at-focus, pan и center-on                          |
 | `src/scripts/narrative-sequence.ts`                        | Изолированное DOM-управление narrative-компонентом               | Переключение слайдов, клавиатура и события завершения/пропуска              |
 | `src/scripts/narrative-route.ts`                           | Связь narrative-событий с completionPath через location.replace  | Изменение финального перехода и browser history                             |
@@ -168,10 +171,12 @@ ESLint проверяет новый Astro/TypeScript-код, unit-тесты и
 | Astro narrative       | `src/pages/experience/story/[sequence].astro`              | Четыре generated story-страницы из route-contract                |
 | Astro color reveal    | `src/pages/experience/color-return.astro`                  | Продуктовый canvas-интерактив FRT-032                            |
 | Astro details         | `src/pages/experience/details.astro`                       | Продуктовый zoom/pan и hotspot-интерактив FRT-036                |
+| Astro light           | `src/pages/experience/light.astro`                         | Продуктовый интерактив света FRT-040                             |
 | Common Astro UI       | `src/components/common/`                                   | Actions, headers, artwork, forms, dialog, state                  |
 | Narrative Astro UI    | `src/components/narrative/`                                | Слайды, метаданные, прогресс и действия                          |
 | Color reveal Astro UI | `src/components/experience/ColorRevealExperience.astro`    | Stage, HUD, progress, reset и completion dialog                  |
 | Details Astro UI      | `src/components/experience/DetailsExplorer.astro`          | Viewport, hotspots, zoom HUD, progress и два dialog-состояния    |
+| Light Astro UI        | `src/components/experience/LightWorkshop.astro`            | Stage, visual layers, selector, range, progress и dialog         |
 | Canvas engine preview | `src/components/experience/ColorRevealEnginePreview.astro` | Технический lifecycle-стенд FRT-031                              |
 | Works Astro UI        | `src/components/works/`                                    | Карточка каталога и переиспользуемая frontend-форма интереса     |
 | UI component preview  | `src/pages/ui-preview.astro`                               | Техническая проверка; не продуктовый URL                         |

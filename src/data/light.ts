@@ -42,6 +42,7 @@ const lightStates = validateLightStates([
     id: "morning",
     order: 1,
     label: "Утро",
+    scaleLabel: "Утро",
     title: "Утренний боковой свет",
     text: "Мягкий тёплый свет вытягивает воздух вокруг стен и оставляет в картине ощущение начала дня.",
     visual: {
@@ -62,6 +63,7 @@ const lightStates = validateLightStates([
     id: "day",
     order: 2,
     label: "Холодный день",
+    scaleLabel: "День",
     title: "Холодный дневной свет",
     text: "В таком свете сильнее читается архитектура: плоскости стены, ритм окон и спокойная конструкция места.",
     visual: {
@@ -82,6 +84,7 @@ const lightStates = validateLightStates([
     id: "evening",
     order: 3,
     label: "Вечер",
+    scaleLabel: "Вечер",
     title: "Вечерний свет и память места",
     text: "Вечер приглушает подробности и собирает сцену в состояние памяти: остаются силуэты, тёплая стена и тишина.",
     visual: {
@@ -102,6 +105,7 @@ const lightStates = validateLightStates([
     id: "lamp",
     order: 4,
     label: "Лампа",
+    scaleLabel: "Лампа",
     title: "Тёплая лампа мастерской",
     text: "Лампа делает мотив ближе и телеснее: важнее становятся следы быта, поверхность дерева и человеческое присутствие.",
     visual: {
@@ -185,6 +189,10 @@ function validateLightStates(records: LightState[]): LightState[] {
     assertNonEmptyString(
       record.label,
       `light state "${label}": label обязателен`,
+    );
+    assertNonEmptyString(
+      record.scaleLabel,
+      `light state "${label}": scaleLabel обязателен`,
     );
     assertNonEmptyString(
       record.title,

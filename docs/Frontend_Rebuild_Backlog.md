@@ -1375,7 +1375,7 @@ npm.cmd run verify
 - добавлен `tests/light-controller.test.mjs` на defaults, range clamp, уникальный progress, смену работы, reset/completion, изоляцию экземпляров и destroy lifecycle;
 - проверить: выполнить `npm.cmd run test:unit` и убедиться, что проходят 15 тестов в трёх suites; полный контур запускается командой `npm.cmd run verify`.
 
-### [ ] FRT-040. Реализовать страницу интерактива света
+### [x] FRT-040. Реализовать страницу интерактива света
 
 Приоритет: Must  
 Версия: Frontend v0.3  
@@ -1393,6 +1393,15 @@ npm.cmd run verify
 - все текущие картины и состояния доступны;
 - интерактив работает на touch-устройствах;
 - страница не загружает код других интерактивов.
+
+Выполнено:
+
+- `/experience/light/` заменён с технической заглушки на продуктовую страницу с legacy-композицией: stage картины, selector трёх работ, range четырёх состояний, note, progress и reset;
+- `src/components/experience/LightWorkshop.astro` получает данные через repository, выводит типизированные visual-параметры, нативный touch-friendly range и completion dialog с переходами к `finale` и каталогу;
+- `src/scripts/light-workshop-page.ts` связывает только DOM страницы света и изолированный контроллер FRT-039: обновляет изображение, подписи, CSS-слои, progress dots, reset и lifecycle cleanup;
+- после просмотра `morning`, `day`, `evening`, `lamp` открывается dialog, а CTA ведёт на `/experience/story/finale/`; смена картины сохраняет состояние света;
+- Browser QA подтверждает desktop и responsive-композицию без горизонтального overflow, переключение работ, полный range-сценарий, dialog, CTA и чистую консоль; production HTML подключает только light workshop bundle без canvas/zoom runtime;
+- проверить: выполнить `npm.cmd run verify`, открыть `/experience/light/`, выбрать вторую работу, последовательно открыть утро, вечер и лампу, закрыть dialog кнопкой «Остаться в мастерской», проверить reset и повторить сценарий с переходом «Открыть финальную вставку»; повторить при узком viewport.
 
 ---
 
