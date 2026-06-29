@@ -17,8 +17,10 @@ const descriptionId = description ? `${id}-description` : undefined;
   id={id}
   class:list={["dialog-shell", { "dialog-shell--preview": preview }]}
   open={open}
+  aria-modal={preview ? undefined : "true"}
   aria-labelledby={titleId}
   aria-describedby={descriptionId}
+  tabindex="-1"
 >
   <div class="dialog-shell__surface">
     <header class="dialog-shell__header">

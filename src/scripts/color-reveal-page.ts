@@ -1,4 +1,5 @@
 import { mountColorRevealEngine } from "./color-reveal-engine";
+import { createAccessibleDialogController } from "./dialog-controller";
 import type { ColorRevealEngine } from "../types/color-reveal";
 
 const initializedPages = new WeakSet<HTMLElement>();
@@ -65,6 +66,8 @@ function setupColorRevealPage(root: HTMLElement): void {
   const progressBar = progressElement;
   const progressLabel = progressText;
   const completionDialog = dialog;
+  const completionDialogController =
+    createAccessibleDialogController(completionDialog);
   let engine: ColorRevealEngine | null = null;
 
   function updateProgress(displayPercent: number): void {
@@ -74,9 +77,7 @@ function setupColorRevealPage(root: HTMLElement): void {
   }
 
   function closeDialog(): void {
-    if (completionDialog.open) {
-      completionDialog.close();
-    }
+    completionDialogController.close();
   }
 
   function reset(): void {
@@ -85,10 +86,7 @@ function setupColorRevealPage(root: HTMLElement): void {
   }
 
   function openCompletionDialog(): void {
-    if (!completionDialog.open) {
-      completionDialog.showModal();
-    }
-    continueLink?.focus({ preventScroll: true });
+    completionDialogController.open({ initialFocus: continueLink });
   }
 
   engine = mountColorRevealEngine({
@@ -110,14 +108,12 @@ function setupColorRevealPage(root: HTMLElement): void {
   resetButton.addEventListener("click", reset);
   dialogResetButton.addEventListener("click", reset);
   dialogCloseButton.addEventListener("click", closeDialog);
-  dialog.addEventListener("click", (event) => {
-    if (event.target === dialog) {
-      closeDialog();
-    }
-  });
   root.ownerDocument.defaultView?.addEventListener(
     "pagehide",
-    () => engine?.destroy(),
+    () => {
+      completionDialogController.destroy();
+      engine?.destroy();
+    },
     { once: true },
   );
 

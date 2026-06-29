@@ -1,4 +1,5 @@
 import { mountZoomPanEngine } from "./zoom-pan-engine";
+import { createAccessibleDialogController } from "./dialog-controller";
 import type { ZoomPanEngine } from "../types/zoom-pan";
 
 const initializedPreviews = new WeakSet<HTMLElement>();
@@ -104,6 +105,7 @@ function setupZoomPanPreview(root: HTMLElement): void {
   const dialogTitle = hotspotDialogTitle;
   const dialogText = hotspotDialogText;
   const dialogClose = hotspotDialogClose;
+  const dialogController = createAccessibleDialogController(dialog);
   const hotspots = hotspotButtons.map(readHotspotFromButton);
   const viewedIds = new Set<string>();
   let engine: ZoomPanEngine | null = null;
@@ -141,14 +143,10 @@ function setupZoomPanPreview(root: HTMLElement): void {
     dialogLabel.textContent = hotspot.label;
     dialogTitle.textContent = hotspot.title;
     dialogText.textContent = hotspot.text;
-
-    if (typeof dialog.showModal === "function" && !dialog.open) {
-      dialog.showModal();
-    } else {
-      dialog.open = true;
-    }
-
-    dialogClose.focus({ preventScroll: true });
+    dialogController.open({
+      initialFocus: dialogClose,
+      trigger: hotspot.button,
+    });
   }
 
   function activateHotspot(hotspot: PreviewHotspot): void {
@@ -185,18 +183,16 @@ function setupZoomPanPreview(root: HTMLElement): void {
     engine?.destroy();
     engine = null;
     statusElement.textContent = "destroyed";
-    dialog.close();
+    dialogController.close();
     setControlsEnabled(false);
   });
-  dialogClose.addEventListener("click", () => dialog.close());
-  dialog.addEventListener("click", (event) => {
-    if (event.target === dialog) {
-      dialog.close();
-    }
-  });
+  dialogClose.addEventListener("click", () => dialogController.close());
   root.ownerDocument.defaultView?.addEventListener(
     "pagehide",
-    () => engine?.destroy(),
+    () => {
+      dialogController.destroy();
+      engine?.destroy();
+    },
     { once: true },
   );
 

@@ -115,19 +115,38 @@ const lightBridgeSequence = getNarrativeSequence("lightBridge");
       </form>
     </div>
 
-    <DialogShell
-      id="preview-dialog"
-      title="Интерактив завершён"
-      description="Нативная оболочка dialog. Управление открытием и фокусом будет добавлено в FRT-041."
-      open
-      preview
-    >
-      <p>Можно продолжить маршрут или остаться у картины.</p>
-      <div slot="actions" class="preview-row">
-        <Action href="/experience/">Продолжить</Action>
-        <Action variant="secondary">Остаться</Action>
-      </div>
-    </DialogShell>
+    <div class="preview-dialog" data-dialog-preview>
+      <SectionHeader
+        level="h2"
+        title="Dialog"
+        description="Общий modal-механизм с title, description, Escape, trap focus и возвратом фокуса к кнопке открытия."
+      />
+      <button
+        class="preview-dialog__open"
+        type="button"
+        data-preview-dialog-open
+      >
+        Открыть dialog
+      </button>
+
+      <DialogShell
+        id="preview-dialog"
+        title="Интерактив завершён"
+        description="Нативная оболочка dialog с единым управлением открытием, закрытием и фокусом."
+      >
+        <p>Можно продолжить маршрут или остаться у картины.</p>
+        <div slot="actions" class="preview-row">
+          <Action href="/experience/">Продолжить</Action>
+          <button
+            class="preview-dialog__close"
+            type="button"
+            data-preview-dialog-close
+          >
+            Остаться
+          </button>
+        </div>
+      </DialogShell>
+    </div>
   </section>
 
   {
@@ -178,6 +197,10 @@ const lightBridgeSequence = getNarrativeSequence("lightBridge");
   </section>
 </BaseLayout>
 
+<script>
+  import "../scripts/dialog-preview";
+</script>
+
 <style>
   .preview-section {
     display: grid;
@@ -200,6 +223,41 @@ const lightBridgeSequence = getNarrativeSequence("lightBridge");
     display: grid;
     gap: var(--space-5);
     margin-top: var(--space-5);
+  }
+
+  .preview-dialog {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .preview-dialog__open,
+  .preview-dialog__close {
+    display: inline-flex;
+    width: fit-content;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3) var(--space-5);
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.2;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .preview-dialog__open {
+    color: var(--color-text-on-accent);
+    background: var(--color-accent-strong);
+    box-shadow: 0 10px 24px rgb(94 39 23 / 20%);
+  }
+
+  .preview-dialog__close {
+    border-color: var(--color-border);
+    color: var(--color-text);
+    background: var(--color-surface-strong);
   }
 
   @media (min-width: 60rem) {

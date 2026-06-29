@@ -1407,7 +1407,7 @@ npm.cmd run verify
 
 ## EPIC F11. Модальные окна и доступность
 
-### [ ] FRT-041. Создать доступный Dialog-компонент
+### [x] FRT-041. Создать доступный Dialog-компонент
 
 Приоритет: Must  
 Версия: Frontend v0.3  
@@ -1427,6 +1427,13 @@ npm.cmd run verify
 - все модальные сценарии используют один механизм;
 - управление полностью работает без мыши;
 - screen reader получает название и описание.
+
+Выполнено 2026-06-29:
+
+- добавлен `src/scripts/dialog-controller.ts` с единым управлением native dialog: `showModal/close`, Escape, backdrop, trap focus, initial focus, возврат фокуса и cleanup;
+- продуктовые сценарии `color-reveal`, `details`, `light` и technical zoom/dialog preview переведены на общий контроллер, а `/ui-preview/` получил интерактивный dialog-стенд;
+- `DialogShell.astro` сохраняет `aria-labelledby/aria-describedby`, добавляет `aria-modal` для modal-режима и остаётся общей семантической оболочкой;
+- проверить: выполнить `npm.cmd run verify`, открыть `http://127.0.0.1:4322/ui-preview/`, нажать «Открыть dialog», пройти `Tab`/`Shift+Tab`, закрыть по `Escape` и убедиться, что фокус вернулся на кнопку открытия; на `/experience/details/` открыть hotspot и повторить Escape-проверку.
 
 ### [ ] FRT-042. Провести аудит семантики страниц
 

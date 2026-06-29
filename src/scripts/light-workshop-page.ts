@@ -1,4 +1,5 @@
 import { createLightController } from "./light-controller";
+import { createAccessibleDialogController } from "./dialog-controller";
 import type {
   LightControllerState,
   LightExperienceDefaults,
@@ -91,6 +92,8 @@ function setupLightWorkshop(root: HTMLElement): void {
   const selector = workSelector;
   const completeDialog = completionDialog;
   const completeClose = completionClose;
+  const completeDialogController =
+    createAccessibleDialogController(completeDialog);
   const view = root.ownerDocument.defaultView;
   let completionTimer: number | null = null;
 
@@ -152,8 +155,7 @@ function setupLightWorkshop(root: HTMLElement): void {
 
     completionTimer = view.setTimeout(() => {
       completionTimer = null;
-      openDialog(completeDialog);
-      completionPrimary?.focus({ preventScroll: true });
+      completeDialogController.open({ initialFocus: completionPrimary });
     }, 360);
   }
 
@@ -184,23 +186,13 @@ function setupLightWorkshop(root: HTMLElement): void {
       view.clearTimeout(completionTimer);
       completionTimer = null;
     }
-    if (completeDialog.open) {
-      completeDialog.close();
-    }
+    completeDialogController.close();
     controller.reset();
     lightRange.focus({ preventScroll: true });
   }
 
   function closeCompletion(): void {
-    if (completeDialog.open) {
-      completeDialog.close();
-    }
-  }
-
-  function handleDialogBackdrop(event: MouseEvent): void {
-    if (event.target === completeDialog) {
-      closeCompletion();
-    }
+    completeDialogController.close();
   }
 
   function destroy(): void {
@@ -212,7 +204,7 @@ function setupLightWorkshop(root: HTMLElement): void {
     lightRange.removeEventListener("input", handleRangeInput);
     reset.removeEventListener("click", handleReset);
     completeClose.removeEventListener("click", closeCompletion);
-    completeDialog.removeEventListener("click", handleDialogBackdrop);
+    completeDialogController.destroy();
     controller.destroy();
   }
 
@@ -220,7 +212,6 @@ function setupLightWorkshop(root: HTMLElement): void {
   lightRange.addEventListener("input", handleRangeInput);
   reset.addEventListener("click", handleReset);
   completeClose.addEventListener("click", closeCompletion);
-  completeDialog.addEventListener("click", handleDialogBackdrop);
   view?.addEventListener("pagehide", destroy, { once: true });
 
   initializedWorkshops.add(root);
@@ -234,18 +225,6 @@ function parseConfig(element: HTMLScriptElement): LightWorkshopConfig {
   }
 
   return JSON.parse(source) as LightWorkshopConfig;
-}
-
-function openDialog(dialog: HTMLDialogElement): void {
-  if (dialog.open) {
-    return;
-  }
-
-  if (typeof dialog.showModal === "function") {
-    dialog.showModal();
-  } else {
-    dialog.open = true;
-  }
 }
 
 document

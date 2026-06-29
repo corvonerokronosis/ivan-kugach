@@ -1,4 +1,5 @@
 import { mountZoomPanEngine } from "./zoom-pan-engine";
+import { createAccessibleDialogController } from "./dialog-controller";
 import type { ZoomPanEngine } from "../types/zoom-pan";
 
 const initializedExplorers = new WeakSet<HTMLElement>();
@@ -101,6 +102,9 @@ function setupDetailsExplorer(root: HTMLElement): void {
   const storyClose = hotspotDialogClose;
   const completeDialog = completionDialog;
   const completeClose = completionDialogClose;
+  const storyDialogController = createAccessibleDialogController(storyDialog);
+  const completeDialogController =
+    createAccessibleDialogController(completeDialog);
   const hotspots = hotspotButtons.map(readHotspotFromButton);
   const viewedIds = new Set<string>();
   const timers = new Set<number>();
@@ -146,23 +150,22 @@ function setupDetailsExplorer(root: HTMLElement): void {
   }
 
   function closeStoryDialog(): void {
-    if (storyDialog.open) {
-      storyDialog.close();
-    }
+    storyDialogController.close();
   }
 
   function openStoryDialog(hotspot: DetailsHotspot): void {
     storyLabel.textContent = hotspot.label;
     storyTitle.textContent = hotspot.title;
     storyText.textContent = hotspot.text;
-    openDialog(storyDialog);
-    storyClose.focus({ preventScroll: true });
+    storyDialogController.open({
+      initialFocus: storyClose,
+      trigger: hotspot.button,
+    });
   }
 
   function openCompletionDialog(): void {
     closeStoryDialog();
-    openDialog(completeDialog);
-    completionPrimaryAction?.focus({ preventScroll: true });
+    completeDialogController.open({ initialFocus: completionPrimaryAction });
   }
 
   function activateHotspot(hotspot: DetailsHotspot): void {
@@ -250,22 +253,16 @@ function setupDetailsExplorer(root: HTMLElement): void {
   resetButton.addEventListener("click", resetView);
   detailsViewport.addEventListener("keydown", handleViewportKeyboard);
   storyClose.addEventListener("click", closeStoryDialog);
-  storyDialog.addEventListener("click", (event) => {
-    if (event.target === storyDialog) {
-      closeStoryDialog();
-    }
-  });
-  completeClose.addEventListener("click", () => completeDialog.close());
-  completeDialog.addEventListener("click", (event) => {
-    if (event.target === completeDialog) {
-      completeDialog.close();
-    }
-  });
+  completeClose.addEventListener("click", () =>
+    completeDialogController.close(),
+  );
   view?.addEventListener(
     "pagehide",
     () => {
       timers.forEach((timer) => view.clearTimeout(timer));
       timers.clear();
+      storyDialogController.destroy();
+      completeDialogController.destroy();
       engine?.destroy();
     },
     { once: true },
@@ -274,18 +271,6 @@ function setupDetailsExplorer(root: HTMLElement): void {
   initializedExplorers.add(root);
   updateHotspotState();
   updateProgress();
-}
-
-function openDialog(dialog: HTMLDialogElement): void {
-  if (dialog.open) {
-    return;
-  }
-
-  if (typeof dialog.showModal === "function") {
-    dialog.showModal();
-  } else {
-    dialog.open = true;
-  }
 }
 
 function readHotspotFromButton(button: HTMLButtonElement): DetailsHotspot {
