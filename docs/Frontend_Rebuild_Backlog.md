@@ -1680,7 +1680,7 @@ npm.cmd run verify
 - выполнить `npm.cmd run check`;
 - открыть detail-страницу работы и проверить в `<head>` уникальные title, description, canonical, Open Graph, twitter image и robots.
 
-### [ ] FRT-049. Добавить sitemap и robots
+### [x] FRT-049. Добавить sitemap и robots
 
 Приоритет: Should  
 Версия: Frontend v0.4  
@@ -1697,6 +1697,25 @@ npm.cmd run verify
 
 - сборка создаёт технически корректные файлы;
 - неизвестные или архивные dev-страницы не попадают в sitemap.
+
+Реализовано:
+
+- подключён официальный `@astrojs/sitemap` в `astro.config.mjs`;
+- задан build-time `site` через `PUBLIC_SITE_URL` с техническим fallback-доменом `.example`, без привязки к финальному домену проекта;
+- sitemap фильтрует `/ui-preview/` и `/404/`, сохраняя публичные страницы работ, серий и архива;
+- добавлен `public/robots.txt` с разрешением индексации публичных страниц и запретом технического `/ui-preview/`.
+
+Где лежит:
+
+- `astro.config.mjs`;
+- `public/robots.txt`;
+- `package.json`, `package-lock.json`.
+
+Как проверить:
+
+- выполнить `npm.cmd run build`;
+- открыть `dist/sitemap-index.xml`, `dist/sitemap-0.xml` и `dist/robots.txt`;
+- убедиться, что sitemap содержит `/works/`, `/works/{slug}/`, `/series/{slug}/`, но не содержит `/ui-preview/` и `/404/`.
 
 ### [ ] FRT-050. Добавить структурированные данные произведений
 
