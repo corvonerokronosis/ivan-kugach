@@ -126,6 +126,7 @@ ESLint проверяет новый Astro/TypeScript-код, unit-тесты, �
 | `docs/`                      | Требования, описание прототипа, дизайн-планы и frontend-бэклог | Читать выборочно по задаче                                                                           |
 | `docs/IMAGE_INVENTORY.md`    | Инвентаризация production-изображений и ожидаемых вариантов    | Открывать перед задачами по image pipeline, SEO social image и визуальному QA                        |
 | `docs/PERFORMANCE_BUDGET.md` | Проверяемые лимиты первой загрузки, LCP и Lighthouse-ориентиры | Открывать перед задачами по производительности, image pipeline и visual QA                           |
+| `docs/QA_VIEWPORTS.md`       | Целевые размеры viewport и страницы для ручного visual QA      | Открывать перед FRT-052, FRT-053 и FRT-054                                                           |
 | `docs/visual-baseline/`      | Эталонные PNG актуального legacy-прототипа                     | Использовать для visual regression; не менять вручную                                                |
 | `experiments/`               | Самостоятельные HTML-эксперименты дизайна и механик            | Не production; только визуальные/исторические референсы                                              |
 | `archive/`                   | Старые версии HTML, changelog и bug notes                      | История; не источник текущего поведения                                                              |
@@ -146,6 +147,12 @@ Performance budget FRT-047:
   каталога и трёх интерактивов;
 - `npm.cmd run performance:budget` — отдельная проверка после `npm.cmd run build`;
   `npm.cmd run verify` запускает её автоматически.
+
+Visual QA FRT-051:
+
+- `docs/QA_VIEWPORTS.md` — целевые размеры `1440x900`, `1180x760`,
+  `820x1180`, `390x844` и `360x800`, а также основные страницы для
+  ручной проверки оболочки, контента, narrative и трёх интерактивов.
 
 ## 5. Ключевые экраны и фичи
 
