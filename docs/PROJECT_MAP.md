@@ -122,7 +122,7 @@ ESLint проверяет новый Astro/TypeScript-код, unit-тесты, �
 | `src/utils/`                 | Чистые helpers и адаптеры                                      | Валидация заявки, coverage grid, zoom/pan math, JSON-LD helpers и frontend-only `inquiry-adapter.ts` |
 | `scripts/`                   | Служебные Node-скрипты                                         | `check-performance-budget.mjs` проверяет статический budget production build                         |
 | `tests/`                     | Unit-тесты чистой frontend-логики                              | Покрывает coverage, zoom/pan math и lifecycle контроллера света                                      |
-| `public/`                    | Статические файлы без обработки Astro                          | `robots.txt` для публичных страниц и запрета технического `/ui-preview/`                             |
+| `public/`                    | Статические файлы без обработки Astro                          | `robots.txt` для crawler rules и `favicon.svg` для общей оболочки                                    |
 | `docs/`                      | Требования, описание прототипа, дизайн-планы и frontend-бэклог | Читать выборочно по задаче                                                                           |
 | `docs/IMAGE_INVENTORY.md`    | Инвентаризация production-изображений и ожидаемых вариантов    | Открывать перед задачами по image pipeline, SEO social image и визуальному QA                        |
 | `docs/PERFORMANCE_BUDGET.md` | Проверяемые лимиты первой загрузки, LCP и Lighthouse-ориентиры | Открывать перед задачами по производительности, image pipeline и visual QA                           |
@@ -153,6 +153,14 @@ Visual QA FRT-051:
 - `docs/QA_VIEWPORTS.md` — целевые размеры `1440x900`, `1180x760`,
   `820x1180`, `390x844` и `360x800`, а также основные страницы для
   ручной проверки оболочки, контента, narrative и трёх интерактивов.
+
+Visual QA FRT-052:
+
+- оболочка и контентные страницы прошли 31 сочетание route/viewport без
+  горизонтального overflow и ошибок консоли; покрытие и representative
+  визуальная проверка записаны в `docs/QA_VIEWPORTS.md`;
+- общий layout подключает `public/favicon.svg`, чтобы прямые входы не создавали
+  ошибку запроса `/favicon.ico`.
 
 ## 5. Ключевые экраны и фичи
 
