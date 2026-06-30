@@ -88,6 +88,7 @@ export function mountZoomPanEngine(
 
     options.content.style.transformOrigin = "0 0";
     options.content.style.transition = shouldTransition ? transition : "none";
+    options.content.style.setProperty("--zoom-pan-scale", String(state.scale));
     options.content.style.transform = `translate3d(${state.x}px, ${state.y}px, 0) scale(${state.scale})`;
     options.viewport.dataset.zoomPanDragging = state.isDragging
       ? "true"

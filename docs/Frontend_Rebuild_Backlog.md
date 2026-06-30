@@ -1831,7 +1831,7 @@ npm.cmd run verify
 - пройти контентные маршруты из раздела FRT-052 в `docs/QA_VIEWPORTS.md` на пяти указанных viewport;
 - проверить отсутствие горизонтальной прокрутки и ошибок консоли, затем на главной перейти по CTA «Перейти к интерактиву».
 
-### [ ] FRT-053. Проверить три интерактива на целевых viewport
+### [x] FRT-053. Проверить три интерактива на целевых viewport
 
 Приоритет: Must  
 Версия: Frontend v0.4  
@@ -1850,6 +1850,18 @@ npm.cmd run verify
 
 - каждый интерактив можно завершить на desktop и mobile;
 - resize и orientation change не приводят к сломанному состоянию.
+
+Реализация:
+
+- выполнена проверка `/experience/color-return/`, `/experience/details/` и `/experience/light/` на целевых viewport из `docs/QA_VIEWPORTS.md`;
+- исправлено сохранение завершённого состояния `/experience/color-return/` после resize/mobile viewport в `src/scripts/color-reveal-engine.ts`;
+- исправлены touch-target для hotspot в `src/components/experience/DetailsExplorer.astro` и размер range-контрола в `src/components/experience/LightWorkshop.astro`;
+- `src/scripts/zoom-pan-engine.ts` передаёт текущий zoom-scale в CSS-переменную, чтобы интерактивные hotspot сохраняли согласованный размер цели при масштабировании.
+
+Проверка:
+
+- `npm.cmd run build`;
+- Chromium QA: layout sweep, completion/restart на desktop и mobile, orientation resize, console/request errors.
 
 ### [ ] FRT-054. Выполнить визуальное сравнение с legacy-прототипом
 

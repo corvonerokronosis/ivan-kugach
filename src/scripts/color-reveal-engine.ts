@@ -103,6 +103,15 @@ export function mountColorRevealEngine(
     rawProgress = resetCoverageGrid(coverageGrid).rawPercent;
   }
 
+  function completeCoverageMap(): void {
+    coverageGrid = createCoverageGrid({
+      width: options.revealCanvas.width,
+      height: options.revealCanvas.height,
+      cellSize: coverageCellSize,
+    });
+    rawProgress = revealAllCoverageGrid(coverageGrid).rawPercent;
+  }
+
   function drawBasePainting(): void {
     baseContext.clearRect(
       0,
@@ -178,6 +187,7 @@ export function mountColorRevealEngine(
       return;
     }
 
+    const phaseBeforeResize = phase;
     cancelAsyncWork();
     const containerRect = options.container.getBoundingClientRect();
     const containerWidth = Math.round(
@@ -227,10 +237,34 @@ export function mountColorRevealEngine(
     activePointerId = null;
     lastPaintPoint = null;
     setBrushOpacity(0);
-    setPhase("idle");
-    initializeCoverageMap();
     drawBasePainting();
-    drawGrayOverlay();
+
+    if (
+      phaseBeforeResize === "complete" ||
+      phaseBeforeResize === "completing"
+    ) {
+      completeCoverageMap();
+      revealContext.clearRect(
+        0,
+        0,
+        options.revealCanvas.width,
+        options.revealCanvas.height,
+      );
+      setPhase("complete");
+      if (phaseBeforeResize === "completing") {
+        completionTimer = engineView.setTimeout(() => {
+          completionTimer = null;
+          if (!destroyed && phase === "complete") {
+            options.onComplete?.();
+          }
+        }, completionDelay);
+      }
+    } else {
+      setPhase("idle");
+      initializeCoverageMap();
+      drawGrayOverlay();
+    }
+
     emitProgress();
   }
 
