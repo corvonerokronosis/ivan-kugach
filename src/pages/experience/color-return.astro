@@ -9,11 +9,16 @@ const bridgeRoute = getNarrativeRouteBySequenceId("bridge");
 if (!bridgeRoute) {
   throw new Error('Narrative route "bridge" не найден');
 }
+
+const pageDescription = [
+  "Интерактивный этап маршрута по живописи Ивана Кугача:",
+  "проведите по картине, чтобы вернуть цвет и открыть следующий сюжетный блок.",
+].join(" ");
 ---
 
 <BaseLayout
   title="Возвращение цвета — Иван Кугач"
-  description="Интерактивный этап маршрута по живописи Ивана Кугача: проведите по картине, чтобы вернуть цвет и открыть следующий сюжетный блок."
+  description={pageDescription}
   studioDecoration
 >
   <section class="color-return" aria-labelledby="color-return-title">

@@ -41,7 +41,10 @@ export const frontendOnlyInquiryAdapter: InquiryAdapter = {
   async prepare(values) {
     return {
       status: "prepared",
-      message: `Заявка по работе «${values.workTitle}» подготовлена для проверки. Данные не отправлены: в технической версии нет backend-подключения.`,
+      message: [
+        `Заявка по работе «${values.workTitle}» подготовлена для проверки.`,
+        "Данные не отправлены: в технической версии нет backend-подключения.",
+      ].join(" "),
       values,
     };
   },

@@ -150,7 +150,10 @@ function setupDetailsExplorer(root: HTMLElement): void {
       return;
     }
 
-    progressElement.textContent = `Открыто точек: ${viewedIds.size} из ${hotspots.length}. Выбирайте точки кнопками, меняйте масштаб кнопками и двигайте вид стрелками клавиатуры.`;
+    progressElement.textContent = [
+      `Открыто точек: ${viewedIds.size} из ${hotspots.length}.`,
+      "Выбирайте точки кнопками, меняйте масштаб кнопками и двигайте вид стрелками клавиатуры.",
+    ].join(" ");
     nextStageLink.hidden = true;
   }
 

@@ -10,6 +10,10 @@ import {
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
 const artworks = getArchivedArtworks();
+const archiveDescription = [
+  "Эти произведения уже недоступны для покупки.",
+  "Архив сохраняет их в контексте творчества художника и помогает перейти к похожим доступным работам.",
+].join(" ");
 
 function formatPrice(artwork: (typeof artworks)[number]): string {
   return artwork.priceType === "request"
@@ -26,7 +30,7 @@ function formatPrice(artwork: (typeof artworks)[number]): string {
     level="h1"
     eyebrow="Архив"
     title="Проданные работы"
-    description="Эти произведения уже недоступны для покупки. Архив сохраняет их в контексте творчества художника и помогает перейти к похожим доступным работам."
+    description={archiveDescription}
   />
 
   <section class="archive-section" aria-labelledby="archive-list-title">

@@ -17,6 +17,19 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
 const introSequence = getNarrativeSequence("intro");
 const lightBridgeSequence = getNarrativeSequence("lightBridge");
+const joinText = (...parts: string[]): string => parts.join(" ");
+const narrativePreviewDescription = joinText(
+  "Один компонент получает контент извне и работает с блоками разной длины.",
+  "Первый пример содержит три окна, второй — два.",
+);
+const revealPreviewDescription = joinText(
+  "Проведите по изображению, затем повторно смонтируйте, сбросьте или демонтируйте экземпляр.",
+  "Стенд не является продуктовой страницей интерактива.",
+);
+const zoomPreviewDescription = joinText(
+  "Проверьте масштаб, drag, точки из данных, dialog, progress, reset и lifecycle стенда.",
+  "Это ещё не продуктовая страница интерактива.",
+);
 ---
 
 <BaseLayout
@@ -161,7 +174,7 @@ const lightBridgeSequence = getNarrativeSequence("lightBridge");
           level="h2"
           eyebrow="FRT-028"
           title="Универсальная narrative-последовательность"
-          description="Один компонент получает контент извне и работает с блоками разной длины. Первый пример содержит три окна, второй — два."
+          description={narrativePreviewDescription}
         />
         <NarrativeSequence
           id="preview-narrative-intro"
@@ -181,7 +194,7 @@ const lightBridgeSequence = getNarrativeSequence("lightBridge");
       level="h2"
       eyebrow="FRT-031"
       title="Изолированный canvas-движок"
-      description="Проведите по изображению, затем повторно смонтируйте, сбросьте или демонтируйте экземпляр. Стенд не является продуктовой страницей интерактива."
+      description={revealPreviewDescription}
     />
     <ColorRevealEnginePreview />
   </section>
@@ -192,7 +205,7 @@ const lightBridgeSequence = getNarrativeSequence("lightBridge");
       level="h2"
       eyebrow="FRT-034 / FRT-035"
       title="Zoom/pan и hotspot-данные"
-      description="Проверьте масштаб, drag, точки из данных, dialog, progress, reset и lifecycle стенда. Это ещё не продуктовая страница интерактива."
+      description={zoomPreviewDescription}
     />
     <ZoomPanEnginePreview />
   </section>

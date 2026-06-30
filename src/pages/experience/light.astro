@@ -17,11 +17,16 @@ const finaleRoute = getNarrativeRouteBySequenceId("finale");
 if (!finaleRoute) {
   throw new Error('Narrative route "finale" не найден');
 }
+
+const pageDescription = [
+  "Меняйте освещение работ Ивана Кугача и откройте четыре состояния мастерской:",
+  "утро, холодный день, вечер и лампу.",
+].join(" ");
 ---
 
 <BaseLayout
   title="Свет в мастерской — Иван Кугач"
-  description="Меняйте освещение работ Ивана Кугача и откройте четыре состояния мастерской: утро, холодный день, вечер и лампу."
+  description={pageDescription}
   studioDecoration
 >
   <section class="light-page" aria-labelledby="light-page-title">

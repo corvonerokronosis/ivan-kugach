@@ -59,6 +59,19 @@ const serializedConfig = JSON.stringify({
   defaults,
 }).replaceAll("<", "\\u003c");
 const initialVisual = initialState.visual;
+const initialStageStyle = [
+  `--light-filter: ${initialVisual.filter}`,
+  `--light-overlay: ${initialVisual.overlay}`,
+  `--light-overlay-opacity: ${initialVisual.overlayOpacity}`,
+  `--light-beam: ${initialVisual.beam}`,
+  `--light-beam-opacity: ${initialVisual.beamOpacity}`,
+  `--light-shadow: ${initialVisual.shadow}`,
+  `--light-side-shadow: ${initialVisual.sideShadow}`,
+  `--light-focus-x: ${initialVisual.focusX}`,
+  `--light-focus-y: ${initialVisual.focusY}`,
+  `--light-shadow-angle: ${initialVisual.shadowAngle}`,
+].join("; ");
+const lightStateCountStyle = `--light-state-count: ${states.length}`;
 ---
 
 <section class="light-workshop" data-light-workshop>
@@ -66,7 +79,7 @@ const initialVisual = initialState.visual;
     <div
       class="light-workshop__stage"
       data-light-stage
-      style={`--light-filter: ${initialVisual.filter}; --light-overlay: ${initialVisual.overlay}; --light-overlay-opacity: ${initialVisual.overlayOpacity}; --light-beam: ${initialVisual.beam}; --light-beam-opacity: ${initialVisual.beamOpacity}; --light-shadow: ${initialVisual.shadow}; --light-side-shadow: ${initialVisual.sideShadow}; --light-focus-x: ${initialVisual.focusX}; --light-focus-y: ${initialVisual.focusY}; --light-shadow-angle: ${initialVisual.shadowAngle};`}
+      style={initialStageStyle}
     >
       <img
         data-light-image
@@ -123,7 +136,7 @@ const initialVisual = initialState.visual;
         />
         <div
           class="light-workshop__scale"
-          style={`--light-state-count: ${states.length}`}
+          style={lightStateCountStyle}
           aria-hidden="true"
         >
           {states.map((state) => <span>{state.scaleLabel}</span>)}
@@ -150,7 +163,7 @@ const initialVisual = initialState.visual;
         <strong>Маршрут света</strong>
         <div
           class="light-workshop__dots"
-          style={`--light-state-count: ${states.length}`}
+          style={lightStateCountStyle}
           aria-hidden="true"
         >
           {

@@ -1,13 +1,17 @@
 import dor3518Image from "../assets/images/works/dor-3518.jpg";
 import type { Series, SeriesRef, SeriesSummary } from "../types/series";
 
+const joinText = (...parts: string[]): string => parts.join(" ");
+
 const series = validateSeries([
   {
     id: "demo-series-needs-title",
     slug: "demo-series-needs-title",
     title: "Демонстрационная серия: требует замены названия",
-    description:
-      "Временная серия из legacy-каталога. Название, состав и кураторское описание требуют редакционного уточнения после атрибуции работ.",
+    description: joinText(
+      "Временная серия из legacy-каталога.",
+      "Название, состав и кураторское описание требуют редакционного уточнения после атрибуции работ.",
+    ),
     cover: {
       src: dor3518Image.src,
       alt: "Обложка демонстрационной серии — DOR 3518",

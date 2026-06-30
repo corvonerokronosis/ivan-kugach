@@ -17,11 +17,16 @@ const introRoute = getNarrativeRouteBySequenceId("intro");
 if (!introRoute) {
   throw new Error('Narrative route "intro" не найден');
 }
+
+const pageDescription = [
+  "Три последовательных интерактива по живописи Ивана Кугача:",
+  "возвращение цвета, исследование деталей и работа со светом.",
+].join(" ");
 ---
 
 <BaseLayout
   title="Интерактивный маршрут — Иван Кугач"
-  description="Три последовательных интерактива по живописи Ивана Кугача: возвращение цвета, исследование деталей и работа со светом."
+  description={pageDescription}
   studioDecoration
 >
   <section class="route-hero" aria-labelledby="route-title">

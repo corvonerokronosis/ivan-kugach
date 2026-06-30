@@ -13,11 +13,16 @@ const lightBridgeRoute = getNarrativeRouteBySequenceId("lightBridge");
 if (!lightBridgeRoute) {
   throw new Error('Narrative route "lightBridge" не найден');
 }
+
+const pageDescription = [
+  "Исследуйте детали картины Ивана Кугача:",
+  "приближайте полотно, перемещайтесь по нему и открывайте точки с кураторскими комментариями.",
+].join(" ");
 ---
 
 <BaseLayout
   title="Приблизить детали — Иван Кугач"
-  description="Исследуйте детали картины Ивана Кугача: приближайте полотно, перемещайтесь по нему и открывайте точки с кураторскими комментариями."
+  description={pageDescription}
   studioDecoration
 >
   <section class="details-page" aria-labelledby="details-page-title">

@@ -1,10 +1,18 @@
 ---
 import DialogShell from "../common/DialogShell.astro";
 import { getHotspots } from "../../data/repository";
+import type { Hotspot } from "../../types/hotspot";
 import OptimizedImage from "../common/OptimizedImage.astro";
 
 const hotspots = getHotspots();
 const image = hotspots[0]?.image;
+
+function getHotspotPositionStyle(hotspot: Hotspot): string {
+  return [
+    `left: ${hotspot.position.x * 100}%`,
+    `top: ${hotspot.position.y * 100}%`,
+  ].join("; ");
+}
 ---
 
 <section class="zoom-preview" data-zoom-pan-preview>
@@ -27,9 +35,7 @@ const image = hotspots[0]?.image;
           <button
             type="button"
             class="zoom-preview__hotspot"
-            style={`left: ${hotspot.position.x * 100}%; top: ${
-              hotspot.position.y * 100
-            }%;`}
+            style={getHotspotPositionStyle(hotspot)}
             data-zoom-pan-hotspot
             data-zoom-pan-ignore
             data-hotspot-id={hotspot.id}
@@ -52,10 +58,9 @@ const image = hotspots[0]?.image;
   <div class="zoom-preview__status" aria-live="polite">
     <span>Масштаб: <strong data-zoom-pan-scale>0%</strong></span>
     <span>Позиция: <strong data-zoom-pan-position>0, 0</strong></span>
-    <span
-      >Точки: <strong data-zoom-pan-progress>0 из {hotspots.length}</strong
-      ></span
-    >
+    <span>
+      Точки: <strong data-zoom-pan-progress>0 из {hotspots.length}</strong>
+    </span>
     <span>Состояние: <strong data-zoom-pan-status>active</strong></span>
   </div>
 

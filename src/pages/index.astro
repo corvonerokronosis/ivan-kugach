@@ -15,6 +15,24 @@ const introRoute = getNarrativeRouteBySequenceId("intro");
 if (!introRoute) {
   throw new Error('Narrative route "intro" не найден');
 }
+
+const joinText = (...parts: string[]): string => parts.join(" ");
+const colorReturnDescription = joinText(
+  "Проведите по картине, чтобы проявить живопись из монохромного слоя.",
+  "Прогресс идёт быстро, а финальное раскрытие завершает композицию автоматически.",
+);
+const detailsDescription = joinText(
+  "Исследуйте вторую картину: приближайте полотно, открывайте точки интереса",
+  "и читайте небольшие пояснения к заметным фрагментам.",
+);
+const lightDescription = joinText(
+  "Меняйте свет на картине и смотрите, как тот же мотив становится",
+  "то архитектурным, то бытовым, то почти вечерним воспоминанием.",
+);
+const catalogDescription = joinText(
+  "Коммерческий сценарий отделён от интерактивного опыта:",
+  "здесь можно посмотреть доступные работы, открыть описание и подготовить заявку.",
+);
 ---
 
 <BaseLayout
@@ -70,7 +88,7 @@ if (!introRoute) {
       layout="stacked"
       eyebrow="Первый этап"
       title="Возвращение цвета"
-      description="Проведите по картине, чтобы проявить живопись из монохромного слоя. Прогресс идёт быстро, а финальное раскрытие завершает композицию автоматически."
+      description={colorReturnDescription}
       href="/experience/color-return/"
       actionLabel="Открыть интерактив"
     >
@@ -98,7 +116,7 @@ if (!introRoute) {
       layout="stacked"
       eyebrow="Второй этап"
       title="Приблизить детали"
-      description="Исследуйте вторую картину: приближайте полотно, открывайте точки интереса и читайте небольшие пояснения к заметным фрагментам."
+      description={detailsDescription}
       href="/experience/details/"
       actionLabel="Исследовать картину"
     >
@@ -126,7 +144,7 @@ if (!introRoute) {
       layout="stacked"
       eyebrow="Третий этап"
       title="Свет в мастерской"
-      description="Меняйте свет на картине и смотрите, как тот же мотив становится то архитектурным, то бытовым, то почти вечерним воспоминанием."
+      description={lightDescription}
       href="/experience/light/"
       actionLabel="Изменить свет"
     >
@@ -154,7 +172,7 @@ if (!introRoute) {
       layout="stacked"
       eyebrow="Отдельный раздел"
       title="Работы для покупки"
-      description="Коммерческий сценарий отделён от интерактивного опыта: здесь можно посмотреть доступные работы, открыть описание и подготовить заявку."
+      description={catalogDescription}
       href="/works/"
       actionLabel="Открыть каталог"
     >

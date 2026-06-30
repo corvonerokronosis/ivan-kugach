@@ -11,6 +11,17 @@ interface Props {
 
 const { hotspots, lightBridgePath, catalogPath } = Astro.props;
 const artwork = hotspots[0]?.image;
+const viewportAriaLabel = [
+  "Область просмотра картины. Используйте колесо или кнопки для масштаба,",
+  "перетаскивание для перемещения, стрелки клавиатуры для сдвига.",
+].join(" ");
+
+function getHotspotPositionStyle(hotspot: Hotspot): string {
+  return [
+    `left: ${hotspot.position.x * 100}%`,
+    `top: ${hotspot.position.y * 100}%`,
+  ].join("; ");
+}
 
 if (!artwork) {
   throw new Error("Details explorer: не найдено изображение для hotspots");
@@ -25,7 +36,7 @@ if (!artwork) {
         data-details-viewport
         tabindex="0"
         role="application"
-        aria-label="Область просмотра картины. Используйте колесо или кнопки для масштаба, перетаскивание для перемещения, стрелки клавиатуры для сдвига."
+        aria-label={viewportAriaLabel}
         aria-describedby="details-explorer-instructions"
       >
         <div class="details-explorer__canvas" data-details-content>
@@ -42,7 +53,7 @@ if (!artwork) {
               <button
                 type="button"
                 class="details-explorer__hotspot"
-                style={`left: ${hotspot.position.x * 100}%; top: ${hotspot.position.y * 100}%;`}
+                style={getHotspotPositionStyle(hotspot)}
                 data-details-hotspot
                 data-zoom-pan-ignore
                 data-hotspot-id={hotspot.id}
