@@ -1717,7 +1717,7 @@ npm.cmd run verify
 - открыть `dist/sitemap-index.xml`, `dist/sitemap-0.xml` и `dist/robots.txt`;
 - убедиться, что sitemap содержит `/works/`, `/works/{slug}/`, `/series/{slug}/`, но не содержит `/ui-preview/` и `/404/`.
 
-### [ ] FRT-050. Добавить структурированные данные произведений
+### [x] FRT-050. Добавить структурированные данные произведений
 
 Приоритет: Could  
 Версия: Frontend v1.0  
@@ -1733,6 +1733,24 @@ npm.cmd run verify
 
 - structured data проходит проверку синтаксиса;
 - данные совпадают с видимым контентом страницы.
+
+Реализовано:
+
+- `PageMetadata.astro` и `BaseLayout.astro` принимают опциональные JSON-LD-данные и выводят их в `<head>`;
+- страницы `/works/{slug}/` получают schema.org `@graph` с `Person` для Ивана Кугача и `VisualArtwork` для текущей работы;
+- поля `dateCreated`, `artMedium` и `size` выводятся только для подтверждённых значений и пропускают MVP-заглушки с «уточняется».
+
+Где лежит:
+
+- `src/components/common/PageMetadata.astro`;
+- `src/layouts/BaseLayout.astro`;
+- `src/utils/structured-data.ts`;
+- `src/pages/works/[slug].astro`.
+
+Как проверить:
+
+- выполнить `npm.cmd run check`, `npm.cmd run lint` и `npm.cmd run build`;
+- открыть `dist/works/dor-3518/index.html`, найти `<script type="application/ld+json">` и убедиться, что JSON содержит `Person`, `VisualArtwork`, название и изображение работы, но не содержит неподтверждённые `dateCreated`, `artMedium` и `size`.
 
 ---
 

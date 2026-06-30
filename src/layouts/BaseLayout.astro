@@ -3,6 +3,7 @@ import StudioDecoration from "../components/StudioDecoration.astro";
 import PageMetadata from "../components/common/PageMetadata.astro";
 import SiteNavigation from "../components/SiteNavigation.astro";
 import "../styles/global.css";
+import type { JsonLdObject } from "../utils/structured-data";
 
 interface Props {
   title?: string;
@@ -12,6 +13,7 @@ interface Props {
   socialImage?: string;
   socialImageAlt?: string;
   openGraphType?: "website" | "article";
+  structuredData?: JsonLdObject | JsonLdObject[];
   studioDecoration?: boolean;
 }
 
@@ -23,6 +25,7 @@ const {
   socialImage,
   socialImageAlt,
   openGraphType,
+  structuredData,
   studioDecoration = false,
 } = Astro.props;
 const hasHeaderContent = Astro.slots.has("header");
@@ -42,6 +45,7 @@ const hasFooter = Astro.slots.has("footer");
       socialImage={socialImage}
       socialImageAlt={socialImageAlt}
       openGraphType={openGraphType}
+      structuredData={structuredData}
     />
   </head>
   <body class:list={{ "has-studio-decoration": studioDecoration }}>

@@ -1,5 +1,6 @@
 ---
 import defaultSocialImage from "../../assets/images/works/dor-3518.jpg";
+import type { JsonLdObject } from "../../utils/structured-data";
 
 type OpenGraphType = "website" | "article";
 
@@ -11,6 +12,7 @@ interface Props {
   socialImage?: string;
   socialImageAlt?: string;
   openGraphType?: OpenGraphType;
+  structuredData?: JsonLdObject | JsonLdObject[];
 }
 
 const defaultTitle = "Иван Кугач";
@@ -27,6 +29,7 @@ const {
   socialImage,
   socialImageAlt,
   openGraphType = "website",
+  structuredData,
 } = Astro.props;
 
 function getMetadataValue(value: string | undefined, fallback: string): string {
@@ -41,6 +44,10 @@ function resolveMetadataUrl(value: string): string {
   return new URL(value, Astro.url).toString();
 }
 
+function serializeStructuredData(data: JsonLdObject): string {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
 const pageTitle = getMetadataValue(title, defaultTitle);
 const pageDescription = getMetadataValue(description, defaultDescription);
 const canonicalUrl = resolveMetadataUrl(canonical ?? Astro.url.pathname);
@@ -49,6 +56,11 @@ const socialImageUrl = resolveMetadataUrl(
   socialImage ?? defaultSocialImage.src,
 );
 const socialImageDescription = getMetadataValue(socialImageAlt, pageTitle);
+const structuredDataItems = structuredData
+  ? Array.isArray(structuredData)
+    ? structuredData
+    : [structuredData]
+  : [];
 ---
 
 <title>{pageTitle}</title>
@@ -70,3 +82,13 @@ const socialImageDescription = getMetadataValue(socialImageAlt, pageTitle);
 <meta name="twitter:description" content={pageDescription} />
 <meta name="twitter:image" content={socialImageUrl} />
 <meta name="twitter:image:alt" content={socialImageDescription} />
+
+{
+  structuredDataItems.map((item) => (
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={serializeStructuredData(item)}
+    />
+  ))
+}
