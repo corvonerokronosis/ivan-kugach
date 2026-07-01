@@ -1863,7 +1863,7 @@ npm.cmd run verify
 - `npm.cmd run build`;
 - Chromium QA: layout sweep, completion/restart на desktop и mobile, orientation resize, console/request errors.
 
-### [ ] FRT-054. Выполнить визуальное сравнение с legacy-прототипом
+### [x] FRT-054. Выполнить визуальное сравнение с legacy-прототипом
 
 Приоритет: Must  
 Версия: Frontend v0.4  
@@ -1882,6 +1882,20 @@ npm.cmd run verify
 
 - нет необъяснённых визуальных регрессий;
 - новая версия сохраняет художественное направление, не копируя технические ограничения монолита.
+
+Реализация:
+
+- выполнено визуальное сравнение Astro candidate с legacy baseline из `docs/VISUAL_BASELINE.md` на `1440x900` и `390x844`;
+- сверены первый экран, launch-карточки, narrative intro, три интерактивных stage, каталог, архив, completion/hotspot-dialog состояния и замены legacy sales-модалок на route/form;
+- результат и намеренные отличия зафиксированы в `docs/QA_VIEWPORTS.md` в разделе `Результат FRT-054 — визуальное сравнение с legacy`.
+
+Проверка:
+
+- `npm.cmd run build`;
+- локальный static preview из `dist` на `http://127.0.0.1:4321/`;
+- Playwright CLI screenshots в `.tmp/frt-054/` для desktop/mobile baseline и modal-state;
+- visual review contact sheets: `desktop-contact.png`, `mobile-contact.png`, `modal-contact.png`;
+- temporary modal-state Playwright scenario: color completion, details hotspot/completion, light completion и prepared interest form.
 
 ---
 
