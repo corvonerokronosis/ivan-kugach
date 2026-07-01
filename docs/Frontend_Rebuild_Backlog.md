@@ -1901,7 +1901,7 @@ npm.cmd run verify
 
 ## EPIC F15. Автоматические проверки
 
-### [ ] FRT-055. Добавить unit-тестовый контур
+### [x] FRT-055. Добавить unit-тестовый контур
 
 Приоритет: Should  
 Версия: Frontend v0.3  
@@ -1919,6 +1919,14 @@ npm.cmd run verify
 - `npm.cmd run test` выполняется локально;
 - тесты детерминированы;
 - минимум покрыты данные, progress и zoom/pan bounds.
+
+Результат:
+
+- добавлен общий `npm.cmd run test`, который запускает существующий unit-контур `test:unit`;
+- `test:unit` компилирует DOM-independent модули и frontend data repository во временную `.tmp/unit-tests`, затем запускает `node:test`;
+- добавлены `tests/data-contract.test.mjs`, `tests/asset-loader.mjs` и `tests/register-asset-loader.mjs`: data-suite проверяет инварианты каталога/архива, slug/id, summaries, связи серий, narrative routes, hotspots и defaults света без браузера;
+- существующие suites продолжают покрывать progress, zoom/pan bounds и контроллер света;
+- проверить: выполнить `npm.cmd run test` и убедиться, что проходят 20 тестов в 4 suites; полный контур запускается через `npm.cmd run verify`.
 
 ### [ ] FRT-056. Добавить browser smoke-тесты
 
