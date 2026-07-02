@@ -100,9 +100,9 @@
 
 Запуск Astro-каркаса: `npm.cmd install`, затем `npm.cmd run dev`.
 
-Проверки и production-сборка: `npm.cmd run verify`. Отдельно доступны `check`, `lint`, `test:unit`, `test:smoke`, `performance:budget`, `format`, `format:check`, `build` и `preview`.
+Проверки и production-сборка: `npm.cmd run verify`. Отдельно доступны `check`, `lint`, `test:unit`, `test:smoke`, `test:smoke:dist`, `performance:budget`, `format`, `format:check`, `build` и `preview`.
 
-ESLint проверяет новый Astro/TypeScript-код, unit-тесты, служебные scripts и корневые конфиги. `test:unit` компилирует DOM-independent utilities для color reveal и zoom/pan во временный каталог и запускает оба Node test suites. `test:smoke` выполняет production build, поднимает локальный static-сервер `dist/` и проходит browser smoke-сценарии без backend. `performance:budget` проверяет production `dist/` после `build` и входит в `verify`. Prettier форматирует Astro, TypeScript, тесты, scripts, CSS, JSON и активную Markdown-документацию. Legacy HTML, архивы, эксперименты и generated output исключены.
+ESLint проверяет новый Astro/TypeScript-код, unit-тесты, служебные scripts и корневые конфиги. `test:unit` компилирует DOM-independent utilities для color reveal и zoom/pan во временный каталог и запускает оба Node test suites. `test:smoke` выполняет production build и запускает browser smoke, а `test:smoke:dist` поднимает локальный static-сервер уже собранного `dist/` и проходит smoke-сценарии без backend. `performance:budget` и `test:smoke:dist` проверяют production `dist/` после `build` и входят в `verify`. Prettier форматирует Astro, TypeScript, тесты, scripts, CSS, JSON и активную Markdown-документацию. Legacy HTML, архивы, эксперименты и generated output исключены.
 
 Запуск полнофункционального legacy-эталона: открыть `index_masterskaya.html` в браузере.
 
@@ -155,6 +155,9 @@ Browser smoke FRT-056:
   главная, каталог, detail работы, форма, три интерактива и dialog-состояния;
 - `npm.cmd run test:smoke` — одна команда для сборки, локального static-сервера и
   Chromium-проверки без backend или внешних сервисов.
+- `npm.cmd run test:smoke:dist` — smoke-проверка уже собранного `dist/`; эта
+  команда используется внутри `npm.cmd run verify` после production build и
+  performance budget.
 
 Visual QA FRT-051:
 

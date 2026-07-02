@@ -1995,7 +1995,7 @@ npm.cmd run verify
 - проверить: выполнить `npm.cmd run test:unit` или `npm.cmd run verify`; при
   ошибке сообщение содержит коллекцию, запись и проблемное поле.
 
-### [ ] FRT-058. Собрать единую release-проверку frontend
+### [x] FRT-058. Собрать единую release-проверку frontend
 
 Приоритет: Must  
 Версия: Frontend v1.0  
@@ -2017,6 +2017,28 @@ npm.cmd run verify
 ```
 
 завершается успешно на чистой рабочей копии.
+
+Результат:
+
+- `npm.cmd run verify` объединяет `check`, `lint`, content checks через
+  repository build gate, unit tests, `format:check`, production build,
+  `performance:budget` и browser smoke;
+- добавлена команда `npm.cmd run test:smoke:dist`, которая запускает
+  `scripts/browser-smoke.mjs` по уже собранному `dist/`, чтобы release-проверка
+  не делала вторую production-сборку;
+- `npm.cmd run test:smoke` сохранена как удобная standalone-команда: она
+  выполняет build и затем вызывает `test:smoke:dist`.
+
+Где лежит:
+
+- `package.json`;
+- `docs/PROJECT_MAP.md`.
+
+Как проверить:
+
+- выполнить `npm.cmd run verify`;
+- убедиться, что команда проходит до конца и smoke-этап выводит
+  `Browser smoke result: PASS`.
 
 ---
 
