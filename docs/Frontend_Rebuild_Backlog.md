@@ -1928,7 +1928,7 @@ npm.cmd run verify
 - существующие suites продолжают покрывать progress, zoom/pan bounds и контроллер света;
 - проверить: выполнить `npm.cmd run test` и убедиться, что проходят 20 тестов в 4 suites; полный контур запускается через `npm.cmd run verify`.
 
-### [ ] FRT-056. Добавить browser smoke-тесты
+### [x] FRT-056. Добавить browser smoke-тесты
 
 Приоритет: Must  
 Версия: Frontend v1.0  
@@ -1948,6 +1948,22 @@ npm.cmd run verify
 
 - smoke-набор запускается одной командой;
 - тест не зависит от backend и внешних сервисов.
+
+Результат:
+
+- добавлена команда `npm.cmd run test:smoke`, которая выполняет production-сборку и запускает browser smoke-набор через Playwright;
+- smoke-скрипт поднимает локальный static-сервер для `dist/`, открывает Chromium без внешних сервисов и проверяет runtime console/page/request errors;
+- покрыты открытие главной, переход в каталог, открытие detail-страницы работы, frontend-валидация/успешная подготовка формы, запуск трёх интерактивов и открытие/закрытие их dialog-состояний.
+
+Где лежит:
+
+- `scripts/browser-smoke.mjs`;
+- `package.json`.
+
+Как проверить:
+
+- выполнить `npm.cmd run test:smoke`;
+- убедиться, что команда завершается сообщением `Browser smoke result: PASS`.
 
 ### [ ] FRT-057. Добавить проверки контентных связей
 

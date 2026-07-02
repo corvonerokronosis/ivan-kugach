@@ -99,9 +99,9 @@
 
 Запуск Astro-каркаса: `npm.cmd install`, затем `npm.cmd run dev`.
 
-Проверки и production-сборка: `npm.cmd run verify`. Отдельно доступны `check`, `lint`, `test:unit`, `performance:budget`, `format`, `format:check`, `build` и `preview`.
+Проверки и production-сборка: `npm.cmd run verify`. Отдельно доступны `check`, `lint`, `test:unit`, `test:smoke`, `performance:budget`, `format`, `format:check`, `build` и `preview`.
 
-ESLint проверяет новый Astro/TypeScript-код, unit-тесты, служебные scripts и корневые конфиги. `test:unit` компилирует DOM-independent utilities для color reveal и zoom/pan во временный каталог и запускает оба Node test suites. `performance:budget` проверяет production `dist/` после `build` и входит в `verify`. Prettier форматирует Astro, TypeScript, тесты, scripts, CSS, JSON и активную Markdown-документацию. Legacy HTML, архивы, эксперименты и generated output исключены.
+ESLint проверяет новый Astro/TypeScript-код, unit-тесты, служебные scripts и корневые конфиги. `test:unit` компилирует DOM-independent utilities для color reveal и zoom/pan во временный каталог и запускает оба Node test suites. `test:smoke` выполняет production build, поднимает локальный static-сервер `dist/` и проходит browser smoke-сценарии без backend. `performance:budget` проверяет production `dist/` после `build` и входит в `verify`. Prettier форматирует Astro, TypeScript, тесты, scripts, CSS, JSON и активную Markdown-документацию. Legacy HTML, архивы, эксперименты и generated output исключены.
 
 Запуск полнофункционального legacy-эталона: открыть `index_masterskaya.html` в браузере.
 
@@ -120,7 +120,7 @@ ESLint проверяет новый Astro/TypeScript-код, unit-тесты, �
 | `src/styles/`                | Токены и общие CSS-слои                                        | `global.css`, `tokens.css` и опциональный `studio.css`                                               |
 | `src/types/`                 | Общие TypeScript-контракты                                     | Модели данных, narrative, hotspots, свет, canvas engine и zoom/pan                                   |
 | `src/utils/`                 | Чистые helpers и адаптеры                                      | Валидация заявки, coverage grid, zoom/pan math, JSON-LD helpers и frontend-only `inquiry-adapter.ts` |
-| `scripts/`                   | Служебные Node-скрипты                                         | `check-performance-budget.mjs` проверяет статический budget production build                         |
+| `scripts/`                   | Служебные Node-скрипты                                         | `check-performance-budget.mjs` проверяет static budget, `browser-smoke.mjs` проходит Chromium smoke  |
 | `tests/`                     | Unit-тесты чистой frontend-логики                              | Покрывает coverage, zoom/pan math и lifecycle контроллера света                                      |
 | `public/`                    | Статические файлы без обработки Astro                          | `robots.txt` для crawler rules и `favicon.svg` для общей оболочки                                    |
 | `docs/`                      | Требования, описание прототипа, дизайн-планы и frontend-бэклог | Читать выборочно по задаче                                                                           |
@@ -147,6 +147,13 @@ Performance budget FRT-047:
   каталога и трёх интерактивов;
 - `npm.cmd run performance:budget` — отдельная проверка после `npm.cmd run build`;
   `npm.cmd run verify` запускает её автоматически.
+
+Browser smoke FRT-056:
+
+- `scripts/browser-smoke.mjs` — Playwright smoke-набор для production `dist/`:
+  главная, каталог, detail работы, форма, три интерактива и dialog-состояния;
+- `npm.cmd run test:smoke` — одна команда для сборки, локального static-сервера и
+  Chromium-проверки без backend или внешних сервисов.
 
 Visual QA FRT-051:
 
