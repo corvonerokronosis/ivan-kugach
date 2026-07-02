@@ -26,78 +26,79 @@
 
 ## 3. Входные точки
 
-| Путь                                                       | Роль                                                                     | Когда открывать                                                             |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
-| `AGENTS.md`                                                | Обязательные правила работы будущих сессий Codex                         | Автоматически учитывать до исследования и изменений                         |
-| `index_masterskaya.html`                                   | Единственная актуальная полнофункциональная версия сайта                 | Любое изменение текущего UI, сценариев, данных или интерактивов             |
-| `package.json`                                             | Зависимости и доступные npm-команды Astro, включая `@astrojs/sitemap`    | Запуск и настройка инструментов                                             |
-| `.gitattributes`                                           | Единые LF-окончания строк и binary-исключения                            | При ложных Git-изменениях или настройке редактора                           |
-| `astro.config.mjs`                                         | Статическая Astro-сборка, `site`, sitemap-интеграция и фильтры dev-URL   | Изменение режима сборки, SEO-файлов или интеграций                          |
-| `tsconfig.json`                                            | Строгая TypeScript-конфигурация                                          | Изменение правил типов и области проверки                                   |
-| `src/pages/index.astro`                                    | Новая главная: hero, четыре входа и информационные блоки                 | Изменение Astro-главной и её CTA                                            |
-| `src/pages/artist.astro`                                   | Страница художника: контекст, цитата и связанные подборки                | Изменение биографической композиции и её responsive-layout                  |
-| `src/pages/experience/index.astro`                         | Landing маршрута: порядок трёх этапов и прямые входы                     | Изменение последовательности, описаний и CTA интерактивного опыта           |
-| `src/pages/experience/color-return.astro`                  | Продуктовая страница интерактива возвращения цвета                       | Canvas-stage, HUD, reset, completion dialog и переход к `bridge`            |
-| `src/pages/experience/details.astro`                       | Продуктовая страница исследования деталей                                | Zoom/pan viewport, hotspots, progress, dialogs и переход к `lightBridge`    |
-| `src/pages/experience/light.astro`                         | Продуктовая страница интерактива света                                   | Stage, selector, range, progress, dialog и переход к `finale`               |
-| `src/pages/experience/story/[sequence].astro`              | Generated-страницы четырёх narrative-блоков                              | Изменение композиции story-страницы и связи с route-contract                |
-| `src/pages/works/index.astro`                              | Каталог доступных работ и frontend-форма интереса                        | Изменение композиции каталога, CTA карточек, формы и разделения статусов    |
-| `src/pages/works/[slug].astro`                             | Generated-страница работы с предвыбранной формой интереса                | Изменение detail-layout, параметров, CTA заявки, галереи и связи с серией   |
-| `src/pages/archive/index.astro`                            | Отдельный архив проданных работ с CTA к похожим произведениям            | Изменение archive-layout, пустого состояния и CTA                           |
-| `src/pages/series/[slug].astro`                            | Generated-витрина серии из локальных данных и связанных работ            | Изменение описания серии, cover/fallback, списка работ и пустого состояния  |
-| `src/pages/404.astro`                                      | Оформленная 404 и контекст неизвестных работ или серий                   | Изменение fallback-навигации и текстов ненайденных маршрутов                |
-| `src/pages/ui-preview.astro`                               | Техническая проверка common UI, dialog, narrative, canvas и zoom/hotspot | Ручная проверка переиспользуемых модулей до продуктового подключения        |
-| `src/components/experience/ColorRevealExperience.astro`    | Продуктовый UI интерактива возвращения цвета                             | Stage, HUD, progress, reset, подсказка и dialog завершения                  |
-| `src/components/experience/DetailsExplorer.astro`          | Продуктовый UI исследования деталей                                      | Рама, viewport, data-driven hotspots, zoom HUD, progress и dialogs          |
-| `src/components/experience/LightWorkshop.astro`            | Продуктовый UI мастерской света                                          | Картина, visual layers, selector, range, note, progress и completion dialog |
-| `src/components/experience/ColorRevealEnginePreview.astro` | Технический canvas-стенд FRT-031                                         | Ручная проверка paint, progress, remount, reset и destroy                   |
-| `src/components/experience/ZoomPanEnginePreview.astro`     | Технический стенд zoom/pan и hotspot-данных FRT-034/FRT-035              | Ручная проверка buttons, wheel, drag, reset, remount, destroy и dialog      |
-| `src/components/narrative/NarrativeSequence.astro`         | Универсальный UI narrative-последовательности                            | Изменение разметки слайда, счётчика и кнопок без встраивания story-контента |
-| `src/scripts/color-reveal-engine.ts`                       | Изолированный Canvas/Pointer-движок возвращения цвета                    | Кисть, coverage, resize, auto-reveal, callbacks и lifecycle                 |
-| `src/scripts/color-reveal-page.ts`                         | Инициализация продуктовой страницы возвращения цвета                     | Подключение движка, progress, reset, dialog и pagehide cleanup              |
-| `src/scripts/color-reveal-preview.ts`                      | Инициализация технического стенда canvas engine                          | Только `/ui-preview/`; не продуктовая страница интерактива                  |
-| `src/scripts/dialog-controller.ts`                         | Единый доступный контроллер нативных dialog                              | showModal/close, trap focus, Escape, backdrop, возврат фокуса и cleanup     |
-| `src/scripts/dialog-preview.ts`                            | Инициализация dialog-примера на `/ui-preview/`                           | Только `/ui-preview/`; ручная keyboard-проверка общего dialog-механизма     |
-| `src/utils/color-reveal-progress.ts`                       | Чистая математика coverage grid для интерактива раскрытия                | Progress, reset, completion threshold и граничные координаты кисти          |
-| `src/scripts/zoom-pan-engine.ts`                           | Изолированный DOM-движок zoom/pan для исследования деталей               | Buttons, wheel, pointer drag, fit/reset, bounds и lifecycle                 |
-| `src/scripts/details-explorer-page.ts`                     | Инициализация продуктовой страницы исследования деталей                  | Hotspots, keyboard, progress, dialogs, completion и pagehide cleanup        |
-| `src/scripts/zoom-pan-preview.ts`                          | Инициализация технического стенда zoom/pan и hotspot-поведения           | Только `/ui-preview/`; viewed IDs, центрирование точки и dialog             |
-| `src/scripts/light-controller.ts`                          | Изолированный state-controller интерактива света                         | Active work/state, range, viewed progress, reset, completion и destroy      |
-| `src/scripts/light-workshop-page.ts`                       | Инициализация продуктовой страницы света                                 | DOM render, selector/range events, dialog, reset и pagehide cleanup         |
-| `src/utils/zoom-pan.ts`                                    | Чистая математика zoom/pan                                               | Fit, bounds, clamp, zoom-at-focus, pan и center-on                          |
-| `src/utils/structured-data.ts`                             | JSON-LD helpers для schema.org                                           | Person/VisualArtwork для страниц работ без неподтверждённых атрибутов       |
-| `src/scripts/narrative-sequence.ts`                        | Изолированное DOM-управление narrative-компонентом                       | Переключение слайдов, клавиатура и события завершения/пропуска              |
-| `src/scripts/narrative-route.ts`                           | Связь narrative-событий с completionPath через location.replace          | Изменение финального перехода и browser history                             |
-| `src/data/narrative-routes.ts`                             | Валидируемый контракт URL и browser history narrative-маршрута           | Изменение порядка переходов, completionPath или канонических story URL      |
-| `src/data/artist-page.ts`                                  | Временный типизированный контент страницы художника                      | Замена текстов, тем и связанных подборок без изменения layout               |
-| `src/data/repository.ts`                                   | Frontend-репозиторий данных и фасад над local-источниками                | Основная точка чтения данных из UI; место будущего CMS/build-time адаптера  |
-| `src/data/content-links.ts`                                | Build-time gate контентных связей и production-ассетов                   | Проверки ID/slug, image registry, series, narrative routes и hotspot ID     |
-| `src/data/artworks.ts`                                     | Локальный типизированный источник пяти работ каталога                    | Изменение данных работ, slug, статусов, цен и временных атрибутов           |
-| `src/data/series.ts`                                       | Локальный типизированный источник серий                                  | Изменение серий, stable ID, slug, cover и связи с работами                  |
-| `src/data/narrative.ts`                                    | Локальный типизированный источник narrative-блоков                       | Изменение story-слайдов, текстов, изображений и completionAction            |
-| `src/data/hotspots.ts`                                     | Локальный типизированный источник hotspot-точек                          | Изменение точек деталей, координат, масштаба и поясняющих текстов           |
-| `src/data/light.ts`                                        | Локальный типизированный источник работ и состояний света                | Изменение картин, порядка, подписей, CSS-параметров и начального состояния  |
-| `src/types/artwork.ts`                                     | Канонический TypeScript-контракт произведения                            | Перед переносом данных работ, карточек, страниц работ и серий               |
-| `src/types/color-reveal.ts`                                | Контракты options, lifecycle, phase и progress canvas engine             | Подключение движка к UI без page-global состояния                           |
-| `src/types/zoom-pan.ts`                                    | Контракты состояния, bounds и options zoom/pan engine                    | Подключение исследовательского интерактива без глобального состояния        |
-| `src/types/inquiry.ts`                                     | Контракты payload, ошибок, состояний и адаптера формы                    | Изменение frontend-формы и будущего интерфейса отправки                     |
-| `src/types/series.ts`                                      | Канонический TypeScript-контракт серии                                   | Перед переносом страниц серий, связей работ и будущего CMS-адаптера         |
-| `src/types/narrative.ts`                                   | TypeScript-контракт narrative-последовательностей                        | Перед переносом narrative UI и маршрутов между этапами                      |
-| `src/types/narrative-route.ts`                             | TypeScript-контракт URL, входов и history actions narrative              | Изменение структуры route-definition                                        |
-| `src/types/hotspot.ts`                                     | TypeScript-контракт hotspot-точек исследовательского интерактива         | Перед переносом zoom/pan и карточек точек                                   |
-| `src/types/light.ts`                                       | Контракты данных, snapshot и lifecycle контроллера света                 | Изменение работ, состояний, callbacks или controller API                    |
-| `src/layouts/BaseLayout.astro`                             | Общий layout новой версии с навигацией, metadata и optional-декором      | Общая оболочка Astro-страниц                                                |
-| `src/components/common/PageMetadata.astro`                 | Единый компонент `<head>` metadata: title, canonical, OG, social, robots | Изменение SEO-основы страниц и безопасных значений по умолчанию             |
-| `src/README.md`                                            | Правила структуры, именования и границ модулей                           | Перед созданием новых Astro/TypeScript-файлов                               |
-| `README.md`                                                | Краткое описание продукта, маршрута, ассетов и способа запуска           | Первичная ориентация и проверка актуальной точки входа                      |
-| `docs/PROJECT_MAP.md`                                      | Навигация по проекту                                                     | Всегда первой в новой сессии                                                |
-| `docs/Frontend_Rebuild_Backlog.md`                         | План миграции в Astro, задачи `FRT-001`–`FRT-062`                        | Работа над технической переработкой                                         |
-| `docs/LOCAL_CONTENT_GUIDE.md`                              | Временная инструкция по локальным данным до CMS                          | Перед изменением работ, серий, narrative, hotspots или production-ассетов   |
-| `docs/LEGACY_MIGRATION_CHECKLIST.md`                       | Карта экранов, переходов, состояний и форм legacy-прототипа              | Перед переносом или проверкой любого работающего сценария                   |
-| `docs/NARRATIVE_ROUTE_CONTRACT.md`                         | Решение по URL, direct entry, completion и browser Back                  | Перед подключением narrative-страниц и completion-переходов                 |
-| `docs/VISUAL_BASELINE.md`                                  | Индекс desktop/mobile PNG и допустимых отличий Astro-версии              | Перед визуальным переносом и regression-сравнением                          |
-| `docs/ENTRYPOINT_CUTOVER_PLAN.md`                          | Статусы точек входа, gates FRT-062 и порядок архивации legacy            | При вопросах о production entry, cutover или rollback                       |
-| `docs/Prototype_Functional_Description.md`                 | Более подробное описание исторически реализованных сценариев             | Когда нужно понять ожидаемое поведение прототипа; сверять с кодом           |
+| Путь                                                       | Роль                                                                     | Когда открывать                                                               |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| `AGENTS.md`                                                | Обязательные правила работы будущих сессий Codex                         | Автоматически учитывать до исследования и изменений                           |
+| `index_masterskaya.html`                                   | Единственная актуальная полнофункциональная версия сайта                 | Любое изменение текущего UI, сценариев, данных или интерактивов               |
+| `package.json`                                             | Зависимости и доступные npm-команды Astro, включая `@astrojs/sitemap`    | Запуск и настройка инструментов                                               |
+| `.gitattributes`                                           | Единые LF-окончания строк и binary-исключения                            | При ложных Git-изменениях или настройке редактора                             |
+| `astro.config.mjs`                                         | Статическая Astro-сборка, `site`, sitemap-интеграция и фильтры dev-URL   | Изменение режима сборки, SEO-файлов или интеграций                            |
+| `tsconfig.json`                                            | Строгая TypeScript-конфигурация                                          | Изменение правил типов и области проверки                                     |
+| `src/pages/index.astro`                                    | Новая главная: hero, четыре входа и информационные блоки                 | Изменение Astro-главной и её CTA                                              |
+| `src/pages/artist.astro`                                   | Страница художника: контекст, цитата и связанные подборки                | Изменение биографической композиции и её responsive-layout                    |
+| `src/pages/experience/index.astro`                         | Landing маршрута: порядок трёх этапов и прямые входы                     | Изменение последовательности, описаний и CTA интерактивного опыта             |
+| `src/pages/experience/color-return.astro`                  | Продуктовая страница интерактива возвращения цвета                       | Canvas-stage, HUD, reset, completion dialog и переход к `bridge`              |
+| `src/pages/experience/details.astro`                       | Продуктовая страница исследования деталей                                | Zoom/pan viewport, hotspots, progress, dialogs и переход к `lightBridge`      |
+| `src/pages/experience/light.astro`                         | Продуктовая страница интерактива света                                   | Stage, selector, range, progress, dialog и переход к `finale`                 |
+| `src/pages/experience/story/[sequence].astro`              | Generated-страницы четырёх narrative-блоков                              | Изменение композиции story-страницы и связи с route-contract                  |
+| `src/pages/works/index.astro`                              | Каталог доступных работ и frontend-форма интереса                        | Изменение композиции каталога, CTA карточек, формы и разделения статусов      |
+| `src/pages/works/[slug].astro`                             | Generated-страница работы с предвыбранной формой интереса                | Изменение detail-layout, параметров, CTA заявки, галереи и связи с серией     |
+| `src/pages/archive/index.astro`                            | Отдельный архив проданных работ с CTA к похожим произведениям            | Изменение archive-layout, пустого состояния и CTA                             |
+| `src/pages/series/[slug].astro`                            | Generated-витрина серии из локальных данных и связанных работ            | Изменение описания серии, cover/fallback, списка работ и пустого состояния    |
+| `src/pages/404.astro`                                      | Оформленная 404 и контекст неизвестных работ или серий                   | Изменение fallback-навигации и текстов ненайденных маршрутов                  |
+| `src/pages/ui-preview.astro`                               | Техническая проверка common UI, dialog, narrative, canvas и zoom/hotspot | Ручная проверка переиспользуемых модулей до продуктового подключения          |
+| `src/components/experience/ColorRevealExperience.astro`    | Продуктовый UI интерактива возвращения цвета                             | Stage, HUD, progress, reset, подсказка и dialog завершения                    |
+| `src/components/experience/DetailsExplorer.astro`          | Продуктовый UI исследования деталей                                      | Рама, viewport, data-driven hotspots, zoom HUD, progress и dialogs            |
+| `src/components/experience/LightWorkshop.astro`            | Продуктовый UI мастерской света                                          | Картина, visual layers, selector, range, note, progress и completion dialog   |
+| `src/components/experience/ColorRevealEnginePreview.astro` | Технический canvas-стенд FRT-031                                         | Ручная проверка paint, progress, remount, reset и destroy                     |
+| `src/components/experience/ZoomPanEnginePreview.astro`     | Технический стенд zoom/pan и hotspot-данных FRT-034/FRT-035              | Ручная проверка buttons, wheel, drag, reset, remount, destroy и dialog        |
+| `src/components/narrative/NarrativeSequence.astro`         | Универсальный UI narrative-последовательности                            | Изменение разметки слайда, счётчика и кнопок без встраивания story-контента   |
+| `src/scripts/color-reveal-engine.ts`                       | Изолированный Canvas/Pointer-движок возвращения цвета                    | Кисть, coverage, resize, auto-reveal, callbacks и lifecycle                   |
+| `src/scripts/color-reveal-page.ts`                         | Инициализация продуктовой страницы возвращения цвета                     | Подключение движка, progress, reset, dialog и pagehide cleanup                |
+| `src/scripts/color-reveal-preview.ts`                      | Инициализация технического стенда canvas engine                          | Только `/ui-preview/`; не продуктовая страница интерактива                    |
+| `src/scripts/dialog-controller.ts`                         | Единый доступный контроллер нативных dialog                              | showModal/close, trap focus, Escape, backdrop, возврат фокуса и cleanup       |
+| `src/scripts/dialog-preview.ts`                            | Инициализация dialog-примера на `/ui-preview/`                           | Только `/ui-preview/`; ручная keyboard-проверка общего dialog-механизма       |
+| `src/utils/color-reveal-progress.ts`                       | Чистая математика coverage grid для интерактива раскрытия                | Progress, reset, completion threshold и граничные координаты кисти            |
+| `src/scripts/zoom-pan-engine.ts`                           | Изолированный DOM-движок zoom/pan для исследования деталей               | Buttons, wheel, pointer drag, fit/reset, bounds и lifecycle                   |
+| `src/scripts/details-explorer-page.ts`                     | Инициализация продуктовой страницы исследования деталей                  | Hotspots, keyboard, progress, dialogs, completion и pagehide cleanup          |
+| `src/scripts/zoom-pan-preview.ts`                          | Инициализация технического стенда zoom/pan и hotspot-поведения           | Только `/ui-preview/`; viewed IDs, центрирование точки и dialog               |
+| `src/scripts/light-controller.ts`                          | Изолированный state-controller интерактива света                         | Active work/state, range, viewed progress, reset, completion и destroy        |
+| `src/scripts/light-workshop-page.ts`                       | Инициализация продуктовой страницы света                                 | DOM render, selector/range events, dialog, reset и pagehide cleanup           |
+| `src/utils/zoom-pan.ts`                                    | Чистая математика zoom/pan                                               | Fit, bounds, clamp, zoom-at-focus, pan и center-on                            |
+| `src/utils/structured-data.ts`                             | JSON-LD helpers для schema.org                                           | Person/VisualArtwork для страниц работ без неподтверждённых атрибутов         |
+| `src/scripts/narrative-sequence.ts`                        | Изолированное DOM-управление narrative-компонентом                       | Переключение слайдов, клавиатура и события завершения/пропуска                |
+| `src/scripts/narrative-route.ts`                           | Связь narrative-событий с completionPath через location.replace          | Изменение финального перехода и browser history                               |
+| `src/data/narrative-routes.ts`                             | Валидируемый контракт URL и browser history narrative-маршрута           | Изменение порядка переходов, completionPath или канонических story URL        |
+| `src/data/artist-page.ts`                                  | Временный типизированный контент страницы художника                      | Замена текстов, тем и связанных подборок без изменения layout                 |
+| `src/data/repository.ts`                                   | Frontend-репозиторий данных и фасад над local-источниками                | Основная точка чтения данных из UI; место будущего CMS/build-time адаптера    |
+| `src/data/content-links.ts`                                | Build-time gate контентных связей и production-ассетов                   | Проверки ID/slug, image registry, series, narrative routes и hotspot ID       |
+| `src/data/artworks.ts`                                     | Локальный типизированный источник пяти работ каталога                    | Изменение данных работ, slug, статусов, цен и временных атрибутов             |
+| `src/data/series.ts`                                       | Локальный типизированный источник серий                                  | Изменение серий, stable ID, slug, cover и связи с работами                    |
+| `src/data/narrative.ts`                                    | Локальный типизированный источник narrative-блоков                       | Изменение story-слайдов, текстов, изображений и completionAction              |
+| `src/data/hotspots.ts`                                     | Локальный типизированный источник hotspot-точек                          | Изменение точек деталей, координат, масштаба и поясняющих текстов             |
+| `src/data/light.ts`                                        | Локальный типизированный источник работ и состояний света                | Изменение картин, порядка, подписей, CSS-параметров и начального состояния    |
+| `src/types/artwork.ts`                                     | Канонический TypeScript-контракт произведения                            | Перед переносом данных работ, карточек, страниц работ и серий                 |
+| `src/types/color-reveal.ts`                                | Контракты options, lifecycle, phase и progress canvas engine             | Подключение движка к UI без page-global состояния                             |
+| `src/types/zoom-pan.ts`                                    | Контракты состояния, bounds и options zoom/pan engine                    | Подключение исследовательского интерактива без глобального состояния          |
+| `src/types/inquiry.ts`                                     | Контракты payload, ошибок, состояний и адаптера формы                    | Изменение frontend-формы и будущего интерфейса отправки                       |
+| `src/types/series.ts`                                      | Канонический TypeScript-контракт серии                                   | Перед переносом страниц серий, связей работ и будущего CMS-адаптера           |
+| `src/types/narrative.ts`                                   | TypeScript-контракт narrative-последовательностей                        | Перед переносом narrative UI и маршрутов между этапами                        |
+| `src/types/narrative-route.ts`                             | TypeScript-контракт URL, входов и history actions narrative              | Изменение структуры route-definition                                          |
+| `src/types/hotspot.ts`                                     | TypeScript-контракт hotspot-точек исследовательского интерактива         | Перед переносом zoom/pan и карточек точек                                     |
+| `src/types/light.ts`                                       | Контракты данных, snapshot и lifecycle контроллера света                 | Изменение работ, состояний, callbacks или controller API                      |
+| `src/layouts/BaseLayout.astro`                             | Общий layout новой версии с навигацией, metadata и optional-декором      | Общая оболочка Astro-страниц                                                  |
+| `src/components/common/PageMetadata.astro`                 | Единый компонент `<head>` metadata: title, canonical, OG, social, robots | Изменение SEO-основы страниц и безопасных значений по умолчанию               |
+| `src/README.md`                                            | Правила структуры, именования и границ модулей                           | Перед созданием новых Astro/TypeScript-файлов                                 |
+| `README.md`                                                | Краткое описание продукта, маршрута, ассетов и способа запуска           | Первичная ориентация и проверка актуальной точки входа                        |
+| `docs/PROJECT_MAP.md`                                      | Навигация по проекту                                                     | Всегда первой в новой сессии                                                  |
+| `docs/Frontend_Rebuild_Backlog.md`                         | План миграции в Astro, задачи `FRT-001`–`FRT-062`                        | Работа над технической переработкой                                           |
+| `docs/LOCAL_CONTENT_GUIDE.md`                              | Временная инструкция по локальным данным до CMS                          | Перед изменением работ, серий, narrative, hotspots или production-ассетов     |
+| `docs/QA_CHECKLIST.md`                                     | Последовательный ручной QA-checklist FRT-061                             | Перед release-проверкой, FRT-062 и после изменений пользовательских сценариев |
+| `docs/LEGACY_MIGRATION_CHECKLIST.md`                       | Карта экранов, переходов, состояний и форм legacy-прототипа              | Перед переносом или проверкой любого работающего сценария                     |
+| `docs/NARRATIVE_ROUTE_CONTRACT.md`                         | Решение по URL, direct entry, completion и browser Back                  | Перед подключением narrative-страниц и completion-переходов                   |
+| `docs/VISUAL_BASELINE.md`                                  | Индекс desktop/mobile PNG и допустимых отличий Astro-версии              | Перед визуальным переносом и regression-сравнением                            |
+| `docs/ENTRYPOINT_CUTOVER_PLAN.md`                          | Статусы точек входа, gates FRT-062 и порядок архивации legacy            | При вопросах о production entry, cutover или rollback                         |
+| `docs/Prototype_Functional_Description.md`                 | Более подробное описание исторически реализованных сценариев             | Когда нужно понять ожидаемое поведение прототипа; сверять с кодом             |
 
 Запуск Astro-каркаса: `npm.cmd install`, затем `npm.cmd run dev`.
 
@@ -129,6 +130,7 @@ ESLint проверяет новый Astro/TypeScript-код, unit-тесты, �
 | `docs/LOCAL_CONTENT_GUIDE.md` | Инструкция по правке локального контента до подключения CMS    | Открывать перед изменением `src/data/*`, новых изображений и content links                           |
 | `docs/IMAGE_INVENTORY.md`     | Инвентаризация production-изображений и ожидаемых вариантов    | Открывать перед задачами по image pipeline, SEO social image и визуальному QA                        |
 | `docs/PERFORMANCE_BUDGET.md`  | Проверяемые лимиты первой загрузки, LCP и Lighthouse-ориентиры | Открывать перед задачами по производительности, image pipeline и visual QA                           |
+| `docs/QA_CHECKLIST.md`        | Последовательный ручной QA-checklist Astro-кандидата           | Открывать перед release-проходом, FRT-062 и после изменений маршрутов или интерактивов               |
 | `docs/QA_VIEWPORTS.md`        | Целевые размеры viewport и страницы для ручного visual QA      | Открывать перед FRT-052, FRT-053 и FRT-054                                                           |
 | `docs/visual-baseline/`       | Эталонные PNG актуального legacy-прототипа                     | Использовать для visual regression; не менять вручную                                                |
 | `experiments/`                | Самостоятельные HTML-эксперименты дизайна и механик            | Не production; только визуальные/исторические референсы                                              |
@@ -168,6 +170,14 @@ Browser smoke FRT-056:
 - `npm.cmd run test:smoke:dist` — smoke-проверка уже собранного `dist/`; эта
   команда используется внутри `npm.cmd run verify` после production build и
   performance budget.
+
+Manual QA FRT-061:
+
+- `docs/QA_CHECKLIST.md` — последовательный ручной проход по production preview,
+  маршрутам, каталогу, detail-странице, narrative, трём интерактивам, dialogs,
+  форме, keyboard navigation, viewport sweep и консоли;
+- чеклист опирается на `docs/QA_VIEWPORTS.md` для размеров и на
+  `docs/VISUAL_BASELINE.md` для визуального сравнения с legacy.
 
 Visual QA FRT-051:
 

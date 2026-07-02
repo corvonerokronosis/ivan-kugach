@@ -138,7 +138,12 @@ email, CRM, Telegram или оплату.
 
 ## Ручной QA-checklist
 
-До отдельного документа `FRT-061` ручная проверка опирается на:
+Полный последовательный сценарий ручной проверки находится в
+[docs/QA_CHECKLIST.md](docs/QA_CHECKLIST.md). Он покрывает production preview,
+маршруты, каталог, карточку работы, narrative, три интерактива, dialogs, форму,
+keyboard navigation, viewport sweep и консоль.
+
+Дополнительные документы для ручной проверки:
 
 - [docs/QA_VIEWPORTS.md](docs/QA_VIEWPORTS.md) - целевые viewport, страницы и
   результаты визуального QA;
@@ -151,10 +156,7 @@ email, CRM, Telegram или оплату.
 
 1. Запустить `npm.cmd run verify`.
 2. Запустить `npm.cmd run preview`.
-3. Проверить прямой вход и обновление страницы на `/`, `/works/`,
-   `/works/{slug}/`, `/archive/`, `/experience/`,
-   `/experience/color-return/`, `/experience/details/` и
-   `/experience/light/`.
+3. Пройти релевантные шаги из `docs/QA_CHECKLIST.md`.
 4. На целевых viewport из `docs/QA_VIEWPORTS.md` убедиться, что нет
    горизонтального overflow, ошибок консоли и перекрытий UI.
 5. Пройти форму интереса без отправки на backend и убедиться, что текст

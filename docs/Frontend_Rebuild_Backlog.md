@@ -2112,7 +2112,7 @@ npm.cmd run verify
   изменения контента и выполнить `npm.cmd run format:check` или
   `npm.cmd run verify`.
 
-### [ ] FRT-061. Подготовить ручной QA-checklist
+### [x] FRT-061. Подготовить ручной QA-checklist
 
 Приоритет: Must  
 Версия: Frontend v1.0  
@@ -2136,6 +2136,17 @@ npm.cmd run verify
 
 - checklist можно пройти последовательно;
 - для каждого шага указан ожидаемый результат.
+
+Результат:
+
+- добавлен `docs/QA_CHECKLIST.md` с последовательным ручным проходом по
+  production preview, маршрутам, каталогу, карточке работы, narrative, трём
+  интерактивам, dialogs, форме, keyboard navigation, viewport sweep, console и
+  финальным release-gates;
+- `README.md`, `docs/PROJECT_MAP.md`, `docs/QA_VIEWPORTS.md` и npm-команды
+  форматирования ведут к новому checklist как к активной release-документации;
+- проверить: выполнить `npm.cmd run format:check` или `npm.cmd run verify`,
+  затем открыть `docs/QA_CHECKLIST.md` и пройти шаги в production preview.
 
 ### [ ] FRT-062. Переключить основную точку входа
 
