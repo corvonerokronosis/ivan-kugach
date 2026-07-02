@@ -1,35 +1,34 @@
 # AGENTS.md
 
-Короткая инструкция для будущих сессий Codex. Цель — быстро найти нужные файлы, не тратить токены на полный обход репозитория и не перепутать текущий прототип с планируемой архитектурой.
+Короткая инструкция для будущих сессий Codex. Цель — быстро найти нужные файлы, не тратить токены на полный обход репозитория и не перепутать текущую Astro-версию с архивным legacy-прототипом.
 
 ## С чего начинать
 
 1. Открой `docs/PROJECT_MAP.md`.
 2. Выполни `git status --short`.
 3. Если нужен список файлов, используй `rg --files` или `git ls-files`.
-4. Для текущего поведения смотри `index_masterskaya.html`.
+4. Для текущего поведения смотри Astro-маршрут, компонент, данные или скрипт из `src/` по карте проекта.
 5. Для технической миграции смотри нужную задачу в `docs/Frontend_Rebuild_Backlog.md`.
-6. Перед переносом сценария проверь `docs/LEGACY_MIGRATION_CHECKLIST.md`.
-7. Перед визуальным переносом открой соответствующий снимок из `docs/VISUAL_BASELINE.md`.
-8. Статус точек входа и gates переключения смотри в `docs/ENTRYPOINT_CUTOVER_PLAN.md`.
+6. Для исторической сверки сценария проверь `docs/LEGACY_MIGRATION_CHECKLIST.md`.
+7. Для визуальной сверки открой соответствующий снимок из `docs/VISUAL_BASELINE.md`.
+8. Статус точек входа после переключения смотри в `docs/ENTRYPOINT_CUTOVER_PLAN.md`.
 9. Перед созданием Astro-файлов проверь правила в `src/README.md`.
 10. `README.md` используй для краткого описания продукта и пользовательского маршрута.
 
-Не читай весь `index_masterskaya.html` целиком без необходимости. Сначала найди нужный экран, функцию, константу или CSS-класс через `rg`.
+Не читай весь `archive/index_masterskaya.html` целиком без необходимости. Для исторической сверки сначала найди нужный экран, функцию, константу или CSS-класс через `rg`.
 
 ## Источник текущей правды
 
-- `index_masterskaya.html` — единственная актуальная полнофункциональная версия и legacy-эталон.
-- `src/pages/index.astro` — техническая стартовая страница новой Astro-версии; продуктовые экраны в неё ещё не перенесены.
-- Внутри него находятся HTML, CSS, JavaScript, данные и состояние всех экранов.
-- `src/` содержит исходный Astro-каркас и прежние изображения прототипа.
+- `src/pages/index.astro` и Astro route `/` — единственная поддерживаемая исходная главная страница.
+- `src/` содержит актуальные Astro-страницы, компоненты, данные, стили, клиентские модули и production-изображения.
+- `archive/index_masterskaya.html` — исторический legacy-reference после FRT-062; не участвует в build и production.
 - `src/README.md` фиксирует ответственность директорий и правила именования нового кода.
 - `experiments/` — отдельные визуальные и механические эксперименты.
 - `archive/` — старые версии и история.
-- `docs/Frontend_Rebuild_Backlog.md` описывает целевую Astro-архитектуру и статус её поэтапной реализации; не воспринимай ещё не выполненные задачи как существующий код.
-- `docs/ENTRYPOINT_CUTOVER_PLAN.md` определяет, когда Astro может стать production-главной; до FRT-062 переключение запрещено.
+- `docs/Frontend_Rebuild_Backlog.md` описывает завершённый frontend-бэклог и последующие ограничения.
+- `docs/ENTRYPOINT_CUTOVER_PLAN.md` фиксирует итоговый статус точек входа после FRT-062 и правила rollback.
 
-Если документация расходится с текущим кодом, до завершения миграции доверяй `index_masterskaya.html` и явно отмечай расхождение.
+Если документация расходится с текущим кодом, доверяй Astro-коду в `src/` и явно отмечай расхождение.
 
 ## Как искать
 
@@ -42,15 +41,15 @@ rg --files
 - Ищи точечно:
 
 ```powershell
-rg -n "landingScreen|experienceScreen|salesScreen" index_masterskaya.html
-rg -n "SALES_WORKS|NARRATIVE_SEQUENCES|HOTSPOTS|LIGHT_WORKS" index_masterskaya.html
-rg -n "showScreen|goToExperience|fitExploreView|updateLightState" index_masterskaya.html
+rg -n "landingScreen|experienceScreen|salesScreen" archive/index_masterskaya.html
+rg -n "SALES_WORKS|NARRATIVE_SEQUENCES|HOTSPOTS|LIGHT_WORKS" archive/index_masterskaya.html
+rg -n "showScreen|goToExperience|fitExploreView|updateLightState" archive/index_masterskaya.html
 ```
 
 - Для стилей ищи по классу конкретной зоны:
 
 ```powershell
-rg -n "\.sales-|\.explore-|\.light-|\.narrative-|\.modal" index_masterskaya.html
+rg -n "\.sales-|\.explore-|\.light-|\.narrative-|\.modal" archive/index_masterskaya.html
 ```
 
 - Для миграционной задачи сначала найди её ID:
@@ -83,8 +82,8 @@ rg -n "FRT-0XX" docs/Frontend_Rebuild_Backlog.md
 
 1. Работай только над одной явно выбранной задачей или тесно связанным минимальным набором.
 2. Проверь её зависимости.
-3. Перед изменениями зафиксируй текущий пользовательский сценарий.
-4. Не удаляй и не заменяй `index_masterskaya.html`, пока не выполнена `FRT-062`.
+3. Перед изменениями зафиксируй текущий пользовательский сценарий в Astro-контуре.
+4. Не восстанавливай корневой legacy HTML как альтернативную production-главную.
 5. После реализации выполни критерии проверки задачи.
 6. Сразу измени статус задачи на `[x]` и добавь краткую запись:
    - что реализовано;
@@ -92,11 +91,11 @@ rg -n "FRT-0XX" docs/Frontend_Rebuild_Backlog.md
    - как проверить.
 7. Остановись и передай пользователю короткий ручной сценарий проверки, если он не просил продолжать дальше.
 
-Не переносить все экраны одним большим рефакторингом. Сохранять legacy-прототип как визуальный и функциональный baseline.
+Не использовать архивный legacy-прототип как источник новых продуктовых изменений. Для visual regression сохранять legacy PNG как исторический baseline.
 
 ## Текущие команды
 
-В проекте создан минимальный Astro-каркас. Доступные команды:
+В проекте создан Astro production-контур. Доступные команды:
 
 ```powershell
 npm.cmd install
@@ -112,20 +111,20 @@ npm.cmd run verify
 
 `lint` проверяет новый Astro/TypeScript-код через ESLint. `format` исправляет форматирование нового production-контура и активной документации, а `format:check` только проверяет его.
 
-Legacy HTML, `archive/`, `experiments/`, generated output и временные директории исключены из ESLint и Prettier.
+Архивный legacy HTML, `archive/`, `experiments/`, generated output и временные директории исключены из ESLint и Prettier.
 
-Для legacy-прототипа:
+Для архивного legacy-reference:
 
-1. Открой `index_masterskaya.html` в браузере.
-2. Проверь нужный экран и связанный пользовательский маршрут.
+1. Открой `archive/index_masterskaya.html` в браузере.
+2. Проверь исторический экран или связанный пользовательский маршрут только для сверки.
 
 Для быстрой проверки встроенного JavaScript:
 
 ```powershell
-node -e "const fs=require('fs');const s=fs.readFileSync('index_masterskaya.html','utf8');const m=s.match(/<script>([\s\S]*?)<\/script>/i);new Function(m[1]);console.log('Inline JS syntax OK')"
+node -e "const fs=require('fs');const s=fs.readFileSync('archive/index_masterskaya.html','utf8');const m=s.match(/<script>([\s\S]*?)<\/script>/i);new Function(m[1]);console.log('Archived inline JS syntax OK')"
 ```
 
-Команда `test` появится в отдельной задаче тестового контура.
+Команда `test` уже доступна как alias для `test:unit`.
 
 На Windows предпочитай `npm.cmd`, не меняя PowerShell execution policy.
 
@@ -140,13 +139,13 @@ node -e "const fs=require('fs');const s=fs.readFileSync('index_masterskaya.html'
 - Не подключай CMS, backend, настоящую отправку заявок или хостинг в рамках frontend-бэклога.
 - Не добавляй React/Vue только ради отдельных интерактивов; текущий целевой план — Astro + TypeScript + DOM/Canvas modules.
 - Не копируй весь встроенный CSS и JavaScript в один новый файл при миграции: разделяй по ответственности.
-- Не доверяй старым экспериментам как источнику актуального поведения.
+- Не доверяй архивному legacy HTML и старым экспериментам как источнику актуального поведения.
 - Сохраняй пути к изображениям и учитывай регистр и пробелы в текущих именах.
 - Не перезаписывай unrelated изменения пользователя в грязном worktree.
 
 ## Минимальные проверки
 
-Для правки текущего монолита:
+Для правки архивного legacy-reference:
 
 - проверить синтаксис встроенного JavaScript;
 - проверить существование изменённых путей к ассетам;
@@ -154,7 +153,7 @@ node -e "const fs=require('fs');const s=fs.readFileSync('index_masterskaya.html'
 - проверить desktop и mobile, если менялась вёрстка;
 - проверить консоль браузера.
 
-Для будущего Astro-кода:
+Для Astro-кода:
 
 - выполнить профильные проверки из задачи;
 - выполнить `npm.cmd run verify`;

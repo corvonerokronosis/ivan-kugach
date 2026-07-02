@@ -5,10 +5,10 @@
 картинами, каталог работ, страницы произведений, серии и архив в статическую
 production-сборку без backend.
 
-`index_masterskaya.html` сохранен в корне как legacy-эталон поведения и
-визуального сравнения до финального переключения точки входа в `FRT-062`.
-Основной разрабатываемый frontend находится в `src/` и запускается через
-команды npm.
+Основной frontend находится в `src/` и запускается через команды npm. Legacy
+proof-of-concept сохранён как исторический reference в
+`archive/index_masterskaya.html`; production-сборка и корневой workflow больше
+не зависят от него.
 
 ## Требования
 
@@ -97,23 +97,23 @@ Legacy-прототип, архивы, эксперименты, generated outpu
 
 ## Карта директорий
 
-| Путь                     | Назначение                                                                      |
-| ------------------------ | ------------------------------------------------------------------------------- |
-| `src/pages/`             | Astro-маршруты и композиция страниц                                             |
-| `src/layouts/`           | Общий HTML-каркас, metadata, slots и декор                                      |
-| `src/components/`        | Переиспользуемые Astro-компоненты UI, каталога, narrative и интерактивов        |
-| `src/assets/`            | Импортируемые production web-изображения и другие ассеты                        |
-| `src/content/`           | Каркас Astro Content Collections                                                |
-| `src/data/`              | Типизированные локальные данные, route-контракты и frontend-репозиторий         |
-| `src/scripts/`           | Изолированные клиентские DOM/Canvas/state-модули                                |
-| `src/styles/`            | Дизайн-токены, глобальные стили и общие CSS-слои                                |
-| `src/types/`             | Общие TypeScript-контракты данных, интерактивов, форм и маршрутов               |
-| `src/utils/`             | Чистые helpers, адаптеры, image registry и structured data                      |
-| `tests/`                 | Unit-тесты DOM-independent логики                                               |
-| `scripts/`               | Служебные Node-скрипты smoke и performance budget                               |
-| `public/`                | Файлы без обработки Astro: `robots.txt`, `favicon.svg`                          |
-| `docs/`                  | Бэклог, карта проекта, migration checklist, visual baseline, QA и release gates |
-| `index_masterskaya.html` | Legacy-эталон до `FRT-062`, не production-точка новой Astro-версии              |
+| Путь                             | Назначение                                                                      |
+| -------------------------------- | ------------------------------------------------------------------------------- |
+| `src/pages/`                     | Astro-маршруты и композиция страниц                                             |
+| `src/layouts/`                   | Общий HTML-каркас, metadata, slots и декор                                      |
+| `src/components/`                | Переиспользуемые Astro-компоненты UI, каталога, narrative и интерактивов        |
+| `src/assets/`                    | Импортируемые production web-изображения и другие ассеты                        |
+| `src/content/`                   | Каркас Astro Content Collections                                                |
+| `src/data/`                      | Типизированные локальные данные, route-контракты и frontend-репозиторий         |
+| `src/scripts/`                   | Изолированные клиентские DOM/Canvas/state-модули                                |
+| `src/styles/`                    | Дизайн-токены, глобальные стили и общие CSS-слои                                |
+| `src/types/`                     | Общие TypeScript-контракты данных, интерактивов, форм и маршрутов               |
+| `src/utils/`                     | Чистые helpers, адаптеры, image registry и structured data                      |
+| `tests/`                         | Unit-тесты DOM-independent логики                                               |
+| `scripts/`                       | Служебные Node-скрипты smoke и performance budget                               |
+| `public/`                        | Файлы без обработки Astro: `robots.txt`, `favicon.svg`                          |
+| `docs/`                          | Бэклог, карта проекта, migration checklist, visual baseline, QA и release gates |
+| `archive/index_masterskaya.html` | Архивный legacy-reference; не production-точка Astro-версии                     |
 
 Подробные правила для `src/` описаны в [src/README.md](src/README.md).
 Навигация по репозиторию - в [docs/PROJECT_MAP.md](docs/PROJECT_MAP.md).
@@ -163,16 +163,17 @@ keyboard navigation, viewport sweep и консоль.
    подтверждения остается честным frontend-only сообщением.
 6. Для визуальных изменений свериться с baseline из `docs/VISUAL_BASELINE.md`.
 
-## Legacy-эталон
+## Legacy-архив
 
-`index_masterskaya.html` не удаляется и не заменяется до `FRT-062`. Его нужно
-открывать напрямую в браузере, когда требуется проверить исходное поведение
-прототипа или сравнить визуальное состояние с Astro-версией.
+`archive/index_masterskaya.html` хранит исторический proof-of-concept после
+переключения `FRT-062`. Его можно открыть напрямую в браузере, когда требуется
+проверить исходное поведение прототипа или сравнить визуальное состояние с
+Astro-версией.
 
-Быстрая проверка встроенного JavaScript legacy-файла:
+Быстрая проверка встроенного JavaScript архивного legacy-файла:
 
 ```powershell
-node -e "const fs=require('fs');const s=fs.readFileSync('index_masterskaya.html','utf8');const m=s.match(/<script>([\s\S]*?)<\/script>/i);new Function(m[1]);console.log('Inline JS syntax OK')"
+node -e "const fs=require('fs');const s=fs.readFileSync('archive/index_masterskaya.html','utf8');const m=s.match(/<script>([\s\S]*?)<\/script>/i);new Function(m[1]);console.log('Archived inline JS syntax OK')"
 ```
 
 Порядок финального переключения зафиксирован в

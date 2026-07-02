@@ -1,6 +1,8 @@
 # Структура исходников Astro
 
-Эта директория содержит новый production-контур. Полнофункциональный legacy-прототип по-прежнему находится в корневом `index_masterskaya.html`.
+Эта директория содержит поддерживаемый production-контур. Архивный
+legacy-прототип после FRT-062 находится в `archive/index_masterskaya.html` и не
+участвует в сборке.
 
 ## Ответственность директорий
 
@@ -49,9 +51,10 @@
 
 Production web-изображения лежат в `assets/images/` и называются lowercase
 kebab-case без пробелов. Эти пути используют и Astro-код, и временно сохранённый
-legacy baseline `index_masterskaya.html`; при переименовании изображения нужно
-одновременно обновлять оба контура. Назначение файлов и ожидаемые варианты для
-image pipeline зафиксированы в `docs/IMAGE_INVENTORY.md`.
+archived legacy reference `archive/index_masterskaya.html`; при переименовании
+изображения нужно одновременно обновлять Astro-контур и архивные ссылки, если
+архив должен оставаться открываемым локально. Назначение файлов и ожидаемые
+варианты для image pipeline зафиксированы в `docs/IMAGE_INVENTORY.md`.
 
 Production UI выводит локальные изображения через
 `components/common/OptimizedImage.astro`. Компонент создаёт AVIF/WebP и fallback

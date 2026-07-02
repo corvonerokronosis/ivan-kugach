@@ -1,7 +1,7 @@
 # Manual QA checklist
 
-Ручной checklist для Astro-кандидата перед `FRT-062`. Он дополняет
-автоматическую проверку `npm.cmd run verify`, но не заменяет её.
+Ручной checklist для Astro production preview после переключения `FRT-062`. Он
+дополняет автоматическую проверку `npm.cmd run verify`, но не заменяет её.
 
 ## Подготовка
 
@@ -11,7 +11,7 @@
 2. Выполнить `npm.cmd run preview`.
    Ожидаемый результат: Astro preview запускает локальный URL без ошибок
    PowerShell; все дальнейшие проверки выполняются в production preview, а не в
-   dev server и не в `index_masterskaya.html`.
+   dev server и не в архивном `archive/index_masterskaya.html`.
 3. Открыть DevTools Console.
    Ожидаемый результат: при прямом входе, навигации, обновлении страницы,
    интерактивах и отправке frontend-формы нет `error`, failed local requests или
@@ -118,6 +118,6 @@
    изменений.
    Ожидаемый результат: автоматические проверки зелёные, а ручные замечания либо
    исправлены, либо явно вынесены в отдельные задачи.
-2. Перед `FRT-062` открыть `docs/ENTRYPOINT_CUTOVER_PLAN.md`.
-   Ожидаемый результат: все gates, включая этот QA-checklist, закрыты до
-   архивации legacy-точки входа.
+2. При изменении точки входа открыть `docs/ENTRYPOINT_CUTOVER_PLAN.md`.
+   Ожидаемый результат: Astro `/` остаётся единственной исходной главной, а
+   legacy HTML остаётся архивным reference.

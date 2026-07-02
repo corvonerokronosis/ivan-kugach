@@ -5,7 +5,7 @@
 Версия документа: 1.0  
 Дата формирования: 2026-06-19  
 Назначение: рабочий бэклог перехода от single-file прототипа к структурированному многостраничному frontend-проекту  
-Текущий источник поведения: `index_masterskaya.html`  
+Текущий источник поведения: Astro-контур `src/` и route `/`  
 Целевой стек: Astro + TypeScript + CSS + изолированные клиентские модули интерактивов
 
 ---
@@ -22,7 +22,9 @@
 - подготовлен к последующему подключению CMS и backend, но пока от них не зависит;
 - имеет автоматические проверки и понятный процесс ручного QA.
 
-Ключевой принцип миграции: не переписывать весь прототип одним большим изменением. Каркас, страницы и интерактивы переносятся последовательно, а текущий `index_masterskaya.html` сохраняется как рабочий визуальный и функциональный эталон до завершения миграции.
+Ключевой принцип миграции был выполнен поэтапно: каркас, страницы и интерактивы
+перенесены последовательно, а legacy proof-of-concept после FRT-062 сохранён в
+`archive/index_masterskaya.html` как исторический visual/functional reference.
 
 ---
 
@@ -65,7 +67,8 @@
 
 ## 4. Текущее техническое состояние
 
-Актуальный прототип находится в `index_masterskaya.html`.
+Актуальный frontend находится в Astro-контуре `src/`. Исторический
+single-file proof-of-concept находится в `archive/index_masterskaya.html`.
 
 На момент аудита:
 
@@ -2148,7 +2151,7 @@ npm.cmd run verify
 - проверить: выполнить `npm.cmd run format:check` или `npm.cmd run verify`,
   затем открыть `docs/QA_CHECKLIST.md` и пройти шаги в production preview.
 
-### [ ] FRT-062. Переключить основную точку входа
+### [x] FRT-062. Переключить основную точку входа
 
 Приоритет: Must  
 Версия: Frontend v1.0  
@@ -2167,6 +2170,20 @@ npm.cmd run verify
 - корневой workflow проекта ведёт в Astro;
 - legacy-файл явно обозначен как архив;
 - production-сборка не зависит от legacy HTML.
+
+Результат FRT-062:
+
+- дата переключения: 2026-07-02;
+- рабочая ветка: `codex/frt-062-entrypoint-cutover`;
+- commit hash: будет зафиксирован после локального коммита этого изменения;
+- `index_masterskaya.html` перенесён в `archive/index_masterskaya.html`, а
+  его asset-пути `src/...` исправлены на `../src/...`;
+- README, `AGENTS.md`, `docs/PROJECT_MAP.md`, `docs/ENTRYPOINT_CUTOVER_PLAN.md`,
+  `docs/LEGACY_MIGRATION_CHECKLIST.md`, `docs/VISUAL_BASELINE.md`,
+  `docs/QA_CHECKLIST.md` и `src/README.md` обновлены под итоговый статус;
+- проверить: выполнить `npm.cmd run verify`, затем `npm.cmd run preview`,
+  открыть Astro `/` и при необходимости архивный
+  `archive/index_masterskaya.html` напрямую в браузере.
 
 ---
 

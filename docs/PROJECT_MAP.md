@@ -7,34 +7,34 @@
 
 Интерактивный сайт о творчестве Ивана Кугача: главная в образе мастерской, сюжетные переходы, три интерактива с картинами и каталог работ.
 
-Текущая полнофункциональная версия — proof-of-concept в одном файле `index_masterskaya.html`. В нём находятся разметка, CSS, данные, состояние и JavaScript всех актуальных экранов.
+Текущая поддерживаемая версия — многостраничный Astro frontend в `src/`, который собирается в статический `dist/`.
 
-Рядом развивается Astro-версия: главная `/` уже перенесена, а остальные продуктовые маршруты пока реализованы поэтапно и местами остаются техническими заглушками. До FRT-062 эта версия не заменяет полнофункциональный legacy-прототип.
+Исторический proof-of-concept сохранён в `archive/index_masterskaya.html` как legacy-reference после FRT-062. Он не участвует в production build и не является источником новых продуктовых изменений.
 
 ## 2. Стек
 
-| Область     | Сейчас                                                          | План                                                       |
-| ----------- | --------------------------------------------------------------- | ---------------------------------------------------------- |
-| Разметка    | Legacy HTML и техническая Astro-страница                        | Astro pages/components                                     |
-| Стили       | Встроенный CSS                                                  | Раздельные CSS tokens/global/component styles              |
-| Логика      | Vanilla JavaScript, DOM API, Canvas API                         | TypeScript и изолированные клиентские модули               |
-| Роутинг     | Legacy без URL; Astro имеет 13 route patterns и 20 static pages | Полная файловая карта Astro                                |
-| Данные      | Константы внутри `<script>`                                     | Типизированные локальные данные с заменяемым CMS-адаптером |
-| Сборка      | Astro dev, build и production preview                           | Astro production build                                     |
-| Тесты       | `test:unit` для чистой математики color reveal и zoom/pan       | Полный unit-контур, content checks и browser smoke tests   |
-| Backend/API | Нет                                                             | Вне текущего frontend-этапа                                |
+| Область     | Сейчас                                                     | План                                                     |
+| ----------- | ---------------------------------------------------------- | -------------------------------------------------------- |
+| Разметка    | Astro pages/components                                     | Поддерживаемый Astro production-контур                   |
+| Стили       | Раздельные CSS tokens/global/component styles              | Развитие дизайн-системы без монолита                     |
+| Логика      | TypeScript и изолированные клиентские модули               | Дальнейшая изоляция интерактивов                         |
+| Роутинг     | Astro имеет 13 route patterns и 20 static pages            | Полная файловая карта Astro                              |
+| Данные      | Типизированные локальные данные с заменяемым CMS-адаптером | Будущий CMS/build-time адаптер                           |
+| Сборка      | Astro dev, build и production preview                      | Astro production build                                   |
+| Тесты       | `test:unit` для чистой математики color reveal и zoom/pan  | Полный unit-контур, content checks и browser smoke tests |
+| Backend/API | Нет                                                        | Вне текущего frontend-этапа                              |
 
 ## 3. Входные точки
 
 | Путь                                                       | Роль                                                                     | Когда открывать                                                               |
 | ---------------------------------------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
 | `AGENTS.md`                                                | Обязательные правила работы будущих сессий Codex                         | Автоматически учитывать до исследования и изменений                           |
-| `index_masterskaya.html`                                   | Единственная актуальная полнофункциональная версия сайта                 | Любое изменение текущего UI, сценариев, данных или интерактивов               |
+| `src/pages/index.astro`                                    | Единственная поддерживаемая исходная главная Astro route `/`             | Изменение главной, CTA и входов в пользовательские маршруты                   |
+| `archive/index_masterskaya.html`                           | Архивный legacy-reference после FRT-062                                  | Только историческая сверка поведения или визуального baseline                 |
 | `package.json`                                             | Зависимости и доступные npm-команды Astro, включая `@astrojs/sitemap`    | Запуск и настройка инструментов                                               |
 | `.gitattributes`                                           | Единые LF-окончания строк и binary-исключения                            | При ложных Git-изменениях или настройке редактора                             |
 | `astro.config.mjs`                                         | Статическая Astro-сборка, `site`, sitemap-интеграция и фильтры dev-URL   | Изменение режима сборки, SEO-файлов или интеграций                            |
 | `tsconfig.json`                                            | Строгая TypeScript-конфигурация                                          | Изменение правил типов и области проверки                                     |
-| `src/pages/index.astro`                                    | Новая главная: hero, четыре входа и информационные блоки                 | Изменение Astro-главной и её CTA                                              |
 | `src/pages/artist.astro`                                   | Страница художника: контекст, цитата и связанные подборки                | Изменение биографической композиции и её responsive-layout                    |
 | `src/pages/experience/index.astro`                         | Landing маршрута: порядок трёх этапов и прямые входы                     | Изменение последовательности, описаний и CTA интерактивного опыта             |
 | `src/pages/experience/color-return.astro`                  | Продуктовая страница интерактива возвращения цвета                       | Canvas-stage, HUD, reset, completion dialog и переход к `bridge`              |
@@ -100,19 +100,19 @@
 | `docs/ENTRYPOINT_CUTOVER_PLAN.md`                          | Статусы точек входа, gates FRT-062 и порядок архивации legacy            | При вопросах о production entry, cutover или rollback                         |
 | `docs/Prototype_Functional_Description.md`                 | Более подробное описание исторически реализованных сценариев             | Когда нужно понять ожидаемое поведение прототипа; сверять с кодом             |
 
-Запуск Astro-каркаса: `npm.cmd install`, затем `npm.cmd run dev`.
+Запуск Astro-проекта: `npm.cmd install`, затем `npm.cmd run dev`.
 
 Проверки и production-сборка: `npm.cmd run verify`. Отдельно доступны `check`, `lint`, `test:unit`, `test:smoke`, `test:smoke:dist`, `performance:budget`, `format`, `format:check`, `build` и `preview`.
 
-ESLint проверяет новый Astro/TypeScript-код, unit-тесты, служебные scripts и корневые конфиги. `test:unit` компилирует DOM-independent utilities для color reveal и zoom/pan во временный каталог и запускает оба Node test suites. `test:smoke` выполняет production build и запускает browser smoke, а `test:smoke:dist` поднимает локальный static-сервер уже собранного `dist/` и проходит smoke-сценарии без backend. `performance:budget` и `test:smoke:dist` проверяют production `dist/` после `build` и входят в `verify`. Prettier форматирует Astro, TypeScript, тесты, scripts, CSS, JSON и активную Markdown-документацию. Legacy HTML, архивы, эксперименты и generated output исключены.
+ESLint проверяет Astro/TypeScript-код, unit-тесты, служебные scripts и корневые конфиги. `test:unit` компилирует DOM-independent utilities для color reveal и zoom/pan во временный каталог и запускает оба Node test suites. `test:smoke` выполняет production build и запускает browser smoke, а `test:smoke:dist` поднимает локальный static-сервер уже собранного `dist/` и проходит smoke-сценарии без backend. `performance:budget` и `test:smoke:dist` проверяют production `dist/` после `build` и входят в `verify`. Prettier форматирует Astro, TypeScript, тесты, scripts, CSS, JSON и активную Markdown-документацию. Архивный legacy HTML, архивы, эксперименты и generated output исключены.
 
-Запуск полнофункционального legacy-эталона: открыть `index_masterskaya.html` в браузере.
+Запуск архивного legacy-reference: открыть `archive/index_masterskaya.html` в браузере.
 
 ## 4. Основные директории
 
 | Директория                    | Содержимое                                                     | Статус                                                                                               |
 | ----------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `src/`                        | Astro-код и изображения актуального прототипа                  | Новая исходная директория; правила в `src/README.md`                                                 |
+| `src/`                        | Astro-код и изображения production frontend                    | Актуальная исходная директория; правила в `src/README.md`                                            |
 | `src/assets/`                 | Импортируемые Astro web-ассеты                                 | `images/works` и `images/interactive` содержат production web-изображения FRT-044                    |
 | `src/components/`             | Повторно используемые Astro-компоненты                         | Навигация, common UI, works-, narrative-, experience-компоненты и декор                              |
 | `src/content/`                | Записи Astro Content Collections                               | Пустой каркас                                                                                        |
@@ -130,7 +130,7 @@ ESLint проверяет новый Astro/TypeScript-код, unit-тесты, �
 | `docs/LOCAL_CONTENT_GUIDE.md` | Инструкция по правке локального контента до подключения CMS    | Открывать перед изменением `src/data/*`, новых изображений и content links                           |
 | `docs/IMAGE_INVENTORY.md`     | Инвентаризация production-изображений и ожидаемых вариантов    | Открывать перед задачами по image pipeline, SEO social image и визуальному QA                        |
 | `docs/PERFORMANCE_BUDGET.md`  | Проверяемые лимиты первой загрузки, LCP и Lighthouse-ориентиры | Открывать перед задачами по производительности, image pipeline и visual QA                           |
-| `docs/QA_CHECKLIST.md`        | Последовательный ручной QA-checklist Astro-кандидата           | Открывать перед release-проходом, FRT-062 и после изменений маршрутов или интерактивов               |
+| `docs/QA_CHECKLIST.md`        | Последовательный ручной QA-checklist Astro production preview  | Открывать перед release-проходом и после изменений маршрутов или интерактивов                        |
 | `docs/QA_VIEWPORTS.md`        | Целевые размеры viewport и страницы для ручного visual QA      | Открывать перед FRT-052, FRT-053 и FRT-054                                                           |
 | `docs/visual-baseline/`       | Эталонные PNG актуального legacy-прототипа                     | Использовать для visual regression; не менять вручную                                                |
 | `experiments/`                | Самостоятельные HTML-эксперименты дизайна и механик            | Не production; только визуальные/исторические референсы                                              |
@@ -193,9 +193,11 @@ Visual QA FRT-052:
 - общий layout подключает `public/favicon.svg`, чтобы прямые входы не создавали
   ошибку запроса `/favicon.ico`.
 
-## 5. Ключевые экраны и фичи
+## 5. Историческая карта legacy-экрана
 
-Все указанные блоки сейчас находятся в `index_masterskaya.html`.
+Эти блоки находятся в `archive/index_masterskaya.html` и нужны только для
+исторической сверки после FRT-062. Текущие продуктовые изменения выполняются в
+Astro-контуре `src/`.
 
 | Экран/фича           | Разметка / данные                                                                      | Основная логика                                                               | Что учитывать                                              |
 | -------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------- |
@@ -211,17 +213,17 @@ Visual QA FRT-052:
 
 ## 6. Данные, состояние и API
 
-| Область              | Где находится                               | Текущее устройство                                               |
-| -------------------- | ------------------------------------------- | ---------------------------------------------------------------- |
-| Каталог работ        | `SALES_WORKS` в `index_masterskaya.html`    | Локальный JS-массив: изображения, цена, статус, серия и описания |
-| Статусные подписи    | `SALES_STATUS_LABELS`                       | Маппинг `available/reserved/sold` на русский UI                  |
-| Narrative            | `NARRATIVE_SEQUENCES`                       | Объект последовательностей `intro`, `bridge`, `finale`           |
-| Hotspots             | `HOTSPOTS`                                  | Массив координат, подписей, текста и масштаба                    |
-| Свет                 | `LIGHT_WORKS`, `LIGHT_STATES`               | Локальные конфигурации картин и состояний освещения              |
-| Canvas bounds        | `ART_BOUNDS`                                | Базовая геометрия интерактива раскрытия                          |
-| Runtime state        | Набор `let` после конфигурационных констант | Глобальное состояние paint, zoom, hotspots, light и narrative    |
-| Постоянное состояние | Отсутствует                                 | Нет `localStorage`, cookies или базы                             |
-| API                  | Отсутствует                                 | Нет `fetch`, backend или реальной отправки формы                 |
+| Область              | Где находится                                    | Текущее устройство                                               |
+| -------------------- | ------------------------------------------------ | ---------------------------------------------------------------- |
+| Каталог работ        | `SALES_WORKS` в `archive/index_masterskaya.html` | Локальный JS-массив: изображения, цена, статус, серия и описания |
+| Статусные подписи    | `SALES_STATUS_LABELS`                            | Маппинг `available/reserved/sold` на русский UI                  |
+| Narrative            | `NARRATIVE_SEQUENCES`                            | Объект последовательностей `intro`, `bridge`, `finale`           |
+| Hotspots             | `HOTSPOTS`                                       | Массив координат, подписей, текста и масштаба                    |
+| Свет                 | `LIGHT_WORKS`, `LIGHT_STATES`                    | Локальные конфигурации картин и состояний освещения              |
+| Canvas bounds        | `ART_BOUNDS`                                     | Базовая геометрия интерактива раскрытия                          |
+| Runtime state        | Набор `let` после конфигурационных констант      | Глобальное состояние paint, zoom, hotspots, light и narrative    |
+| Постоянное состояние | Отсутствует                                      | Нет `localStorage`, cookies или базы                             |
+| API                  | Отсутствует                                      | Нет `fetch`, backend или реальной отправки формы                 |
 
 Для будущей миграции данных начинать с EPIC F5 в `docs/Frontend_Rebuild_Backlog.md`, особенно `FRT-018`–`FRT-022`.
 
@@ -251,9 +253,9 @@ Visual QA FRT-052:
 | Studio background     | `src/styles/studio.css`                                    | Тяжёлые слои только для страниц с декором                                 |
 | Astro design tokens   | `src/styles/tokens.css`                                    | Палитра, семантические цвета, шкалы и motion                              |
 | Astro global styles   | `src/styles/global.css`                                    | Reset, базовая типографика, skip-link и shell                             |
-| Глобальные токены     | `:root` в начале `index_masterskaya.html`                  | Цвета, тени, поверхности и акценты                                        |
+| Legacy-токены         | `:root` в начале `archive/index_masterskaya.html`          | Исторические цвета, тени, поверхности и акценты                           |
 | Body и фон мастерской | Начало `<style>`                                           | Многослойные gradients и fixed pseudo-elements                            |
-| Общие экраны          | `.screen`, `.screen.hidden`                                | Основа текущей псевдонавигации                                            |
+| Legacy-экраны         | `.screen`, `.screen.hidden`                                | Основа архивной псевдонавигации                                           |
 | Декор мастерской      | `.studio-props`                                            | `aria-hidden`; широкое влияние на композицию                              |
 | Общие панели          | `.hero-panel`, `.workspace`                                | Используются несколькими экранами                                         |
 | Narrative             | `.narrative-*`                                             | Карточка, progress и переходы                                             |
@@ -267,53 +269,50 @@ Visual QA FRT-052:
 
 ## 8. Common tasks → Start here
 
-| Задача                                    | Начать здесь                                                  | Затем проверить                                                  |
-| ----------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------- |
-| Изменить Astro-главную или её CTA         | `src/pages/index.astro`                                       | Все целевые URL и desktop/mobile layout                          |
-| Изменить страницу художника или её тексты | `src/pages/artist.astro`, `src/data/artist-page.ts`           | `/artist/`, изображения, связанные подборки и responsive-layout  |
-| Изменить legacy-главную                   | `#landingScreen` в `index_masterskaya.html`                   | Связанные `addEventListener` и переходы `goTo*`                  |
-| Изменить общий визуальный стиль           | `:root`, `body`, `.hero-panel`, `.workspace`                  | Все шесть экранов и responsive rules                             |
-| Изменить картину/цену/статус              | `SALES_WORKS`                                                 | `renderSalesCatalog`, select формы, detail modal и архив         |
-| Изменить форму                            | Разметка двух sales forms                                     | `getSalesFormState`, `validateSalesFormState`, `submitSalesForm` |
-| Изменить narrative                        | `NARRATIVE_SEQUENCES`                                         | `renderNarrativeSlide`, completion routes                        |
-| Изменить hotspot                          | `HOTSPOTS`                                                    | `ensureExploreHotspots`, `centerExploreOn`, completion count     |
-| Исправить zoom/pan                        | `getExploreBounds`, `clampExplorePosition`, `setExploreScale` | Wheel, pointer drag, resize и hotspot centering                  |
-| Исправить кисть/progress                  | `ART_BOUNDS`, coverage variables, `fitCanvasToImage`          | `stampCoverage`, `updateProgress`, `autoCompletePainting`, reset |
-| Изменить интерактив света                 | `LIGHT_WORKS`, `LIGHT_STATES`                                 | Selector render, `updateLightState`, completion tracking         |
-| Добавить/заменить изображение             | Соответствующая папка в `src/`                                | Все строковые ссылки в HTML и массивах данных                    |
-| Исправить mobile layout                   | Responsive rules в конце `<style>`                            | Главная, каталог и каждый интерактив отдельно                    |
-| Начать Astro-миграцию                     | `docs/Frontend_Rebuild_Backlog.md`, `FRT-001`                 | Не удалять legacy HTML до `FRT-062`                              |
-| Зафиксировать поведение перед переносом   | `docs/LEGACY_MIGRATION_CHECKLIST.md`                          | Точные ID, данные и обработчики в `index_masterskaya.html`       |
-| Сравнить визуальный результат             | `docs/VISUAL_BASELINE.md`                                     | PNG нужного экрана в desktop/mobile и modal/completion state     |
-| Проверить статус основной точки входа     | `docs/ENTRYPOINT_CUTOVER_PLAN.md`                             | Не переключать production до gates FRT-062                       |
-| Понять ожидаемый пользовательский маршрут | `README.md`                                                   | Код `goTo*`, narrative completion и modal CTA                    |
-| Посмотреть альтернативный дизайн          | Только нужный файл в `experiments/`                           | Не переносить его как текущую реализацию без явного решения      |
+| Задача                                    | Начать здесь                                                               | Затем проверить                                                    |
+| ----------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Изменить Astro-главную или её CTA         | `src/pages/index.astro`                                                    | Все целевые URL и desktop/mobile layout                            |
+| Изменить страницу художника или её тексты | `src/pages/artist.astro`, `src/data/artist-page.ts`                        | `/artist/`, изображения, связанные подборки и responsive-layout    |
+| Сверить legacy-главную                    | `#landingScreen` в `archive/index_masterskaya.html`                        | Только историческое сравнение с Astro `/`                          |
+| Изменить общий визуальный стиль           | `src/styles/`, `src/layouts/BaseLayout.astro`, нужный компонент            | Все основные Astro routes и responsive rules                       |
+| Изменить картину/цену/статус              | `src/data/artworks.ts`                                                     | `src/data/repository.ts`, страницы работ, каталог и архив          |
+| Изменить форму                            | `src/components/works/InterestForm.astro` и form scripts                   | Валидация, frontend-only подтверждение и generated detail routes   |
+| Изменить narrative                        | `src/data/narrative.ts`, `src/data/narrative-routes.ts`                    | Story routes, completionPath и browser history                     |
+| Изменить hotspot                          | `src/data/hotspots.ts`, `src/components/experience/DetailsExplorer.astro`  | Hotspot dialog, viewed progress и completion                       |
+| Исправить zoom/pan                        | `src/scripts/zoom-pan-engine.ts`, `src/utils/zoom-pan.ts`                  | Wheel, pointer drag, resize и hotspot centering                    |
+| Исправить кисть/progress                  | `src/scripts/color-reveal-engine.ts`, `src/utils/color-reveal-progress.ts` | Coverage, completion dialog и reset                                |
+| Изменить интерактив света                 | `src/data/light.ts`, `src/scripts/light-controller.ts`                     | Selector, range, progress и completion tracking                    |
+| Добавить/заменить изображение             | Соответствующая папка в `src/assets/images/`                               | Image registry, content links и архивные ссылки при необходимости  |
+| Исправить mobile layout                   | Responsive rules в конце `<style>`                                         | Главная, каталог и каждый интерактив отдельно                      |
+| Проверить завершённый frontend-бэклог     | `docs/Frontend_Rebuild_Backlog.md`                                         | FRT-062 отмечает переключение, новые задачи вести отдельно         |
+| Сверить поведение с legacy-reference      | `docs/LEGACY_MIGRATION_CHECKLIST.md`                                       | Точные ID, данные и обработчики в `archive/index_masterskaya.html` |
+| Сравнить визуальный результат             | `docs/VISUAL_BASELINE.md`                                                  | PNG нужного экрана в desktop/mobile и modal/completion state       |
+| Проверить статус основной точки входа     | `docs/ENTRYPOINT_CUTOVER_PLAN.md`                                          | Astro `/` — исходная главная; `dist/index.html` — generated entry  |
+| Понять ожидаемый пользовательский маршрут | `README.md`                                                                | Astro routes, narrative completion и form CTA                      |
+| Посмотреть альтернативный дизайн          | Только нужный файл в `experiments/`                                        | Не переносить его как текущую реализацию без явного решения        |
 
 ## 9. Опасные зоны
 
-- `index_masterskaya.html` — монолит: небольшое изменение может задеть несвязанный экран.
-- `showScreen` и функции `goTo*` — управляют видимостью, scroll, reset и инициализацией нескольких сценариев.
-- Общий глобальный runtime state после конфигурационных массивов — переменные разных интерактивов находятся в одной области видимости.
-- Общий `window` keyboard handler — управляет narrative и закрывает все типы модалок.
-- Общий resize handler — пересчитывает canvas и explorer.
-- `.hero-panel`, `.workspace`, `.launch-card`, `.modal` — общие CSS-классы с широким визуальным эффектом.
-- `renderSalesCatalog` — одновременно заполняет каталог, архив, серию и оба select формы.
-- `SALES_WORKS` — изменение ID или статуса влияет на карточки, detail modal и формы.
-- `NARRATIVE_SEQUENCES` — поля завершения определяют переходы между экранами.
+- `archive/index_masterskaya.html` — исторический монолит: не править его как production-код без отдельной архивной задачи.
+- Общие layout, metadata и navigation в `src/layouts/BaseLayout.astro` влияют на все страницы.
+- `src/data/repository.ts` и `src/data/content-links.ts` связывают локальные данные, маршруты и production-ассеты.
+- Клиентские модули интерактивов должны подключаться только на своих routes.
+- `src/styles/global.css`, `src/styles/tokens.css` и shared common-компоненты имеют широкий визуальный эффект.
+- Изменение ID, slug или статуса в `src/data/*` влияет на generated routes, sitemap, JSON-LD и content checks.
 - Пути к изображениям чувствительны к регистру и пробелам в именах файлов.
-- Не заменять legacy-прототип целиком до появления работающей новой точки входа и визуального baseline.
+- Не восстанавливать корневой legacy HTML как альтернативную production-главную.
 
 ## 10. Не читать без прямой необходимости
 
 - `experiments/` — много самостоятельных HTML-копий с дублирующимся кодом.
-- `archive/` — старые реализации и исторические заметки.
+- `archive/` — архивный legacy-reference, старые реализации и исторические заметки.
 - `scrns/` — бинарные скриншоты.
 - Содержимое крупных файлов в `src/` — изображения не нужно читать как текст.
 - `docs/Вводные.md` — большой исходный документ; открывать только для продуктовых требований.
 - Старые `docs/CHANGELOG_*.md` — только для истории конкретного решения.
 - `docs/Interactive_Storyline_Mechanics_Ideas.md` — идеи, а не текущий контракт.
 - `docs/Design_Improvement_Plan.md` — открывать только для дизайн-задач.
-- `docs/Artwork_Sales_Page_Requirements.md` и `docs/Artwork_Sales_Page_MVP_Scope.md` — открывать для коммерческого раздела; текущую правду всё равно сверять с `index_masterskaya.html`.
+- `docs/Artwork_Sales_Page_Requirements.md` и `docs/Artwork_Sales_Page_MVP_Scope.md` — открывать для коммерческого раздела; текущую реализацию сверять с Astro-кодом и локальными данными.
 
 Если после Astro-миграции появятся `node_modules/`, `dist/`, `build/`, `coverage/`, `.astro/` или временные каталоги, не включать их в первичное исследование.
 
@@ -322,7 +321,7 @@ Visual QA FRT-052:
 1. Учесть правила корневого `AGENTS.md`.
 2. `docs/PROJECT_MAP.md`.
 3. `git status --short` и компактный `rg --files`.
-4. Для legacy-поведения — только строковые сигнатуры нужной зоны в `index_masterskaya.html`.
-5. Для Astro-каркаса — `src/README.md`, `package.json`, нужная страница или layout.
+4. Для текущего поведения — `src/README.md`, `package.json`, нужная Astro-страница, layout, компонент, data или script.
+5. Для legacy-сверки — только строковые сигнатуры нужной зоны в `archive/index_masterskaya.html`.
 6. Соответствующий epic в `docs/Frontend_Rebuild_Backlog.md`, если задача относится к миграции.
 7. Один профильный документ из `docs/`, только если кода и карты недостаточно.
