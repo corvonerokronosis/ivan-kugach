@@ -166,9 +166,9 @@ Hotspot содержит:
   `src/utils/image-assets.ts`, иначе `validateContentLinks` остановит
   `test:unit`, `build` или `verify`.
 
-Если изображение используется и в legacy baseline, дополнительно проверьте
-строковые ссылки в `index_masterskaya.html`; до FRT-062 legacy остаётся
-источником текущей полнофункциональной правды.
+Если изображение используется в архивном legacy-reference, дополнительно
+проверьте строковые ссылки в `archive/index_masterskaya.html`. Legacy не входит
+в production и не является источником текущей правды.
 
 ## Проверки
 

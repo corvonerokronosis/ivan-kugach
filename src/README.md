@@ -1,7 +1,7 @@
 # Структура исходников Astro
 
 Эта директория содержит поддерживаемый production-контур. Архивный
-legacy-прототип после FRT-062 находится в `archive/index_masterskaya.html` и не
+legacy-прототип находится в `archive/index_masterskaya.html` и не
 участвует в сборке.
 
 ## Ответственность директорий

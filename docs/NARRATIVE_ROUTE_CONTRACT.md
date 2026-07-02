@@ -1,6 +1,8 @@
 # Контракт URL narrative-маршрута
 
-Документ фиксирует решение FRT-029 до подключения продуктовых narrative-страниц в FRT-030. Исполняемая конфигурация находится в `src/data/narrative-routes.ts`.
+Документ фиксирует действующий URL-контракт narrative-страниц. Исполняемая
+конфигурация находится в `src/data/narrative-routes.ts`; при расхождении
+приоритет имеет код.
 
 ## Граница URL и внутреннего состояния
 
@@ -12,12 +14,12 @@
 
 ## Карта маршрута
 
-| После страницы                  | Narrative URL                      | После завершения или пропуска |
-| ------------------------------- | ---------------------------------- | ----------------------------- |
-| `/` или `/experience/`          | `/experience/story/intro/`         | `/experience/color-return/`   |
-| `/experience/color-return/`     | `/experience/story/bridge/`        | `/experience/details/`        |
-| `/experience/details/`          | `/experience/story/light-bridge/`  | `/experience/light/`          |
-| `/experience/light/`            | `/experience/story/finale/`        | `/`                           |
+| После страницы              | Narrative URL                     | После завершения или пропуска |
+| --------------------------- | --------------------------------- | ----------------------------- |
+| `/` или `/experience/`      | `/experience/story/intro/`        | `/experience/color-return/`   |
+| `/experience/color-return/` | `/experience/story/bridge/`       | `/experience/details/`        |
+| `/experience/details/`      | `/experience/story/light-bridge/` | `/experience/light/`          |
+| `/experience/light/`        | `/experience/story/finale/`       | `/`                           |
 
 Прямые входы `/experience/color-return/`, `/experience/details/` и `/experience/light/` сохраняются. Они загружают собственное начальное состояние и не проверяют, был ли пройден предыдущий этап.
 
@@ -39,8 +41,9 @@
 
 При прямом входе в narrative URL страница получает последовательность только из pathname. Глобальное состояние, `sessionStorage` или заранее созданный runtime-контекст не требуются.
 
-## Ответственность следующих задач
+## Проверка после изменений
 
-- FRT-030 создала generated narrative-страницы из этого контракта и связала события компонента с `completionPath`.
-- Задачи интерактивов подключают обычные ссылки на соответствующий narrative URL из completion-состояний.
-- FRT-061 проверяет прямой вход, refresh, последовательный маршрут и browser Back в production preview.
+- Generated-страницы создаёт `src/pages/experience/story/[sequence].astro`.
+- Completion-состояния интерактивов используют обычные ссылки на narrative URL.
+- После изменения проверить direct entry, refresh, последовательный маршрут и
+  browser Back в production preview по `docs/QA_CHECKLIST.md`.

@@ -1,8 +1,8 @@
 # Performance budget
 
-Документ фиксирует бюджет первой загрузки для Astro production build после
-FRT-045 и FRT-046. Бюджет проверяется статически по содержимому `dist/` и
-является blocking gate в `npm.cmd run verify`.
+Документ фиксирует действующий бюджет первой загрузки Astro production build.
+Бюджет проверяется статически по содержимому `dist/` и является blocking gate в
+`npm.cmd run verify`.
 
 ## Что проверяется автоматически
 
@@ -41,7 +41,7 @@ high-priority изображений на `/works/` быть не должно.
 
 ## Mobile и Lighthouse ориентиры
 
-Ручной Lighthouse-профиль для FRT-052/FRT-053:
+Ручной Lighthouse-профиль:
 
 - режим: mobile;
 - throttling: Lighthouse default simulated Slow 4G + CPU slowdown;

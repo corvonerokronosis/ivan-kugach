@@ -97,26 +97,27 @@ Legacy-прототип, архивы, эксперименты, generated outpu
 
 ## Карта директорий
 
-| Путь                             | Назначение                                                                      |
-| -------------------------------- | ------------------------------------------------------------------------------- |
-| `src/pages/`                     | Astro-маршруты и композиция страниц                                             |
-| `src/layouts/`                   | Общий HTML-каркас, metadata, slots и декор                                      |
-| `src/components/`                | Переиспользуемые Astro-компоненты UI, каталога, narrative и интерактивов        |
-| `src/assets/`                    | Импортируемые production web-изображения и другие ассеты                        |
-| `src/content/`                   | Каркас Astro Content Collections                                                |
-| `src/data/`                      | Типизированные локальные данные, route-контракты и frontend-репозиторий         |
-| `src/scripts/`                   | Изолированные клиентские DOM/Canvas/state-модули                                |
-| `src/styles/`                    | Дизайн-токены, глобальные стили и общие CSS-слои                                |
-| `src/types/`                     | Общие TypeScript-контракты данных, интерактивов, форм и маршрутов               |
-| `src/utils/`                     | Чистые helpers, адаптеры, image registry и structured data                      |
-| `tests/`                         | Unit-тесты DOM-independent логики                                               |
-| `scripts/`                       | Служебные Node-скрипты smoke и performance budget                               |
-| `public/`                        | Файлы без обработки Astro: `robots.txt`, `favicon.svg`                          |
-| `docs/`                          | Бэклог, карта проекта, migration checklist, visual baseline, QA и release gates |
-| `archive/index_masterskaya.html` | Архивный legacy-reference; не production-точка Astro-версии                     |
+| Путь                             | Назначение                                                               |
+| -------------------------------- | ------------------------------------------------------------------------ |
+| `src/pages/`                     | Astro-маршруты и композиция страниц                                      |
+| `src/layouts/`                   | Общий HTML-каркас, metadata, slots и декор                               |
+| `src/components/`                | Переиспользуемые Astro-компоненты UI, каталога, narrative и интерактивов |
+| `src/assets/`                    | Импортируемые production web-изображения и другие ассеты                 |
+| `src/content/`                   | Каркас Astro Content Collections                                         |
+| `src/data/`                      | Типизированные локальные данные, route-контракты и frontend-репозиторий  |
+| `src/scripts/`                   | Изолированные клиентские DOM/Canvas/state-модули                         |
+| `src/styles/`                    | Дизайн-токены, глобальные стили и общие CSS-слои                         |
+| `src/types/`                     | Общие TypeScript-контракты данных, интерактивов, форм и маршрутов        |
+| `src/utils/`                     | Чистые helpers, адаптеры, image registry и structured data               |
+| `tests/`                         | Unit-тесты DOM-independent логики                                        |
+| `scripts/`                       | Служебные Node-скрипты smoke и performance budget                        |
+| `public/`                        | Файлы без обработки Astro: `robots.txt`, `favicon.svg`                   |
+| `docs/`                          | Карта проекта, рабочие инструкции, QA и объединённый legacy-reference    |
+| `archive/index_masterskaya.html` | Архивный legacy-reference; не production-точка Astro-версии              |
 
 Подробные правила для `src/` описаны в [src/README.md](src/README.md).
-Навигация по репозиторию - в [docs/PROJECT_MAP.md](docs/PROJECT_MAP.md).
+Навигация по репозиторию - в [docs/PROJECT_MAP.md](docs/PROJECT_MAP.md), индекс
+активных документов - в [docs/README.md](docs/README.md).
 
 ## Контент и данные
 
@@ -127,8 +128,7 @@ hotspots и production-изображений находится в
 `src/data/repository.ts`, а связи проверяются в `src/data/content-links.ts`.
 
 Перед изменением локальных данных также сверяйте актуальные ID, slug,
-изображения и связи с [docs/PROJECT_MAP.md](docs/PROJECT_MAP.md) и
-[docs/LEGACY_MIGRATION_CHECKLIST.md](docs/LEGACY_MIGRATION_CHECKLIST.md).
+изображения и связи с [docs/PROJECT_MAP.md](docs/PROJECT_MAP.md).
 Инвентаризация production-изображений находится в
 [docs/IMAGE_INVENTORY.md](docs/IMAGE_INVENTORY.md).
 
@@ -147,10 +147,8 @@ keyboard navigation, viewport sweep и консоль.
 
 - [docs/QA_VIEWPORTS.md](docs/QA_VIEWPORTS.md) - целевые viewport, страницы и
   результаты визуального QA;
-- [docs/VISUAL_BASELINE.md](docs/VISUAL_BASELINE.md) - legacy-снимки для
-  визуального сравнения;
-- [docs/ENTRYPOINT_CUTOVER_PLAN.md](docs/ENTRYPOINT_CUTOVER_PLAN.md) - gates
-  переключения точки входа.
+- [docs/LEGACY_REFERENCE.md](docs/LEGACY_REFERENCE.md) - статус архивной точки
+  входа, functional reference и legacy-снимки для визуального сравнения.
 
 Минимальный ручной сценарий после изменений:
 
@@ -161,12 +159,12 @@ keyboard navigation, viewport sweep и консоль.
    горизонтального overflow, ошибок консоли и перекрытий UI.
 5. Пройти форму интереса без отправки на backend и убедиться, что текст
    подтверждения остается честным frontend-only сообщением.
-6. Для визуальных изменений свериться с baseline из `docs/VISUAL_BASELINE.md`.
+6. Для визуальных изменений свериться с baseline из `docs/LEGACY_REFERENCE.md`.
 
 ## Legacy-архив
 
 `archive/index_masterskaya.html` хранит исторический proof-of-concept после
-переключения `FRT-062`. Его можно открыть напрямую в браузере, когда требуется
+перехода на Astro. Его можно открыть напрямую в браузере, когда требуется
 проверить исходное поведение прототипа или сравнить визуальное состояние с
 Astro-версией.
 
@@ -176,5 +174,5 @@ Astro-версией.
 node -e "const fs=require('fs');const s=fs.readFileSync('archive/index_masterskaya.html','utf8');const m=s.match(/<script>([\s\S]*?)<\/script>/i);new Function(m[1]);console.log('Archived inline JS syntax OK')"
 ```
 
-Порядок финального переключения зафиксирован в
-[docs/ENTRYPOINT_CUTOVER_PLAN.md](docs/ENTRYPOINT_CUTOVER_PLAN.md).
+Статус точки входа, функциональная карта и visual baseline объединены в
+[docs/LEGACY_REFERENCE.md](docs/LEGACY_REFERENCE.md).
