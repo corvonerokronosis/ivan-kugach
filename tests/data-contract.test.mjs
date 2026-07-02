@@ -1,11 +1,38 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
+import { validateContentLinks } from "../.tmp/unit-tests/data/content-links.js";
 import { getDataRepository } from "../.tmp/unit-tests/data/repository.js";
 
 const repo = getDataRepository();
 
 describe("frontend data repository contract", () => {
+  it("keeps all content links valid for production build", () => {
+    assert.doesNotThrow(() => validateContentLinks(repo));
+  });
+
+  it("reports record and field for broken content links", () => {
+    const [firstArtwork, ...otherArtworks] = repo.getArtworks();
+    const invalidArtwork = {
+      ...firstArtwork,
+      images: [
+        {
+          ...firstArtwork.images[0],
+          src: "/missing-production-image.jpg",
+        },
+      ],
+    };
+
+    assert.throws(
+      () =>
+        validateContentLinks({
+          ...repo,
+          getArtworks: () => [invalidArtwork, ...otherArtworks],
+        }),
+      /artworks "dor-3518" images\[0\]\.src points to unknown production image/,
+    );
+  });
+
   it("partitions artworks into catalog and archive without losing records", () => {
     const artworks = repo.getArtworks();
     const catalog = repo.getCatalogArtworks();

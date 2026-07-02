@@ -1965,7 +1965,7 @@ npm.cmd run verify
 - выполнить `npm.cmd run test:smoke`;
 - убедиться, что команда завершается сообщением `Browser smoke result: PASS`.
 
-### [ ] FRT-057. Добавить проверки контентных связей
+### [x] FRT-057. Добавить проверки контентных связей
 
 Приоритет: Must  
 Версия: Frontend v0.2  
@@ -1984,6 +1984,16 @@ npm.cmd run verify
 
 - некорректные данные не попадают в production-сборку;
 - сообщение содержит запись и проблемное поле.
+
+Результат:
+
+- реализован build-time gate `validateContentLinks`, который проверяет уникальность
+  ID/slug, production-изображения, series-связи, статусы, narrative-переходы и
+  hotspot ID;
+- код лежит в `src/data/content-links.ts` и подключён в `src/data/repository.ts`,
+  unit-проверки добавлены в `tests/data-contract.test.mjs`;
+- проверить: выполнить `npm.cmd run test:unit` или `npm.cmd run verify`; при
+  ошибке сообщение содержит коллекцию, запись и проблемное поле.
 
 ### [ ] FRT-058. Собрать единую release-проверку frontend
 

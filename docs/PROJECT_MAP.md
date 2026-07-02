@@ -71,6 +71,7 @@
 | `src/data/narrative-routes.ts`                             | Валидируемый контракт URL и browser history narrative-маршрута           | Изменение порядка переходов, completionPath или канонических story URL      |
 | `src/data/artist-page.ts`                                  | Временный типизированный контент страницы художника                      | Замена текстов, тем и связанных подборок без изменения layout               |
 | `src/data/repository.ts`                                   | Frontend-репозиторий данных и фасад над local-источниками                | Основная точка чтения данных из UI; место будущего CMS/build-time адаптера  |
+| `src/data/content-links.ts`                                | Build-time gate контентных связей и production-ассетов                   | Проверки ID/slug, image registry, series, narrative routes и hotspot ID     |
 | `src/data/artworks.ts`                                     | Локальный типизированный источник пяти работ каталога                    | Изменение данных работ, slug, статусов, цен и временных атрибутов           |
 | `src/data/series.ts`                                       | Локальный типизированный источник серий                                  | Изменение серий, stable ID, slug, cover и связи с работами                  |
 | `src/data/narrative.ts`                                    | Локальный типизированный источник narrative-блоков                       | Изменение story-слайдов, текстов, изображений и completionAction            |
@@ -113,7 +114,7 @@ ESLint проверяет новый Astro/TypeScript-код, unit-тесты, �
 | `src/assets/`                | Импортируемые Astro web-ассеты                                 | `images/works` и `images/interactive` содержат production web-изображения FRT-044                    |
 | `src/components/`            | Повторно используемые Astro-компоненты                         | Навигация, common UI, works-, narrative-, experience-компоненты и декор                              |
 | `src/content/`               | Записи Astro Content Collections                               | Пустой каркас                                                                                        |
-| `src/data/`                  | Типизированные локальные данные и frontend-репозиторий         | `repository.ts` читает local-источники, включая narrative, hotspots и данные света                   |
+| `src/data/`                  | Типизированные локальные данные и frontend-репозиторий         | `repository.ts` читает local-источники и запускает `content-links.ts` как build-time gate            |
 | `src/layouts/`               | Общие Astro-layouts                                            | `BaseLayout.astro`: metadata, skip-link и page slots                                                 |
 | `src/pages/`                 | Файловые маршруты Astro                                        | Главная, художник, experience/story, каталог, архив, generated-страницы, 404 и `/ui-preview/`        |
 | `src/scripts/`               | Изолированные клиентские DOM/Canvas/state-модули               | Форма, narrative, canvas/zoom-pan engines и контроллер света                                         |

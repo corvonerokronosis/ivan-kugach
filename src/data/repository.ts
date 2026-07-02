@@ -2,6 +2,7 @@ import {
   getArtistPageContent as getLocalArtistPageContent,
   type ArtistPageContent,
 } from "./artist-page";
+import { validateContentLinks } from "./content-links";
 import {
   artworkAvailabilityLabels as localArtworkAvailabilityLabels,
   getArchivedArtworks as getLocalArchivedArtworks,
@@ -113,6 +114,8 @@ const localDataRepository = {
   getLightStateById: getLocalLightStateById,
   getLightExperienceDefaults: getLocalLightExperienceDefaults,
 } satisfies FrontendDataRepository;
+
+validateContentLinks(localDataRepository);
 
 export function getDataRepository(): FrontendDataRepository {
   return localDataRepository;
