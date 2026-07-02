@@ -120,20 +120,14 @@ Legacy-прототип, архивы, эксперименты, generated outpu
 
 ## Контент и данные
 
-Краткая локальная инструкция до отдельного документа `FRT-060`:
+Локальная инструкция по изменению работ, статусов, цен, серий, narrative,
+hotspots и production-изображений находится в
+[docs/LOCAL_CONTENT_GUIDE.md](docs/LOCAL_CONTENT_GUIDE.md). Она временная до
+подключения CMS: сейчас данные лежат в `src/data/*`, UI читает их через
+`src/data/repository.ts`, а связи проверяются в `src/data/content-links.ts`.
 
-- произведения: `src/data/artworks.ts`, типы в `src/types/artwork.ts`;
-- серии: `src/data/series.ts`, типы в `src/types/series.ts`;
-- narrative: `src/data/narrative.ts`, route-контракт в
-  `src/data/narrative-routes.ts`;
-- hotspots: `src/data/hotspots.ts`, типы в `src/types/hotspot.ts`;
-- свет: `src/data/light.ts`, типы в `src/types/light.ts`;
-- единая точка чтения данных для UI: `src/data/repository.ts`;
-- проверка связей контента: `src/data/content-links.ts`, запускается внутри
-  `npm.cmd run build` и `npm.cmd run verify`.
-
-Перед изменением локальных данных сверяйте актуальные ID, slug, изображения и
-связи с [docs/PROJECT_MAP.md](docs/PROJECT_MAP.md) и
+Перед изменением локальных данных также сверяйте актуальные ID, slug,
+изображения и связи с [docs/PROJECT_MAP.md](docs/PROJECT_MAP.md) и
 [docs/LEGACY_MIGRATION_CHECKLIST.md](docs/LEGACY_MIGRATION_CHECKLIST.md).
 Инвентаризация production-изображений находится в
 [docs/IMAGE_INVENTORY.md](docs/IMAGE_INVENTORY.md).
