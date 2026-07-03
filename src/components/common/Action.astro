@@ -1,4 +1,6 @@
 ---
+import { withBasePath } from "../../utils/site-path";
+
 interface Props {
   href?: string;
   variant?: "primary" | "secondary" | "quiet";
@@ -18,11 +20,12 @@ const {
 } = Astro.props;
 
 const className = `action action--${variant} action--${size}`;
+const resolvedHref = href ? withBasePath(href) : undefined;
 ---
 
 {
-  href ? (
-    <a class={className} href={href} aria-label={ariaLabel}>
+  resolvedHref ? (
+    <a class={className} href={resolvedHref} aria-label={ariaLabel}>
       <slot />
     </a>
   ) : (

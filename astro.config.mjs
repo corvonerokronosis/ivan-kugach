@@ -1,22 +1,27 @@
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
-import { env } from "node:process";
 import { URL } from "node:url";
 
-const site = env.PUBLIC_SITE_URL ?? "https://ivan-kugach.example";
+const site = "https://corvonerokronosis.github.io";
+const base = "/ivan-kugach";
 const excludedSitemapPathPrefixes = ["/404", "/ui-preview"];
 
 export default defineConfig({
   site,
+  base,
   output: "static",
   integrations: [
     sitemap({
       filter: (page) => {
         const { pathname } = new URL(page);
+        const projectPathname = pathname.startsWith(`${base}/`)
+          ? pathname.slice(base.length)
+          : pathname;
 
         return !excludedSitemapPathPrefixes.some((pathPrefix) => {
           return (
-            pathname === pathPrefix || pathname.startsWith(`${pathPrefix}/`)
+            projectPathname === pathPrefix ||
+            projectPathname.startsWith(`${pathPrefix}/`)
           );
         });
       },

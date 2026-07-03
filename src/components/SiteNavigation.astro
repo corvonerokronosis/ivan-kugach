@@ -1,4 +1,6 @@
 ---
+import { withBasePath, withoutBasePath } from "../utils/site-path";
+
 interface Props {
   currentPath: string;
 }
@@ -23,8 +25,9 @@ const navigationItems: NavigationItem[] = [
   { href: "/archive/", label: "Архив", section: "archive" },
 ];
 
+const projectPath = withoutBasePath(currentPath);
 const normalizedPath =
-  currentPath === "/" ? currentPath : `${currentPath.replace(/\/+$/, "")}/`;
+  projectPath === "/" ? projectPath : `${projectPath.replace(/\/+$/, "")}/`;
 
 const isCurrentSection = (section: NavigationItem["section"]) => {
   if (section === "home") {
@@ -44,7 +47,7 @@ const isCurrentSection = (section: NavigationItem["section"]) => {
 <nav class="site-navigation" aria-label="Основная навигация">
   <a
     class="site-navigation__identity"
-    href="/"
+    href={withBasePath("/")}
     aria-label="Иван Кугач — на главную"
   >
     <span class="site-navigation__name">Иван Кугач</span>
@@ -57,7 +60,7 @@ const isCurrentSection = (section: NavigationItem["section"]) => {
         <li>
           <a
             class="site-navigation__link"
-            href={item.href}
+            href={withBasePath(item.href)}
             aria-current={isCurrentSection(item.section) ? "page" : undefined}
           >
             {item.label}

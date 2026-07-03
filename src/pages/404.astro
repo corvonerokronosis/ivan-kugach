@@ -2,6 +2,7 @@
 import Action from "../components/common/Action.astro";
 import MetaBadge from "../components/common/MetaBadge.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { withBasePath } from "../utils/site-path";
 ---
 
 <BaseLayout
@@ -34,8 +35,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       </div>
 
       <nav class="not-found__secondary" aria-label="Другие разделы">
-        <a href="/experience/">Интерактивный маршрут</a>
-        <a href="/artist/">О художнике</a>
+        <a href={withBasePath("/experience/")}>Интерактивный маршрут</a>
+        <a href={withBasePath("/artist/")}>О художнике</a>
       </nav>
     </div>
 
@@ -62,6 +63,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 </BaseLayout>
 
 <script>
+  import { withoutBasePath } from "../utils/site-path";
+
   const joinText = (...parts: string[]): string => parts.join(" ");
 
   const routeContext = {
@@ -83,7 +86,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     },
   } as const;
 
-  const normalizedPath = window.location.pathname.toLowerCase();
+  const normalizedPath = withoutBasePath(
+    window.location.pathname.toLowerCase(),
+  );
   const context = normalizedPath.startsWith("/works/")
     ? routeContext.work
     : normalizedPath.startsWith("/series/")

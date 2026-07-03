@@ -12,7 +12,7 @@
     "format": "prettier --write \"src/**/*.{astro,js,mjs,ts,css,md}\" \"tests/**/*.{js,mjs,ts}\" \"scripts/**/*.mjs\" \"*.{json,js,mjs,md}\" \"docs/*.md\"",
     "format:check": "prettier --check \"src/**/*.{astro,js,mjs,ts,css,md}\" \"tests/**/*.{js,mjs,ts}\" \"scripts/**/*.mjs\" \"*.{json,js,mjs,md}\" \"docs/*.md\"",
     "test": "npm run test:unit",
-    "test:unit": "tsc --ignoreConfig --outDir .tmp/unit-tests --rootDir src --module ESNext --moduleResolution Bundler --target ES2022 --skipLibCheck src/env.d.ts src/utils/color-reveal-progress.ts src/utils/zoom-pan.ts src/scripts/light-controller.ts src/data/repository.ts && node --import ./tests/register-asset-loader.mjs --test tests/*.test.mjs",
+    "test:unit": "tsc --ignoreConfig --outDir .tmp/unit-tests --rootDir src --module ESNext --moduleResolution Bundler --target ES2022 --skipLibCheck src/env.d.ts src/utils/color-reveal-progress.ts src/utils/site-path.ts src/utils/zoom-pan.ts src/scripts/light-controller.ts src/data/repository.ts && node --import ./tests/register-asset-loader.mjs --test tests/*.test.mjs",
     "test:smoke": "npm run build && npm run test:smoke:dist",
     "test:smoke:dist": "node scripts/browser-smoke.mjs",
     "performance:budget": "node scripts/check-performance-budget.mjs",

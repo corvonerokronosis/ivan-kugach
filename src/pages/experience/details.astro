@@ -1,6 +1,7 @@
 ---
 import Action from "../../components/common/Action.astro";
 import DetailsExplorer from "../../components/experience/DetailsExplorer.astro";
+import { withBasePath } from "../../utils/site-path";
 import {
   getHotspots,
   getNarrativeRouteBySequenceId,
@@ -42,8 +43,8 @@ const pageDescription = [
 
     <DetailsExplorer
       {hotspots}
-      lightBridgePath={lightBridgeRoute.pathname}
-      catalogPath="/works/"
+      lightBridgePath={withBasePath(lightBridgeRoute.pathname)}
+      catalogPath={withBasePath("/works/")}
     />
   </section>
 

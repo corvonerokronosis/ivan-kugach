@@ -1,5 +1,6 @@
 ---
 import ColorRevealExperience from "../../components/experience/ColorRevealExperience.astro";
+import { withBasePath } from "../../utils/site-path";
 import Action from "../../components/common/Action.astro";
 import { getNarrativeRouteBySequenceId } from "../../data/repository";
 import BaseLayout from "../../layouts/BaseLayout.astro";
@@ -34,7 +35,7 @@ const pageDescription = [
       <Action href="/experience/" variant="secondary">К маршруту</Action>
     </div>
 
-    <ColorRevealExperience bridgePath={bridgeRoute.pathname} />
+    <ColorRevealExperience bridgePath={withBasePath(bridgeRoute.pathname)} />
   </section>
 
   <p slot="footer">

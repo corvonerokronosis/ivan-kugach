@@ -1,6 +1,7 @@
 ---
 import Action from "../../components/common/Action.astro";
 import LightWorkshop from "../../components/experience/LightWorkshop.astro";
+import { withBasePath } from "../../utils/site-path";
 import {
   getLightExperienceDefaults,
   getLightStates,
@@ -47,8 +48,8 @@ const pageDescription = [
       {works}
       {states}
       {defaults}
-      finalePath={finaleRoute.pathname}
-      catalogPath="/works/"
+      finalePath={withBasePath(finaleRoute.pathname)}
+      catalogPath={withBasePath("/works/")}
     />
   </section>
 

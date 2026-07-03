@@ -2,6 +2,7 @@
 import Action from "../common/Action.astro";
 import FramedArtwork from "../common/FramedArtwork.astro";
 import type { ArtworkSummary } from "../../types/artwork";
+import { withBasePath } from "../../utils/site-path";
 
 interface Props {
   artwork: ArtworkSummary;
@@ -12,7 +13,7 @@ interface Props {
 const { artwork, statusLabel, priceLabel } = Astro.props;
 const primaryImage =
   artwork.images.find((image) => image.role === "primary") ?? artwork.images[0];
-const artworkUrl = `/works/${artwork.slug}/`;
+const artworkUrl = withBasePath(`/works/${artwork.slug}/`);
 const isSold = artwork.availability === "sold";
 const actionLabel = isSold
   ? "Узнать о похожих работах"

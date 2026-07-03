@@ -1,4 +1,5 @@
 import type { Artwork, ArtworkImage } from "../types/artwork";
+import { withBasePath } from "./site-path";
 
 export type JsonLdValue =
   | string
@@ -47,7 +48,10 @@ export function createArtworkStructuredData({
     artworkData.isPartOf = {
       "@type": "CreativeWorkSeries",
       name: artwork.series.title,
-      url: new URL(`/series/${artwork.series.slug}/`, pageUrl).toString(),
+      url: new URL(
+        withBasePath(`/series/${artwork.series.slug}/`),
+        pageUrl,
+      ).toString(),
     };
   }
 
@@ -60,7 +64,7 @@ export function createArtworkStructuredData({
 function createArtistStructuredData(baseUrl: URL): JsonLdObject {
   return {
     "@type": "Person",
-    "@id": new URL("/#ivan-kugach", baseUrl).toString(),
+    "@id": new URL(withBasePath("/#ivan-kugach"), baseUrl).toString(),
     name: artistName,
   };
 }

@@ -8,6 +8,7 @@ import {
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import type { NarrativeSequence as NarrativeSequenceData } from "../../../types/narrative";
 import type { NarrativeRouteDefinition } from "../../../types/narrative-route";
+import { withBasePath } from "../../../utils/site-path";
 
 interface Props {
   narrative: NarrativeSequenceData;
@@ -42,7 +43,7 @@ const { narrative, route } = Astro.props;
   <div
     class="narrative-route"
     data-narrative-route
-    data-completion-path={route.completionPath}
+    data-completion-path={withBasePath(route.completionPath)}
   >
     <div class="narrative-route__toolbar">
       <p>Сюжетный маршрут · {narrative.slides.length} окна</p>

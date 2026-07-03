@@ -1,6 +1,7 @@
 ---
 import defaultSocialImage from "../../assets/images/works/dor-3518.jpg";
 import type { JsonLdObject } from "../../utils/structured-data";
+import { withBasePath } from "../../utils/site-path";
 
 type OpenGraphType = "website" | "article";
 
@@ -41,7 +42,7 @@ function getMetadataValue(value: string | undefined, fallback: string): string {
 }
 
 function resolveMetadataUrl(value: string): string {
-  return new URL(value, Astro.url).toString();
+  return new URL(withBasePath(value), Astro.url).toString();
 }
 
 function serializeStructuredData(data: JsonLdObject): string {
