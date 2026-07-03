@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const rootDir = fileURLToPath(new URL("..", import.meta.url));
 const distDir = path.join(rootDir, "dist");
+const siteBase = "/ivan-kugach";
 const kib = 1024;
 
 const routes = [
@@ -280,7 +281,10 @@ function sumFiles(assetUrls) {
 }
 
 function toDistPath(assetUrl) {
-  const pathname = assetUrl.split("?")[0];
+  const urlPathname = assetUrl.split("?")[0];
+  const pathname = urlPathname.startsWith(`${siteBase}/`)
+    ? urlPathname.slice(siteBase.length)
+    : urlPathname;
   return path.join(distDir, pathname.replace(/^\//, ""));
 }
 

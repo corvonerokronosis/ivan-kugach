@@ -3,10 +3,37 @@ import { describe, it } from "node:test";
 
 import { validateContentLinks } from "../.tmp/unit-tests/data/content-links.js";
 import { getDataRepository } from "../.tmp/unit-tests/data/repository.js";
+import {
+  withBasePath,
+  withoutBasePath,
+} from "../.tmp/unit-tests/utils/site-path.js";
 
 const repo = getDataRepository();
 
 describe("frontend data repository contract", () => {
+  it("resolves internal paths against the project-site base", () => {
+    const base = "/ivan-kugach/";
+
+    assert.equal(withBasePath("/", base), "/ivan-kugach/");
+    assert.equal(
+      withBasePath("/works/?work=dor-3518#work-inquiry", base),
+      "/ivan-kugach/works/?work=dor-3518#work-inquiry",
+    );
+    assert.equal(
+      withBasePath("/ivan-kugach/artist/", base),
+      "/ivan-kugach/artist/",
+    );
+    assert.equal(withBasePath("#work-inquiry", base), "#work-inquiry");
+    assert.equal(
+      withBasePath("https://example.test/works/", base),
+      "https://example.test/works/",
+    );
+    assert.equal(
+      withoutBasePath("/ivan-kugach/series/interiors/", base),
+      "/series/interiors/",
+    );
+  });
+
   it("keeps all content links valid for production build", () => {
     assert.doesNotThrow(() => validateContentLinks(repo));
   });

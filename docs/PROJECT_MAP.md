@@ -58,6 +58,7 @@ Narrative-последовательность и правила browser Back з
 | Общая оболочка       | `src/layouts/BaseLayout.astro`, `src/components/SiteNavigation.astro`, `src/components/StudioDecoration.astro`                    |
 | Общие UI-примитивы   | `src/components/common/`                                                                                                          |
 | Метаданные и JSON-LD | `src/components/common/PageMetadata.astro`, `src/utils/structured-data.ts`                                                        |
+| Base-aware URL       | `src/utils/site-path.ts`                                                                                                          |
 | Каталог и заявки     | `src/components/works/`, `src/scripts/interest-form.ts`, `src/utils/inquiry-adapter.ts`                                           |
 | Narrative            | `src/components/narrative/NarrativeSequence.astro`, `src/scripts/narrative-sequence.ts`, `src/scripts/narrative-route.ts`         |
 | Возвращение цвета    | `src/components/experience/ColorRevealExperience.astro`, `src/scripts/color-reveal-page.ts`, `src/scripts/color-reveal-engine.ts` |
@@ -140,6 +141,12 @@ npm.cmd run verify
 
 `verify` последовательно запускает typecheck, lint, unit-тесты, format-check,
 production build, performance budget и browser smoke по `dist/`.
+
+GitHub Pages project site публикуется из `main` workflow-файлом
+`.github/workflows/deploy.yml`. Production URL использует base
+`/ivan-kugach/`; внутренние URL на границе рендера и клиентской навигации
+преобразует `src/utils/site-path.ts`, а data route contracts продолжают хранить
+канонические пути от корня проекта.
 
 Тестовые точки:
 

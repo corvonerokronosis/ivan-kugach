@@ -6,6 +6,7 @@ import { chromium } from "playwright";
 
 const rootDir = process.cwd();
 const distDir = path.join(rootDir, "dist");
+const siteBase = "/ivan-kugach";
 const smokeViewport = { width: 1280, height: 820 };
 const routes = {
   home: "/",
@@ -67,7 +68,7 @@ async function smokeContentRoutes() {
   );
 
   const firstWorkLink = page
-    .locator('a[href^="/works/"]:not([href="/works/"])')
+    .locator(`a[href^="${siteBase}/works/"]:not([href="${siteBase}/works/"])`)
     .first();
   const firstWorkHref = await firstWorkLink.getAttribute("href");
   assert(
@@ -214,7 +215,13 @@ function assert(condition, message) {
 }
 
 function toUrl(pathname) {
-  return new URL(pathname, baseUrl).toString();
+  const projectPathname = pathname.startsWith(`${siteBase}/`)
+    ? pathname
+    : pathname === siteBase
+      ? `${siteBase}/`
+      : `${siteBase}${pathname}`;
+
+  return new URL(projectPathname, baseUrl).toString();
 }
 
 async function startStaticServer() {
@@ -262,10 +269,20 @@ async function startStaticServer() {
 }
 
 async function resolveDistPath(pathname) {
-  const safePathname = decodeURIComponent(pathname).replace(/^\/+/, "");
+  const decodedPathname = decodeURIComponent(pathname);
+
+  if (
+    decodedPathname !== siteBase &&
+    !decodedPathname.startsWith(`${siteBase}/`)
+  ) {
+    return null;
+  }
+
+  const projectPathname = decodedPathname.slice(siteBase.length) || "/";
+  const safePathname = projectPathname.replace(/^\/+/, "");
   const candidates = [];
 
-  if (pathname === "/" || pathname.endsWith("/")) {
+  if (projectPathname === "/" || projectPathname.endsWith("/")) {
     candidates.push(path.join(distDir, safePathname, "index.html"));
   } else {
     candidates.push(path.join(distDir, safePathname));
