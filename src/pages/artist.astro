@@ -1,7 +1,6 @@
 ---
 import Action from "../components/common/Action.astro";
 import FramedArtwork from "../components/common/FramedArtwork.astro";
-import MetaBadge from "../components/common/MetaBadge.astro";
 import { getArtistPageContent } from "../data/repository";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import interiorArtwork from "../assets/images/interactive/color-reveal/kugach-picture-1.png";
@@ -18,7 +17,6 @@ const artworkByKey = {
   <article class="artist-page">
     <section class="artist-hero" aria-labelledby="artist-title">
       <div class="artist-hero__copy">
-        <p class="artist-kicker">{content.eyebrow}</p>
         <h1 id="artist-title">{content.title}</h1>
         <p class="artist-lead">{content.lead}</p>
 
@@ -52,7 +50,6 @@ const artworkByKey = {
       </div>
 
       <div class="artist-context__copy">
-        <MetaBadge tone="accent">Временный редакционный текст</MetaBadge>
         <h2 id="artist-context-title">{content.contextTitle}</h2>
         {content.contextParagraphs.map((paragraph) => <p>{paragraph}</p>)}
       </div>
@@ -60,7 +57,6 @@ const artworkByKey = {
 
     <section class="artist-themes" aria-labelledby="artist-themes-title">
       <div class="artist-section-heading">
-        <p class="artist-kicker">Контекст</p>
         <h2 id="artist-themes-title">На что обратить внимание</h2>
       </div>
 
@@ -84,7 +80,6 @@ const artworkByKey = {
     <section class="artist-series" aria-labelledby="artist-series-title">
       <div class="artist-section-heading artist-section-heading--series">
         <div>
-          <p class="artist-kicker">Продолжить знакомство</p>
           <h2 id="artist-series-title">Связанные серии</h2>
         </div>
         <p>
@@ -104,7 +99,6 @@ const artworkByKey = {
                 aspectRatio="4 / 3"
               />
               <div class="artist-series-card__copy">
-                <MetaBadge>Временная подборка</MetaBadge>
                 <h3>{series.title}</h3>
                 <p>{series.description}</p>
                 <Action href={series.href} variant="quiet" size="small">
@@ -327,10 +321,6 @@ const artworkByKey = {
     display: grid;
     gap: var(--space-3);
     padding-inline: var(--space-4);
-  }
-
-  .artist-series-card__copy :global(.meta-badge) {
-    justify-self: start;
   }
 
   @media (max-width: 56rem) {

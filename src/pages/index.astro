@@ -6,7 +6,6 @@ import lightArtwork from "../assets/images/interactive/light/dor-6258.jpg";
 import Action from "../components/common/Action.astro";
 import FramedArtwork from "../components/common/FramedArtwork.astro";
 import InteractiveLaunchCard from "../components/common/InteractiveLaunchCard.astro";
-import MetaBadge from "../components/common/MetaBadge.astro";
 import { getNarrativeRouteBySequenceId } from "../data/repository";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
@@ -42,7 +41,6 @@ const catalogDescription = joinText(
 >
   <section class="home-hero" aria-labelledby="home-title">
     <div class="home-hero__copy">
-      <MetaBadge>Прототип музея Кугача</MetaBadge>
       <h1 id="home-title">Войти в картину и вернуть ей цвет</h1>
       <p class="home-hero__lead">
         Стартовая страница подводит пользователя к интерактиву: коротко
@@ -86,7 +84,6 @@ const catalogDescription = joinText(
     <InteractiveLaunchCard
       headingLevel="h3"
       layout="stacked"
-      eyebrow="Первый этап"
       title="Возвращение цвета"
       description={colorReturnDescription}
       href="/experience/color-return/"
@@ -99,9 +96,6 @@ const catalogDescription = joinText(
         caption="Миниатюра картины и быстрый переход в экран раскрашивания."
         aspectRatio="1.08 / 1"
       />
-      <MetaBadge slot="meta">Интерактив</MetaBadge>
-      <MetaBadge slot="meta">1 картина</MetaBadge>
-      <MetaBadge slot="meta" tone="accent">1–2 минуты</MetaBadge>
       <div slot="details">
         <strong>Описание интерактива</strong>
         <p>
@@ -114,7 +108,6 @@ const catalogDescription = joinText(
     <InteractiveLaunchCard
       headingLevel="h3"
       layout="stacked"
-      eyebrow="Второй этап"
       title="Приблизить детали"
       description={detailsDescription}
       href="/experience/details/"
@@ -127,9 +120,6 @@ const catalogDescription = joinText(
         caption="Переход к исследованию с приближением и историями деталей."
         aspectRatio="1.08 / 1"
       />
-      <MetaBadge slot="meta">Новый сценарий</MetaBadge>
-      <MetaBadge slot="meta">Зум и точки</MetaBadge>
-      <MetaBadge slot="meta" tone="accent">Свободный просмотр</MetaBadge>
       <div slot="details">
         <strong>Описание интерактива</strong>
         <p>
@@ -142,7 +132,6 @@ const catalogDescription = joinText(
     <InteractiveLaunchCard
       headingLevel="h3"
       layout="stacked"
-      eyebrow="Третий этап"
       title="Свет в мастерской"
       description={lightDescription}
       href="/experience/light/"
@@ -155,9 +144,6 @@ const catalogDescription = joinText(
         caption="Состояние картины меняется через утро, день, вечер и лампу."
         aspectRatio="1.08 / 1"
       />
-      <MetaBadge slot="meta">Третий шаг</MetaBadge>
-      <MetaBadge slot="meta">Свет</MetaBadge>
-      <MetaBadge slot="meta" tone="accent">Мастерская</MetaBadge>
       <div slot="details">
         <strong>Описание интерактива</strong>
         <p>
@@ -170,7 +156,6 @@ const catalogDescription = joinText(
     <InteractiveLaunchCard
       headingLevel="h3"
       layout="stacked"
-      eyebrow="Отдельный раздел"
       title="Работы для покупки"
       description={catalogDescription}
       href="/works/"
@@ -183,9 +168,6 @@ const catalogDescription = joinText(
         caption="Спокойная страница с каталогом, статусами, ценами и заявкой."
         aspectRatio="1.08 / 1"
       />
-      <MetaBadge slot="meta">Заявочная галерея</MetaBadge>
-      <MetaBadge slot="meta">5 работ</MetaBadge>
-      <MetaBadge slot="meta" tone="accent">Без онлайн-оплаты</MetaBadge>
       <div slot="details">
         <strong>Покупка через заявку</strong>
         <p>
