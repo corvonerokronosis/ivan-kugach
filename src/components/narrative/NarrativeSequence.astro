@@ -29,19 +29,11 @@ const Heading = headingLevel;
 >
   <header class="narrative-sequence__header">
     <div>
-      <p class="narrative-sequence__eyebrow">{sequence.eyebrow}</p>
       <Heading id={`${id}-title`}>Сюжетная последовательность</Heading>
       <p id={`${id}-lead`} class="narrative-sequence__lead">
         {sequence.lead}
       </p>
     </div>
-    <p class="narrative-sequence__counter" aria-live="polite">
-      <span data-narrative-counter>
-        Окно {safeInitialIndex + 1} из {slides.length}
-      </span>
-      <span aria-hidden="true"> · </span>
-      <span>Блок: {sequence.eyebrow.toLocaleLowerCase("ru-RU")}</span>
-    </p>
   </header>
 
   <div class="narrative-sequence__viewport" aria-live="polite">
@@ -63,11 +55,6 @@ const Heading = headingLevel;
           </div>
 
           <div class="narrative-slide__copy">
-            <div class="narrative-slide__meta" aria-label="Метаданные">
-              {slide.meta.map((item) => (
-                <span>{item}</span>
-              ))}
-            </div>
             <h3>{slide.title}</h3>
             <p class="narrative-slide__text">{slide.text}</p>
             <aside class="narrative-slide__secondary">
@@ -146,19 +133,8 @@ const Heading = headingLevel;
     align-items: end;
   }
 
-  .narrative-sequence__eyebrow,
-  .narrative-sequence__counter,
   .narrative-sequence__keyboard-hint {
     font-family: var(--font-family-ui);
-  }
-
-  .narrative-sequence__eyebrow {
-    margin: 0 0 var(--space-2);
-    color: var(--color-accent-strong);
-    font-size: var(--font-size-100);
-    font-weight: var(--font-weight-bold);
-    letter-spacing: var(--letter-spacing-label);
-    text-transform: uppercase;
   }
 
   .narrative-sequence__header :is(h1, h2) {
@@ -170,13 +146,6 @@ const Heading = headingLevel;
     max-width: 48rem;
     margin: var(--space-2) 0 0;
     color: var(--color-text-muted);
-  }
-
-  .narrative-sequence__counter {
-    margin: 0;
-    color: var(--color-text-muted);
-    font-size: var(--font-size-200);
-    font-weight: var(--font-weight-semibold);
   }
 
   .narrative-sequence__viewport {
@@ -227,25 +196,6 @@ const Heading = headingLevel;
     align-content: center;
     gap: var(--space-4);
     padding: clamp(var(--space-4), 3vw, var(--space-7));
-  }
-
-  .narrative-slide__meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-  }
-
-  .narrative-slide__meta span {
-    padding: var(--space-1) var(--space-3);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-pill);
-    color: var(--color-text-muted);
-    background: var(--color-surface-muted);
-    font-family: var(--font-family-ui);
-    font-size: var(--font-size-100);
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
   }
 
   .narrative-slide__copy h3 {
@@ -343,10 +293,6 @@ const Heading = headingLevel;
   }
 
   @media (min-width: 58rem) {
-    .narrative-sequence__header {
-      grid-template-columns: minmax(0, 1fr) auto;
-    }
-
     .narrative-slide {
       grid-template-columns: minmax(18rem, 0.9fr) minmax(22rem, 1.1fr);
     }

@@ -11,7 +11,6 @@ export interface ArtistRelatedSeries {
 }
 
 export interface ArtistPageContent {
-  eyebrow: string;
   title: string;
   lead: string;
   quote: string;
@@ -24,7 +23,6 @@ export interface ArtistPageContent {
 const joinText = (...parts: string[]): string => parts.join(" ");
 
 const artistPageContent: ArtistPageContent = {
-  eyebrow: "Художник",
   title: "Иван Кугач",
   lead: "Иван Кугач известен вниманием к тихим сюжетам, человеческому масштабу и мягкой живописной атмосфере.",
   quote: joinText(

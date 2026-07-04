@@ -4,7 +4,6 @@ import detailsArtwork from "../../assets/images/interactive/details/kugach-pictu
 import lightArtwork from "../../assets/images/interactive/light/dor-6258.jpg";
 import Action from "../../components/common/Action.astro";
 import FramedArtwork from "../../components/common/FramedArtwork.astro";
-import MetaBadge from "../../components/common/MetaBadge.astro";
 import {
   getNarrativeRouteBySequenceId,
   getNarrativeSequences,
@@ -31,7 +30,6 @@ const pageDescription = [
 >
   <section class="route-hero" aria-labelledby="route-title">
     <div class="route-hero__copy">
-      <MetaBadge tone="accent">Три этапа · единый маршрут</MetaBadge>
       <h1 id="route-title">
         Смотреть на картину — значит двигаться внутри неё
       </h1>
@@ -92,10 +90,6 @@ const pageDescription = [
           />
         </div>
         <div class="route-stage__copy">
-          <div class="route-stage__meta">
-            <MetaBadge>Первый этап</MetaBadge>
-            <MetaBadge tone="accent">1–2 минуты</MetaBadge>
-          </div>
           <h3>Возвращение цвета</h3>
           <p>
             Проведите по картине, чтобы постепенно открыть живописный слой.
@@ -121,10 +115,6 @@ const pageDescription = [
           />
         </div>
         <div class="route-stage__copy">
-          <div class="route-stage__meta">
-            <MetaBadge>Второй этап</MetaBadge>
-            <MetaBadge tone="accent">Зум и точки</MetaBadge>
-          </div>
           <h3>Приблизить детали</h3>
           <p>
             Исследуйте полотно крупным планом, находите точки интереса и
@@ -148,10 +138,6 @@ const pageDescription = [
           />
         </div>
         <div class="route-stage__copy">
-          <div class="route-stage__meta">
-            <MetaBadge>Третий этап</MetaBadge>
-            <MetaBadge tone="accent">Четыре состояния</MetaBadge>
-          </div>
           <h3>Свет в мастерской</h3>
           <p>
             Меняйте освещение и наблюдайте, как утро, день, вечер и лампа
@@ -171,7 +157,6 @@ const pageDescription = [
       <span></span>
     </div>
     <div>
-      <span class="route-stages__eyebrow">Отдельный раздел</span>
       <h2 id="catalog-title">Каталог не является четвёртым этапом</h2>
       <p>
         Интерактивный маршрут посвящён наблюдению за живописью. Доступные
@@ -382,12 +367,6 @@ const pageDescription = [
     max-width: 37rem;
     margin: 0;
     color: var(--color-text-muted);
-  }
-
-  .route-stage__meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
   }
 
   .route-catalog {

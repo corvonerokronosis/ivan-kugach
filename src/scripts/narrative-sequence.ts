@@ -21,7 +21,6 @@ function setupNarrativeSequence(root: HTMLElement): void {
   const slides = Array.from(
     root.querySelectorAll<HTMLElement>("[data-narrative-slide]"),
   );
-  const counter = root.querySelector<HTMLElement>("[data-narrative-counter]");
   const previousButton = root.querySelector<HTMLButtonElement>(
     "[data-narrative-previous]",
   );
@@ -32,17 +31,10 @@ function setupNarrativeSequence(root: HTMLElement): void {
     "[data-narrative-skip]",
   );
 
-  if (
-    slides.length === 0 ||
-    !counter ||
-    !previousButton ||
-    !nextButton ||
-    !skipButton
-  ) {
+  if (slides.length === 0 || !previousButton || !nextButton || !skipButton) {
     return;
   }
 
-  const counterElement = counter;
   const previousControl = previousButton;
   const nextControl = nextButton;
   const skipControl = skipButton;
@@ -82,7 +74,6 @@ function setupNarrativeSequence(root: HTMLElement): void {
       slide.hidden = index !== currentIndex;
     });
     root.dataset.currentIndex = String(currentIndex);
-    counterElement.textContent = `Окно ${currentIndex + 1} из ${slides.length}`;
     previousControl.disabled = currentIndex === 0;
     nextControl.textContent =
       currentIndex === slides.length - 1 ? completionLabel : "Далее";
