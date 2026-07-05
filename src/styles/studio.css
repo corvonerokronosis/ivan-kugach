@@ -1,4 +1,5 @@
 body.has-studio-decoration {
+  position: relative;
   background:
     radial-gradient(
       ellipse at 52% -10%,
@@ -20,7 +21,7 @@ body.has-studio-decoration {
 
 body.has-studio-decoration::before,
 body.has-studio-decoration::after {
-  position: fixed;
+  position: absolute;
   right: 0;
   left: 0;
   z-index: var(--layer-background);
@@ -54,6 +55,11 @@ body.has-studio-decoration::after {
       #83583a 4.25rem 6.375rem
     );
   box-shadow: inset 0 1.5rem 3rem rgb(41 24 14 / 28%);
+}
+
+body.has-studio-decoration .site-footer {
+  border-top-color: rgb(255 245 224 / 24%);
+  color: rgb(255 245 224 / 82%);
 }
 
 .studio-decoration {
