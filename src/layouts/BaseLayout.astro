@@ -73,7 +73,12 @@ const hasFooter = Astro.slots.has("footer");
 
       {
         hasFooter && (
-          <footer class="site-footer">
+          <footer
+            class:list={[
+              "site-footer",
+              { "studio-reading-plane": studioDecoration },
+            ]}
+          >
             <slot name="footer" />
           </footer>
         )
