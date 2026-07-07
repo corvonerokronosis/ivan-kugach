@@ -22,6 +22,7 @@ Astro-приложением. Историю завершённой миграц
 | `PERFORMANCE_BUDGET.md`       | Автоматические лимиты production-сборки и ручные ориентиры             |
 | `QA_CHECKLIST.md`             | Ручной release-проход по production preview                            |
 | `QA_VIEWPORTS.md`             | Матрица целевых viewport и зафиксированные результаты visual QA        |
+| `HOME_REDESIGN_BACKLOG.md`    | Backlog переноса экспериментального редизайна главной в Astro-контур   |
 | `LEGACY_REFERENCE.md`         | Статус архивного прототипа, functional reference и индекс baseline PNG |
 
 ## Правила поддержки
