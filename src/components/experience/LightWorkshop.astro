@@ -6,6 +6,7 @@ import type {
   LightWork,
 } from "../../types/light";
 import { getProductionImageAsset } from "../../utils/image-assets";
+import Action from "../common/Action.astro";
 import DialogShell from "../common/DialogShell.astro";
 import OptimizedImage from "../common/OptimizedImage.astro";
 
@@ -187,21 +188,22 @@ const lightStateCountStyle = `--light-state-count: ${states.length}`;
       </div>
 
       <div class="light-workshop__actions">
-        <a
-          class="light-workshop__action light-workshop__action--primary"
+        <Action
+          class="light-workshop__action"
           data-light-continue
           href={finalePath}
           hidden
         >
           Продолжить историю
-        </a>
-        <button
-          class="light-workshop__action light-workshop__action--secondary"
+        </Action>
+        <Action
+          class="light-workshop__action"
+          variant="secondary"
           type="button"
           data-light-reset
         >
           Сбросить свет
-        </button>
+        </Action>
       </div>
     </aside>
   </div>
@@ -223,26 +225,13 @@ const lightStateCountStyle = `--light-state-count: ${states.length}`;
     </p>
 
     <Fragment slot="actions">
-      <a
-        class="light-workshop__dialog-action"
-        data-light-complete-primary
-        href={finalePath}
-      >
+      <Action data-light-complete-primary href={finalePath}>
         Открыть финальную вставку
-      </a>
-      <button
-        class="light-workshop__dialog-action light-workshop__dialog-action--secondary"
-        type="button"
-        data-light-complete-close
-      >
+      </Action>
+      <Action variant="secondary" type="button" data-light-complete-close>
         Остаться в мастерской
-      </button>
-      <a
-        class="light-workshop__dialog-action light-workshop__dialog-action--quiet"
-        href={catalogPath}
-      >
-        Открыть каталог
-      </a>
+      </Action>
+      <Action variant="quiet" href={catalogPath}> Открыть каталог </Action>
     </Fragment>
   </DialogShell>
 
@@ -509,56 +498,20 @@ const lightStateCountStyle = `--light-state-count: ${states.length}`;
   .light-workshop__dot {
     height: 0.625rem;
     overflow: hidden;
-    border-radius: var(--radius-pill);
-    background: rgb(47 36 25 / 16%);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-muted);
   }
 
   .light-workshop__dot[data-viewed="true"] {
-    background: linear-gradient(90deg, var(--color-accent), #f3cf87);
-    box-shadow: 0 0 16px rgb(214 147 68 / 28%);
+    border-color: var(--color-accent-strong);
+    background: var(--color-accent-strong);
   }
 
   .light-workshop__actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
-  }
-
-  .light-workshop__action,
-  .light-workshop__dialog-action {
-    display: inline-flex;
-    width: fit-content;
-    min-height: 2.75rem;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-3) var(--space-5);
-    border: 1px solid transparent;
-    border-radius: var(--radius-pill);
-    font-family: var(--font-family-ui);
-    font-size: var(--font-size-300);
-    font-weight: var(--font-weight-semibold);
-    line-height: 1.2;
-    text-align: center;
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-  .light-workshop__action--primary,
-  .light-workshop__dialog-action {
-    color: var(--color-text-on-accent);
-    background: var(--color-accent-strong);
-  }
-
-  .light-workshop__action--secondary,
-  .light-workshop__dialog-action--secondary {
-    border-color: var(--color-border);
-    color: var(--color-text);
-    background: var(--color-surface-strong);
-  }
-
-  .light-workshop__dialog-action--quiet {
-    color: var(--color-accent-strong);
-    background: transparent;
   }
 
   .light-workshop__instructions {
@@ -591,8 +544,8 @@ const lightStateCountStyle = `--light-state-count: ${states.length}`;
     }
 
     .light-workshop__actions,
-    .light-workshop__action,
-    .light-workshop__dialog-action {
+    .light-workshop__actions :global(.light-workshop__action),
+    .light-workshop :global(.dialog-shell__actions .action) {
       width: 100%;
     }
   }

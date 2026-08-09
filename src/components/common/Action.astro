@@ -8,6 +8,8 @@ interface Props {
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   ariaLabel?: string;
+  class?: string;
+  [attribute: string]: unknown;
 }
 
 const {
@@ -17,20 +19,35 @@ const {
   type = "button",
   disabled = false,
   ariaLabel,
+  class: customClass,
+  ...attributes
 } = Astro.props;
 
-const className = `action action--${variant} action--${size}`;
-const resolvedHref = href ? withBasePath(href) : undefined;
+const className = [
+  "action",
+  `action--${variant}`,
+  `action--${size}`,
+  customClass,
+];
+const resolvedHref = href && !disabled ? withBasePath(href) : undefined;
 ---
 
 {
-  resolvedHref ? (
-    <a class={className} href={resolvedHref} aria-label={ariaLabel}>
+  href ? (
+    <a
+      {...attributes}
+      class:list={className}
+      href={resolvedHref}
+      aria-label={ariaLabel}
+      aria-disabled={disabled ? "true" : undefined}
+      tabindex={disabled ? -1 : undefined}
+    >
       <slot />
     </a>
   ) : (
     <button
-      class={className}
+      {...attributes}
+      class:list={className}
       type={type}
       disabled={disabled}
       aria-label={ariaLabel}
@@ -48,7 +65,7 @@ const resolvedHref = href ? withBasePath(href) : undefined;
     align-items: center;
     justify-content: center;
     border: 1px solid transparent;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-md);
     font-family: var(--font-family-ui);
     font-weight: var(--font-weight-semibold);
     line-height: 1.2;
@@ -59,22 +76,33 @@ const resolvedHref = href ? withBasePath(href) : undefined;
       color var(--motion-duration-fast) var(--motion-easing-standard),
       background-color var(--motion-duration-fast) var(--motion-easing-standard),
       border-color var(--motion-duration-fast) var(--motion-easing-standard),
+      box-shadow var(--motion-duration-fast) var(--motion-easing-standard),
       opacity var(--motion-duration-fast) var(--motion-easing-standard),
       transform var(--motion-duration-fast) var(--motion-easing-standard);
   }
 
-  .action:hover {
+  .action:hover:not(:disabled, [aria-disabled="true"]) {
     transform: translateY(calc(-1 * var(--motion-distance-sm)));
   }
 
-  .action:active {
-    transform: translateY(var(--motion-distance-sm));
+  .action:active:not(:disabled, [aria-disabled="true"]) {
+    transform: translateY(0);
   }
 
-  .action:disabled {
-    opacity: 0.48;
+  .action:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring-shadow);
+  }
+
+  .action:is(:disabled, [aria-disabled="true"]) {
+    opacity: 0.52;
     cursor: not-allowed;
     transform: none;
+    box-shadow: none;
+  }
+
+  .action[hidden] {
+    display: none;
   }
 
   .action--small {
@@ -91,7 +119,7 @@ const resolvedHref = href ? withBasePath(href) : undefined;
   .action--primary {
     color: var(--color-text-on-accent);
     background: var(--color-accent-strong);
-    box-shadow: 0 10px 24px rgb(94 39 23 / 20%);
+    box-shadow: var(--shadow-surface);
   }
 
   .action--primary:hover {
@@ -111,6 +139,10 @@ const resolvedHref = href ? withBasePath(href) : undefined;
     background: var(--color-surface-muted);
   }
 
+  .action--secondary:active:not(:disabled, [aria-disabled="true"]) {
+    background: var(--color-surface);
+  }
+
   .action--quiet {
     color: var(--color-accent-strong);
     background: transparent;
@@ -119,5 +151,10 @@ const resolvedHref = href ? withBasePath(href) : undefined;
   .action--quiet:hover {
     color: var(--color-accent);
     background: var(--color-accent-muted);
+  }
+
+  .action--quiet:active:not(:disabled, [aria-disabled="true"]) {
+    color: var(--color-accent-strong);
+    background: color-mix(in srgb, var(--color-accent-muted) 72%, transparent);
   }
 </style>

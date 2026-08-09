@@ -1,5 +1,6 @@
 ---
 import type { Hotspot } from "../../types/hotspot";
+import Action from "../common/Action.astro";
 import DialogShell from "../common/DialogShell.astro";
 import OptimizedImage from "../common/OptimizedImage.astro";
 
@@ -104,14 +105,14 @@ if (!artwork) {
           Открыто точек: 0 из {hotspots.length}. Выбирайте точки кнопками,
           меняйте масштаб кнопками и двигайте вид стрелками клавиатуры.
         </p>
-        <a
+        <Action
           class="details-explorer__continue"
           data-details-continue
           href={lightBridgePath}
           hidden
         >
           Перейти к свету
-        </a>
+        </Action>
       </div>
     </div>
   </div>
@@ -131,13 +132,9 @@ if (!artwork) {
     <p data-details-dialog-text></p>
 
     <Fragment slot="actions">
-      <button
-        class="details-explorer__dialog-action"
-        type="button"
-        data-details-dialog-close
-      >
+      <Action type="button" data-details-dialog-close>
         Продолжить просмотр
-      </button>
+      </Action>
     </Fragment>
   </DialogShell>
 
@@ -152,22 +149,11 @@ if (!artwork) {
     </p>
 
     <Fragment slot="actions">
-      <button
-        class="details-explorer__dialog-action details-explorer__dialog-action--secondary"
-        type="button"
-        data-details-complete-close
-      >
+      <Action variant="secondary" type="button" data-details-complete-close>
         Остаться у картины
-      </button>
-      <a class="details-explorer__dialog-action" href={lightBridgePath}>
-        К мастерской света
-      </a>
-      <a
-        class="details-explorer__dialog-action details-explorer__dialog-action--quiet"
-        href={catalogPath}
-      >
-        Работы для покупки
-      </a>
+      </Action>
+      <Action href={lightBridgePath}> К мастерской света </Action>
+      <Action variant="quiet" href={catalogPath}> Работы для покупки </Action>
     </Fragment>
   </DialogShell>
 </section>
@@ -391,9 +377,7 @@ if (!artwork) {
     text-transform: uppercase;
   }
 
-  .details-explorer__zoom button,
-  .details-explorer__dialog-action,
-  .details-explorer__continue {
+  .details-explorer__zoom button {
     display: inline-flex;
     min-height: 2.5rem;
     align-items: center;
@@ -451,13 +435,7 @@ if (!artwork) {
     margin: 0;
   }
 
-  .details-explorer__continue,
-  .details-explorer__dialog-action {
-    color: var(--color-text-on-accent);
-    background: var(--color-accent-strong);
-  }
-
-  .details-explorer__continue[hidden] {
+  .details-explorer :global(.details-explorer__continue[hidden]) {
     display: none;
   }
 
@@ -467,18 +445,6 @@ if (!artwork) {
     color: var(--color-text-muted);
     font-size: var(--font-size-200);
     text-align: center;
-  }
-
-  .details-explorer__dialog-action--secondary {
-    border-color: var(--color-border);
-    color: var(--color-text);
-    background: linear-gradient(180deg, #f5ddb0, #e5bb70);
-  }
-
-  .details-explorer__dialog-action--quiet {
-    border-color: var(--color-border);
-    color: var(--color-text);
-    background: var(--color-surface-strong);
   }
 
   .details-explorer :global(.dialog-shell__body) {
@@ -505,8 +471,8 @@ if (!artwork) {
 
     .details-explorer__zoom,
     .details-explorer__progress,
-    .details-explorer__continue,
-    .details-explorer__dialog-action {
+    .details-explorer :global(.details-explorer__continue),
+    .details-explorer :global(.dialog-shell__actions .action) {
       width: 100%;
     }
 

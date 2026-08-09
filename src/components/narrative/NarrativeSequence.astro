@@ -1,5 +1,6 @@
 ---
 import type { NarrativeSequence } from "../../types/narrative";
+import Action from "../common/Action.astro";
 import OptimizedImage from "../common/OptimizedImage.astro";
 
 interface Props {
@@ -69,35 +70,26 @@ const Heading = headingLevel;
   </div>
 
   <footer class="narrative-sequence__controls">
-    <button
-      class="narrative-control narrative-control--quiet"
+    <Action
+      variant="quiet"
       type="button"
       data-narrative-previous
       aria-keyshortcuts="ArrowLeft"
       disabled={safeInitialIndex === 0}
     >
       Назад
-    </button>
+    </Action>
     <div class="narrative-sequence__actions">
-      <button
-        class="narrative-control narrative-control--secondary"
-        type="button"
-        data-narrative-skip
-      >
+      <Action variant="secondary" type="button" data-narrative-skip>
         {sequence.skipLabel}
-      </button>
-      <button
-        class="narrative-control narrative-control--primary"
-        type="button"
-        data-narrative-next
-        aria-keyshortcuts="ArrowRight"
-      >
+      </Action>
+      <Action type="button" data-narrative-next aria-keyshortcuts="ArrowRight">
         {
           safeInitialIndex === slides.length - 1
             ? sequence.completionLabel
             : "Далее"
         }
-      </button>
+      </Action>
     </div>
   </footer>
 
@@ -240,45 +232,6 @@ const Heading = headingLevel;
     justify-content: space-between;
   }
 
-  .narrative-control {
-    min-height: 2.75rem;
-    padding: var(--space-3) var(--space-5);
-    border: 1px solid transparent;
-    border-radius: var(--radius-pill);
-    font-family: var(--font-family-ui);
-    font-size: var(--font-size-300);
-    font-weight: var(--font-weight-semibold);
-    cursor: pointer;
-    transition:
-      transform var(--motion-duration-fast) var(--motion-easing-standard),
-      opacity var(--motion-duration-fast) var(--motion-easing-standard);
-  }
-
-  .narrative-control:hover:not(:disabled) {
-    transform: translateY(calc(-1 * var(--motion-distance-sm)));
-  }
-
-  .narrative-control:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-  }
-
-  .narrative-control--primary {
-    color: var(--color-text-on-accent);
-    background: var(--color-accent-strong);
-  }
-
-  .narrative-control--secondary {
-    border-color: var(--color-border);
-    color: var(--color-text);
-    background: var(--color-surface-strong);
-  }
-
-  .narrative-control--quiet {
-    color: var(--color-accent-strong);
-    background: transparent;
-  }
-
   .narrative-sequence__keyboard-hint {
     margin: 0;
     color: var(--color-text-muted);
@@ -310,7 +263,7 @@ const Heading = headingLevel;
 
     .narrative-sequence__controls,
     .narrative-sequence__actions,
-    .narrative-control {
+    .narrative-sequence__controls :global(.action) {
       width: 100%;
     }
   }

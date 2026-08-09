@@ -17,7 +17,8 @@ const { tone = "neutral" } = Astro.props;
     align-items: center;
     padding: var(--space-1) var(--space-3);
     border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-pill);
+    border-left-width: 0.2rem;
+    border-radius: var(--radius-sm);
     color: var(--color-text-muted);
     background: var(--color-surface-muted);
     font-family: var(--font-family-ui);
@@ -42,6 +43,11 @@ const { tone = "neutral" } = Astro.props;
       transparent
     );
     color: var(--color-status-success);
+    background: color-mix(
+      in srgb,
+      var(--color-status-success) 8%,
+      var(--color-surface-muted)
+    );
   }
 
   .meta-badge--warning {
@@ -51,6 +57,11 @@ const { tone = "neutral" } = Astro.props;
       transparent
     );
     color: var(--color-status-warning);
+    background: color-mix(
+      in srgb,
+      var(--color-status-warning) 9%,
+      var(--color-surface-muted)
+    );
   }
 
   .meta-badge--danger {
@@ -60,5 +71,10 @@ const { tone = "neutral" } = Astro.props;
       transparent
     );
     color: var(--color-status-danger);
+    background: color-mix(
+      in srgb,
+      var(--color-status-danger) 8%,
+      var(--color-surface-muted)
+    );
   }
 </style>

@@ -57,11 +57,18 @@ const zoomPreviewDescription = joinText(
       <Action href="/experience/">Основное действие</Action>
       <Action href="/works/" variant="secondary">Вторичное действие</Action>
       <Action variant="quiet">Обычная кнопка</Action>
+      <Action variant="secondary" disabled>Недоступное действие</Action>
     </div>
     <MessageState title="Информационное состояние">
       <p>
         Компонент принимает тон и live-режим, не обращаясь к глобальному DOM.
       </p>
+    </MessageState>
+    <MessageState title="Успешное состояние" tone="success">
+      <p>Общее подтверждение использует тот же каркас и семантический цвет.</p>
+    </MessageState>
+    <MessageState title="Состояние ошибки" tone="error">
+      <p>Ошибка остаётся заметной в светлой и тёмной теме.</p>
     </MessageState>
     <ProgressIndicator
       label="Просмотренные детали"
@@ -136,13 +143,7 @@ const zoomPreviewDescription = joinText(
         title="Dialog"
         description="Общий modal-механизм с title, description, Escape, trap focus и возвратом фокуса к кнопке открытия."
       />
-      <button
-        class="preview-dialog__open"
-        type="button"
-        data-preview-dialog-open
-      >
-        Открыть dialog
-      </button>
+      <Action type="button" data-preview-dialog-open> Открыть dialog </Action>
 
       <DialogShell
         id="preview-dialog"
@@ -152,13 +153,9 @@ const zoomPreviewDescription = joinText(
         <p>Можно продолжить маршрут или остаться у картины.</p>
         <div slot="actions" class="preview-row">
           <Action href="/experience/">Продолжить</Action>
-          <button
-            class="preview-dialog__close"
-            type="button"
-            data-preview-dialog-close
-          >
+          <Action type="button" variant="secondary" data-preview-dialog-close>
             Остаться
-          </button>
+          </Action>
         </div>
       </DialogShell>
     </div>
@@ -243,36 +240,6 @@ const zoomPreviewDescription = joinText(
   .preview-dialog {
     display: grid;
     gap: var(--space-4);
-  }
-
-  .preview-dialog__open,
-  .preview-dialog__close {
-    display: inline-flex;
-    width: fit-content;
-    min-height: 2.75rem;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-3) var(--space-5);
-    border: 1px solid transparent;
-    border-radius: var(--radius-pill);
-    font-family: var(--font-family-ui);
-    font-size: var(--font-size-300);
-    font-weight: var(--font-weight-semibold);
-    line-height: 1.2;
-    text-align: center;
-    cursor: pointer;
-  }
-
-  .preview-dialog__open {
-    color: var(--color-text-on-accent);
-    background: var(--color-accent-strong);
-    box-shadow: 0 10px 24px rgb(94 39 23 / 20%);
-  }
-
-  .preview-dialog__close {
-    border-color: var(--color-border);
-    color: var(--color-text);
-    background: var(--color-surface-strong);
   }
 
   @media (min-width: 60rem) {
