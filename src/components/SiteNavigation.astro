@@ -44,44 +44,73 @@ const isCurrentSection = (section: NavigationItem["section"]) => {
 };
 ---
 
-<nav class="site-navigation" aria-label="Основная навигация">
-  <a
-    class="site-navigation__identity"
-    href={withBasePath("/")}
-    aria-label="Иван Кугач — на главную"
+<nav class="site-navigation" aria-label="Основная навигация" data-menu-root>
+  <div class="site-navigation__top">
+    <a
+      class="site-navigation__identity"
+      href={withBasePath("/")}
+      aria-label="Иван Кугач — на главную"
+    >
+      <span class="site-navigation__name">Иван Кугач</span>
+      <span class="site-navigation__caption">Мастерская художника</span>
+    </a>
+
+    <button
+      class="site-navigation__menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="site-navigation-panel"
+      data-menu-toggle
+    >
+      <span>Меню</span>
+      <span class="site-navigation__menu-icon" aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <div
+    class="site-navigation__panel"
+    id="site-navigation-panel"
+    data-menu-panel
   >
-    <span class="site-navigation__name">Иван Кугач</span>
-    <span class="site-navigation__caption">Мастерская художника</span>
-  </a>
+    <ul class="site-navigation__list" data-menu-links>
+      {
+        navigationItems.map((item) => (
+          <li>
+            <a
+              class="site-navigation__link"
+              href={withBasePath(item.href)}
+              aria-current={isCurrentSection(item.section) ? "page" : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
 
-  <ul class="site-navigation__list">
-    {
-      navigationItems.map((item) => (
-        <li>
-          <a
-            class="site-navigation__link"
-            href={withBasePath(item.href)}
-            aria-current={isCurrentSection(item.section) ? "page" : undefined}
-          >
-            {item.label}
-          </a>
-        </li>
-      ))
-    }
-  </ul>
+    <label class="site-navigation__theme">
+      <span class="site-navigation__theme-label">Тема</span>
+      <select class="site-navigation__theme-select" data-theme-control disabled>
+        <option value="system">Как в системе</option>
+        <option value="light">Светлая</option>
+        <option value="dark">Тёмная</option>
+      </select>
+    </label>
+  </div>
 
-  <label class="site-navigation__theme">
-    <span class="site-navigation__theme-label">Тема</span>
-    <select class="site-navigation__theme-select" data-theme-control disabled>
-      <option value="system">Как в системе</option>
-      <option value="light">Светлая</option>
-      <option value="dark">Тёмная</option>
-    </select>
-  </label>
+  <button
+    class="site-navigation__backdrop"
+    type="button"
+    tabindex="-1"
+    aria-label="Закрыть меню"
+    data-menu-backdrop
+    hidden></button>
 </nav>
 
 <style>
   .site-navigation {
+    position: relative;
+    isolation: isolate;
     display: grid;
     min-width: 0;
     gap: var(--space-5);
@@ -100,6 +129,96 @@ const isCurrentSection = (section: NavigationItem["section"]) => {
       ),
       var(--color-surface);
     box-shadow: var(--shadow-surface);
+  }
+
+  .site-navigation[data-menu-open] {
+    z-index: var(--layer-overlay);
+  }
+
+  .site-navigation__top,
+  .site-navigation__panel {
+    position: relative;
+    z-index: var(--layer-content);
+  }
+
+  .site-navigation__top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .site-navigation__panel {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .site-navigation__panel[hidden] {
+    display: none;
+  }
+
+  .site-navigation__menu-toggle {
+    display: none;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    background: var(--color-surface-strong);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+  }
+
+  .site-navigation[data-menu-ready] .site-navigation__menu-toggle {
+    display: inline-flex;
+  }
+
+  .site-navigation__menu-toggle:hover {
+    border-color: var(--color-border-strong);
+    color: var(--color-accent-strong);
+  }
+
+  .site-navigation__menu-toggle:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring-shadow);
+  }
+
+  .site-navigation__menu-icon {
+    position: relative;
+    width: 1.1rem;
+    height: 0.75rem;
+    border-block: 2px solid currentColor;
+  }
+
+  .site-navigation__menu-icon::after {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    border-top: 2px solid currentColor;
+    content: "";
+    transform: translateY(-50%);
+  }
+
+  .site-navigation__backdrop {
+    position: fixed;
+    z-index: var(--layer-background);
+    inset: 0;
+    display: none;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: var(--color-overlay);
+    cursor: default;
+  }
+
+  .site-navigation__backdrop:not([hidden]) {
+    display: block;
   }
 
   .site-navigation__identity {
@@ -191,7 +310,6 @@ const isCurrentSection = (section: NavigationItem["section"]) => {
 
   .site-navigation__theme {
     display: grid;
-    grid-column: 1 / -1;
     grid-template-columns: max-content minmax(0, 1fr);
     align-items: center;
     gap: var(--space-2);
@@ -244,6 +362,18 @@ const isCurrentSection = (section: NavigationItem["section"]) => {
       padding-inline: var(--header-safe-inset);
     }
 
+    .site-navigation__top,
+    .site-navigation__panel,
+    .site-navigation__panel[hidden] {
+      display: contents !important;
+    }
+
+    .site-navigation__menu-toggle,
+    .site-navigation[data-menu-ready] .site-navigation__menu-toggle,
+    .site-navigation__backdrop:not([hidden]) {
+      display: none;
+    }
+
     .site-navigation__list {
       display: flex;
       flex-wrap: nowrap;
@@ -258,7 +388,6 @@ const isCurrentSection = (section: NavigationItem["section"]) => {
     }
 
     .site-navigation__theme {
-      grid-column: auto;
       grid-template-columns: max-content 8.25rem;
       gap: var(--space-1);
       width: auto;
@@ -266,6 +395,12 @@ const isCurrentSection = (section: NavigationItem["section"]) => {
 
     .site-navigation__theme-label {
       padding-inline: 0;
+    }
+  }
+
+  @media (max-width: 34rem) {
+    .site-navigation__list {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>

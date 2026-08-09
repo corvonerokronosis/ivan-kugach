@@ -53,7 +53,9 @@ const hasFooter = Astro.slots.has("footer");
     />
   </head>
   <body class:list={{ "has-studio-decoration": studioDecoration }}>
-    <a class="skip-link" href="#main-content">Перейти к содержанию</a>
+    <a class="skip-link" href="#main-content" data-menu-background
+      >Перейти к содержанию</a
+    >
 
     {studioDecoration && <StudioDecoration />}
 
@@ -62,14 +64,19 @@ const hasFooter = Astro.slots.has("footer");
         <SiteNavigation currentPath={Astro.url.pathname} />
         {
           hasHeaderContent && (
-            <div class="site-header__content">
+            <div class="site-header__content" data-menu-background>
               <slot name="header" />
             </div>
           )
         }
       </header>
 
-      <main id="main-content" class="site-main" tabindex="-1">
+      <main
+        id="main-content"
+        class="site-main"
+        tabindex="-1"
+        data-menu-background
+      >
         <slot />
       </main>
 
@@ -80,6 +87,7 @@ const hasFooter = Astro.slots.has("footer");
               "site-footer",
               { "studio-reading-plane": studioDecoration },
             ]}
+            data-menu-background
           >
             <slot name="footer" />
           </footer>
@@ -88,9 +96,11 @@ const hasFooter = Astro.slots.has("footer");
     </div>
 
     <script>
+      import { initMobileMenuController } from "../scripts/mobile-menu-controller";
       import { initThemeController } from "../scripts/theme-controller";
 
       initThemeController();
+      initMobileMenuController();
     </script>
   </body>
 </html>

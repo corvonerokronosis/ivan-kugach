@@ -223,20 +223,88 @@ async function smokeStaticHeader() {
     });
   assert(
     tabletHeaderPosition !== "sticky",
-    "До отдельного mobile-menu header должен оставаться статичным ниже desktop breakpoint.",
+    "Mobile header должен оставаться статичным ниже desktop breakpoint.",
   );
 
+  const tabletToggle = page.getByRole("button", {
+    name: "Меню",
+    exact: true,
+  });
+  const tabletToggleElement = page.locator("[data-menu-toggle]");
   const tabletLinks = await page.locator(".site-navigation__link").all();
+  assert(
+    await tabletToggle.isVisible(),
+    "Menu toggle должен быть видимым на tablet при включённом JS.",
+  );
+  for (const link of tabletLinks) {
+    assert(
+      !(await link.isVisible()),
+      "Enhanced navigation link должен быть скрыт до открытия menu.",
+    );
+  }
+  assert(
+    !(await page.locator("[data-theme-control]").isVisible()),
+    "Theme control должен быть частью закрытой mobile menu.",
+  );
+
+  await tabletToggle.click();
+  assert(
+    (await tabletToggle.getAttribute("aria-expanded")) === "true",
+    "Открытая mobile menu должна выставлять aria-expanded=true.",
+  );
   for (const link of tabletLinks) {
     assert(
       await link.isVisible(),
-      "No-JS navigation link должен оставаться видимым на tablet.",
+      "Navigation links должны быть видимы в открытой mobile menu.",
     );
   }
   assert(
     await page.locator("[data-theme-control]").isVisible(),
-    "Theme control должен оставаться видимым на tablet.",
+    "Theme control должен быть доступен в открытой mobile menu.",
   );
+  assert(
+    await page.locator("html[data-mobile-menu-open]").count(),
+    "Открытая mobile menu должна блокировать document scroll.",
+  );
+  assert(
+    await page
+      .locator("[data-menu-background]")
+      .evaluateAll((elements) => elements.every((element) => element.inert)),
+    "Открытая mobile menu должна делать background inert.",
+  );
+
+  await page.keyboard.press("Escape");
+  assert(
+    (await tabletToggle.getAttribute("aria-expanded")) === "false",
+    "Escape должен закрывать mobile menu.",
+  );
+  assert(
+    await tabletToggle.evaluate(
+      (element) => element.ownerDocument.activeElement === element,
+    ),
+    "После Escape focus должен возвращаться в menu toggle.",
+  );
+
+  await tabletToggle.click();
+  await page.locator("[data-menu-backdrop]").click();
+  assert(
+    (await tabletToggle.getAttribute("aria-expanded")) === "false",
+    "Клик вне panel должен закрывать mobile menu.",
+  );
+
+  await tabletToggle.click();
+  await page.setViewportSize(compactDesktopViewport);
+  assert(
+    !(await tabletToggleElement.isVisible()) &&
+      (await tabletToggleElement.getAttribute("aria-expanded")) === "false",
+    "Desktop resize должен закрывать menu и скрывать toggle.",
+  );
+  assert(
+    !(await page.locator("html[data-mobile-menu-open]").count()),
+    "Desktop resize должен снимать scroll lock.",
+  );
+
+  await page.setViewportSize(tabletViewport);
   const hasTabletHorizontalOverflow = await page.evaluate(
     () =>
       globalThis.document.documentElement.scrollWidth >
@@ -251,12 +319,28 @@ async function smokeStaticHeader() {
 
   const noJsContext = await browser.newContext({
     javaScriptEnabled: false,
-    viewport: compactDesktopViewport,
+    viewport: tabletViewport,
   });
   const noJsPage = await noJsContext.newPage();
 
   try {
     await noJsPage.goto(toUrl(routes.home));
+    assert(
+      !(await noJsPage
+        .getByRole("button", { name: "Меню", exact: true })
+        .isVisible()),
+      "Menu toggle должен оставаться скрытым без JS.",
+    );
+    assert(
+      await noJsPage
+        .getByRole("link", { name: "Каталог", exact: true })
+        .isVisible(),
+      "Navigation links должны оставаться доступными без JS на tablet.",
+    );
+    assert(
+      await noJsPage.locator("[data-theme-control]").isVisible(),
+      "Theme control должен оставаться видимым без JS на tablet.",
+    );
     await noJsPage.getByRole("link", { name: "Каталог", exact: true }).click();
     await noJsPage.waitForURL(toUrl(routes.catalog));
     await assertVisible(
