@@ -519,19 +519,71 @@ async function smokeUiPrimitives() {
     await disabledAction.isDisabled(),
     "Недоступное Action-действие должно оставаться disabled.",
   );
+  const disabledLinkAction = page.locator('a[aria-disabled="true"]').filter({
+    hasText: "Недоступная ссылка",
+  });
+  assert(
+    (await disabledLinkAction.getAttribute("aria-disabled")) === "true",
+    "Недоступная Action-ссылка должна сохранять aria-disabled=true.",
+  );
+  assert(
+    (await page.locator("[data-preview-badges] .meta-badge").count()) === 5,
+    "UI preview должен показывать все пять реальных тонов MetaBadge.",
+  );
+  assert(
+    (await page
+      .locator("[data-preview-message-states] .message-state")
+      .count()) === 4,
+    "UI preview должен показывать info, success, warning и error сообщения.",
+  );
   await assertVisible(page.getByRole("alert"));
+  await assertVisible(page.getByText("Предупреждение", { exact: true }));
+  assert(
+    (await page.locator("[data-preview-progress-states] progress").count()) ===
+      3,
+    "UI preview должен показывать initial, progress и completed состояния.",
+  );
+  assert(
+    await page.locator("#preview-disabled-note").isDisabled(),
+    "UI preview должен показывать disabled FormField.",
+  );
+
+  await assertPreviewFoundationMedia(page);
+
+  assert(
+    (await page
+      .locator(".preview-catalog-grid .artwork-catalog-card")
+      .count()) === 3,
+    "UI preview должен показывать реальные карточки доступности каталога.",
+  );
+  await assertVisible(page.locator("#preview-dialog-surface[open]"));
 
   await page.getByRole("button", { name: "Открыть dialog" }).click();
   await page.locator("#preview-dialog[open]").waitFor();
   await page.getByRole("button", { name: "Остаться" }).click();
   await page.locator("#preview-dialog[open]").waitFor({ state: "detached" });
 
-  await page.evaluate(() => {
-    globalThis.document.documentElement.dataset.theme = "dark";
-  });
+  const themeControl = page.locator("[data-theme-control]");
+  await themeControl.selectOption("light");
+  await assertThemeState(page, "light", "light");
+  await themeControl.selectOption("dark");
+  await assertThemeState(page, "dark", "dark");
   await assertVisible(page.getByText("Успешное состояние"));
+  await assertVisible(page.locator(".site-footer"));
 
   await page.setViewportSize(mobileMediaViewport);
+  const menuToggle = page.locator("[data-menu-toggle]");
+  await assertVisible(menuToggle);
+  await menuToggle.click();
+  assert(
+    (await menuToggle.getAttribute("aria-expanded")) === "true",
+    "UI preview должен показывать рабочее mobile menu.",
+  );
+  await page.keyboard.press("Escape");
+  assert(
+    (await menuToggle.getAttribute("aria-expanded")) === "false",
+    "Escape должен закрывать mobile menu на UI preview.",
+  );
   const hasHorizontalOverflow = await page.evaluate(
     () =>
       globalThis.document.documentElement.scrollWidth >
@@ -543,6 +595,68 @@ async function smokeUiPrimitives() {
   );
 
   await page.close();
+}
+
+async function assertPreviewFoundationMedia(page) {
+  const mediaSlots = page.locator(
+    "[data-preview-media-grid] [data-media-slot]",
+  );
+
+  assert(
+    (await mediaSlots.count()) === 3,
+    "UI preview должен показывать два landscape-slot и один portrait-slot.",
+  );
+
+  const landscapeSlots = page.locator(
+    '[data-preview-media-grid] [data-media-slot="landscape"]',
+  );
+  const portraitSlot = page.locator(
+    '[data-preview-media-grid] [data-media-slot="portrait"]',
+  );
+
+  assert(
+    (await landscapeSlots.count()) === 2 && (await portraitSlot.count()) === 1,
+    "UI preview должен явно покрывать landscape и portrait ratios.",
+  );
+
+  const landscapeMetrics = [];
+
+  for (let index = 0; index < 2; index += 1) {
+    const slot = landscapeSlots.nth(index);
+    const image = slot.locator("img");
+    const frame = slot.locator(".framed-artwork__frame");
+    const frameSize = await frame.evaluate((element) => {
+      const { width, height } = element.getBoundingClientRect();
+
+      return { width, height };
+    });
+
+    await assertReservedImageDimensions(image);
+    assert(
+      Math.abs(frameSize.width / frameSize.height - 4 / 3) < 0.02,
+      "Landscape preview slot должен сохранять пропорцию 4:3.",
+    );
+    landscapeMetrics.push(frameSize);
+  }
+
+  assert(
+    Math.abs(landscapeMetrics[0].height - landscapeMetrics[1].height) < 1,
+    "Landscape-slot не должен менять высоту между альбомным и портретным исходниками.",
+  );
+
+  const portraitFrameRatio = await portraitSlot
+    .locator(".framed-artwork__frame")
+    .evaluate((element) => {
+      const { width, height } = element.getBoundingClientRect();
+
+      return width / height;
+    });
+
+  await assertReservedImageDimensions(portraitSlot.locator("img"));
+  assert(
+    Math.abs(portraitFrameRatio - 3 / 4) < 0.02,
+    "Portrait preview slot должен сохранять пропорцию 3:4.",
+  );
 }
 
 async function smokeContentRoutes() {
