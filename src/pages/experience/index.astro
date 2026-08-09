@@ -221,9 +221,9 @@ const pageDescription = [
   .route-hero h1 {
     max-width: 12ch;
     margin: 0;
-    font-size: clamp(2.75rem, 7vw, 5.25rem);
+    font-size: var(--font-size-heading-xl);
     font-weight: var(--font-weight-semibold);
-    line-height: 0.94;
+    line-height: var(--line-height-heading);
   }
 
   .route-hero__copy > p {
@@ -461,10 +461,6 @@ const pageDescription = [
       padding: var(--space-5);
       border-width: 0.375rem;
       border-radius: var(--radius-lg);
-    }
-
-    .route-hero h1 {
-      font-size: clamp(2.35rem, 13vw, 3.45rem);
     }
 
     .route-hero__actions,

@@ -14,6 +14,7 @@ html {
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
   color: var(--color-text);
   background:
@@ -82,12 +83,16 @@ h1,
 h2,
 h3 {
   font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-heading);
   line-height: var(--line-height-heading);
+  overflow-wrap: anywhere;
   text-wrap: balance;
 }
 
 p {
-  max-width: 68ch;
+  max-width: var(--measure-copy);
+  text-wrap: pretty;
 }
 
 code {
@@ -135,6 +140,7 @@ code {
   z-index: var(--layer-content);
   display: grid;
   min-height: 100vh;
+  min-height: 100dvh;
   grid-template-rows: auto 1fr auto;
 }
 

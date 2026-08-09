@@ -125,7 +125,6 @@ const artworkByKey = {
     grid-template-columns: minmax(0, 0.82fr) minmax(20rem, 1.18fr);
     gap: clamp(var(--space-8), 7vw, 6rem);
     align-items: center;
-    min-height: min(43rem, calc(100vh - 10rem));
   }
 
   .artist-hero__copy {
@@ -148,10 +147,10 @@ const artworkByKey = {
   .artist-hero h1 {
     max-width: 8ch;
     margin: 0;
-    font-size: clamp(3.75rem, 9vw, 8.5rem);
-    font-weight: var(--font-weight-regular);
-    letter-spacing: -0.055em;
-    line-height: 0.82;
+    font-size: var(--font-size-heading-xl);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-heading);
+    line-height: var(--line-height-heading);
   }
 
   .artist-lead {
@@ -331,7 +330,6 @@ const artworkByKey = {
 
     .artist-hero h1 {
       max-width: none;
-      font-size: clamp(3.5rem, 16vw, 6.5rem);
     }
 
     .artist-context {

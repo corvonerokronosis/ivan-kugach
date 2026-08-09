@@ -1,24 +1,32 @@
 :root {
-  /* Typography is recalibrated separately in R3-03. */
-  --font-family-body: Georgia, "Times New Roman", serif;
-  --font-family-display: Georgia, "Times New Roman", serif;
-  --font-family-ui: Arial, Helvetica, sans-serif;
+  /* Dense system typography: no unlicensed or render-blocking web font. */
+  --font-family-system:
+    "Segoe UI Variable", "Segoe UI", system-ui, -apple-system,
+    BlinkMacSystemFont, Arial, sans-serif;
+  --font-family-body: var(--font-family-system);
+  --font-family-display: var(--font-family-system);
+  --font-family-ui: var(--font-family-system);
   --font-size-100: 0.75rem;
   --font-size-200: 0.875rem;
   --font-size-300: 1rem;
   --font-size-400: 1.0625rem;
   --font-size-500: 1.125rem;
-  --font-size-600: 1.4375rem;
-  --font-size-heading-sm: clamp(1.75rem, 3vw, 2.5rem);
-  --font-size-heading-md: clamp(1.75rem, 4vw, 2.625rem);
-  --font-size-heading-lg: clamp(2.25rem, 5vw, 3.875rem);
-  --line-height-tight: 1.08;
-  --line-height-heading: 1.16;
-  --line-height-body: 1.6;
+  --font-size-600: 1.25rem;
+  --font-size-heading-sm: clamp(1.375rem, 2vw, 1.75rem);
+  --font-size-heading-md: clamp(1.625rem, 3vw, 2.25rem);
+  --font-size-heading-lg: clamp(2rem, 4.5vw, 3.25rem);
+  --font-size-heading-xl: clamp(2.125rem, 5vw, 4rem);
+  --line-height-tight: 1;
+  --line-height-heading: 1.08;
+  --line-height-body: 1.55;
   --font-weight-regular: 400;
+  --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  --letter-spacing-label: 0.08em;
+  --letter-spacing-heading: -0.035em;
+  --letter-spacing-label: 0.06em;
+  --measure-copy: 65ch;
+  --measure-heading: 20ch;
 
   /* Spacing and shared layout geometry. */
   --space-0: 0;
