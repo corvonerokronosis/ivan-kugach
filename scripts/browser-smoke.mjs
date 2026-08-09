@@ -8,6 +8,8 @@ const rootDir = process.cwd();
 const distDir = path.join(rootDir, "dist");
 const siteBase = "/ivan-kugach";
 const smokeViewport = { width: 1280, height: 820 };
+const compactDesktopViewport = { width: 1180, height: 760 };
+const tabletViewport = { width: 820, height: 1180 };
 const mobileMediaViewport = { width: 390, height: 844 };
 const routes = {
   home: "/",
@@ -34,6 +36,7 @@ const context = await browser.newContext({
 const runtimeErrors = [];
 
 try {
+  await smokeStaticHeader();
   await smokeContentRoutes();
   await smokeUiPrimitives();
   await smokeColorReveal();
@@ -54,6 +57,143 @@ try {
   await context.close();
   await browser.close();
   await server.close();
+}
+
+async function smokeStaticHeader() {
+  const page = await newSmokePage();
+
+  await page.setViewportSize(compactDesktopViewport);
+  await page.goto(toUrl(routes.home));
+  await assertVisible(
+    page.getByRole("heading", { level: 1, name: /Войти в картину/i }),
+  );
+
+  const skipLink = page.getByRole("link", { name: "Перейти к содержанию" });
+  await page.keyboard.press("Tab");
+  assert(
+    await skipLink.evaluate(
+      (element) => element.ownerDocument.activeElement === element,
+    ),
+    "Skip-link должен быть первым элементом Tab-порядка.",
+  );
+  await skipLink.click();
+  assert(
+    await page
+      .locator("#main-content")
+      .evaluate((element) => element.ownerDocument.activeElement === element),
+    "Skip-link должен переводить фокус в main-content.",
+  );
+
+  const homeCurrentLink = page.locator(
+    '.site-navigation__link[aria-current="page"]',
+  );
+  assert(
+    (await homeCurrentLink.count()) === 1 &&
+      (await homeCurrentLink.innerText()) === "Главная",
+    "Главная должна быть единственным активным пунктом navigation.",
+  );
+
+  await assertDesktopHeaderGeometry(page);
+  await page.evaluate(() => {
+    globalThis.window.scrollTo(0, 600);
+  });
+  const stickyNavTop = await page
+    .locator(".site-navigation")
+    .evaluate((element) => element.getBoundingClientRect().top);
+  assert(
+    stickyNavTop >= 15 && stickyNavTop <= 25,
+    `Sticky navigation должна сохранять safe inset, получено ${stickyNavTop}px.`,
+  );
+
+  await page.setViewportSize(tabletViewport);
+  const tabletHeaderPosition = await page
+    .locator(".site-header")
+    .evaluate((element) => {
+      const view = element.ownerDocument.defaultView;
+
+      if (!view) {
+        throw new Error("Window недоступен для проверки tablet header.");
+      }
+
+      return view.getComputedStyle(element).position;
+    });
+  assert(
+    tabletHeaderPosition !== "sticky",
+    "До отдельного mobile-menu header должен оставаться статичным ниже desktop breakpoint.",
+  );
+
+  const tabletLinks = await page.locator(".site-navigation__link").all();
+  for (const link of tabletLinks) {
+    assert(
+      await link.isVisible(),
+      "No-JS navigation link должен оставаться видимым на tablet.",
+    );
+  }
+
+  await page.close();
+
+  const noJsContext = await browser.newContext({
+    javaScriptEnabled: false,
+    viewport: compactDesktopViewport,
+  });
+  const noJsPage = await noJsContext.newPage();
+
+  try {
+    await noJsPage.goto(toUrl(routes.home));
+    await noJsPage.getByRole("link", { name: "Каталог", exact: true }).click();
+    await noJsPage.waitForURL(toUrl(routes.catalog));
+    await assertVisible(
+      noJsPage.getByRole("heading", { level: 1, name: "Каталог работ" }),
+    );
+  } finally {
+    await noJsContext.close();
+  }
+}
+
+async function assertDesktopHeaderGeometry(page) {
+  const geometry = await page.locator(".site-header").evaluate((header) => {
+    const view = header.ownerDocument.defaultView;
+
+    if (!view) {
+      throw new Error("Window недоступен для проверки desktop header.");
+    }
+
+    const navigation = header.querySelector(".site-navigation");
+    const items = Array.from(
+      header.querySelectorAll(".site-navigation__list li"),
+    );
+
+    if (!(navigation instanceof view.HTMLElement) || items.length === 0) {
+      throw new Error("Navigation geometry недоступна.");
+    }
+
+    const navigationRect = navigation.getBoundingClientRect();
+    const itemTops = items.map((item) => item.getBoundingClientRect().top);
+
+    return {
+      headerPosition: view.getComputedStyle(header).position,
+      itemTopDelta: Math.max(...itemTops) - Math.min(...itemTops),
+      navigationLeft: navigationRect.left,
+      navigationRight: navigationRect.right,
+      navigationTop: navigationRect.top,
+      viewportWidth: view.innerWidth,
+    };
+  });
+
+  assert(
+    geometry.headerPosition === "sticky",
+    "Header должен быть sticky на compact desktop.",
+  );
+  assert(
+    geometry.itemTopDelta < 1,
+    `Desktop navigation должна оставаться в одну строку, delta ${geometry.itemTopDelta}px.`,
+  );
+  assert(
+    geometry.navigationLeft >= 16 &&
+      geometry.navigationRight <= geometry.viewportWidth - 16 &&
+      geometry.navigationTop >= 16,
+    "Sticky navigation должна сохранять safe inset 16–24px от viewport.",
+  );
 }
 
 async function smokeUiPrimitives() {
@@ -128,6 +268,36 @@ async function smokeContentRoutes() {
   await page.waitForURL(toUrl(firstWorkHref));
   await assertVisible(page.getByRole("heading", { level: 1 }).first());
   await assertStableWorkMedia(page);
+
+  const catalogCurrentLink = page.locator(
+    '.site-navigation__link[aria-current="page"]',
+  );
+  assert(
+    (await catalogCurrentLink.count()) === 1 &&
+      (await catalogCurrentLink.innerText()) === "Каталог",
+    "Detail route должна сохранять активный раздел Каталог.",
+  );
+
+  await page.locator('a[href="#work-inquiry"]').first().click();
+  await page.waitForURL(/#work-inquiry$/);
+  const anchorGeometry = await page
+    .locator("#work-inquiry")
+    .evaluate((target) => {
+      const navigation = target.ownerDocument.querySelector(".site-navigation");
+
+      if (!navigation) {
+        throw new Error("Navigation недоступна для проверки anchor offset.");
+      }
+
+      return {
+        navigationBottom: navigation.getBoundingClientRect().bottom,
+        targetTop: target.getBoundingClientRect().top,
+      };
+    });
+  assert(
+    anchorGeometry.targetTop >= anchorGeometry.navigationBottom,
+    "Anchor target не должен скрываться под sticky navigation.",
+  );
 
   await page.getByRole("button", { name: "Подготовить заявку" }).click();
   await assertVisible(page.getByText("Проверьте отмеченные поля."));
