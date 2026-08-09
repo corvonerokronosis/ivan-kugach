@@ -2,6 +2,7 @@
 import StudioDecoration from "../components/StudioDecoration.astro";
 import PageMetadata from "../components/common/PageMetadata.astro";
 import SiteNavigation from "../components/SiteNavigation.astro";
+import { themeBootstrapScript } from "../scripts/theme-controller";
 import "../styles/global.css";
 import { withBasePath } from "../utils/site-path";
 import type { JsonLdObject } from "../utils/structured-data";
@@ -38,6 +39,7 @@ const hasFooter = Astro.slots.has("footer");
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
+    <script is:inline set:html={themeBootstrapScript} />
     <link rel="icon" href={withBasePath("/favicon.svg")} type="image/svg+xml" />
     <PageMetadata
       title={title}
@@ -84,5 +86,11 @@ const hasFooter = Astro.slots.has("footer");
         )
       }
     </div>
+
+    <script>
+      import { initThemeController } from "../scripts/theme-controller";
+
+      initThemeController();
+    </script>
   </body>
 </html>
