@@ -88,3 +88,6 @@ blob-report/
 experiments/local-homepage-redesign/
 experiments/local-homepage-redesign-variant-2/
 experiments/local-homepage-redesign-variant-3/
+
+# Local-only project documentation
+docs/
