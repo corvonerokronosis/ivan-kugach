@@ -1,44 +1,5 @@
 :root {
-  /* Reference palette: workshop materials and paint accents. */
-  --palette-parchment-50: #fffdf8;
-  --palette-parchment-100: #fff5e0;
-  --palette-parchment-200: #efe0c3;
-  --palette-sand-300: #d2b692;
-  --palette-sand-400: #cbb994;
-  --palette-umber-500: #8e3f24;
-  --palette-umber-600: #6e4b31;
-  --palette-umber-700: #6b4329;
-  --palette-umber-800: #5e2717;
-  --palette-umber-900: #3e281b;
-  --palette-ink-950: #291d14;
-  --palette-paint-red: #b73521;
-  --palette-paint-blue: #315f7e;
-  --palette-paint-green: #56784a;
-  --palette-paint-yellow: #d7a33a;
-
-  /* Semantic colors: components should consume these instead of palette values. */
-  --color-canvas-top: var(--palette-sand-400);
-  --color-canvas-bottom: var(--palette-umber-600);
-  --color-surface: rgb(247 236 213 / 80%);
-  --color-surface-strong: rgb(255 245 224 / 92%);
-  --color-surface-muted: rgb(255 248 236 / 64%);
-  --color-text: var(--palette-ink-950);
-  --color-text-muted: rgb(41 29 20 / 74%);
-  --color-text-on-accent: var(--palette-parchment-50);
-  --color-accent: var(--palette-umber-500);
-  --color-accent-strong: var(--palette-umber-800);
-  --color-accent-muted: rgb(142 63 36 / 16%);
-  --color-border: rgb(72 43 22 / 22%);
-  --color-border-subtle: rgb(47 36 25 / 12%);
-  --color-wood: var(--palette-umber-700);
-  --color-wood-strong: var(--palette-umber-900);
-  --color-linen: var(--palette-parchment-200);
-  --color-status-success: #345b31;
-  --color-status-warning: #8a611f;
-  --color-status-danger: #8a2f20;
-  --color-overlay: rgb(34 20 12 / 58%);
-
-  /* Typography. The serif stack preserves the legacy editorial character. */
+  /* Typography is recalibrated separately in R3-03. */
   --font-family-body: Georgia, "Times New Roman", serif;
   --font-family-display: Georgia, "Times New Roman", serif;
   --font-family-ui: Arial, Helvetica, sans-serif;
@@ -59,7 +20,7 @@
   --font-weight-bold: 700;
   --letter-spacing-label: 0.08em;
 
-  /* Spacing follows a compact 4px base and covers recurring legacy gaps. */
+  /* Spacing and shared layout geometry. */
   --space-0: 0;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -73,22 +34,31 @@
   --space-12: 3rem;
   --space-13: 3.25rem;
   --section-gap: clamp(var(--space-8), 5vw, var(--space-13));
+  --layout-max-width: 75rem;
+  --layout-gutter: clamp(var(--space-4), 3vw, var(--space-8));
+  --layout-content-gap: var(--space-6);
 
-  /* Shape. Irregular decorative geometry remains component-local. */
-  --radius-sm: 0.375rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1.125rem;
-  --radius-xl: 1.5rem;
-  --radius-2xl: 1.875rem;
-  --radius-3xl: 2rem;
+  /* Material geometry. Route-level primitives migrate to these in R3-04/R3-05. */
+  --radius-sm: 0.125rem;
+  --radius-md: 0.25rem;
+  --radius-lg: 0.375rem;
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.625rem;
+  --radius-3xl: 0.75rem;
   --radius-pill: 999px;
   --radius-round: 50%;
+  --frame-border-width: 0.5rem;
+  --frame-inner-border-width: 0.125rem;
+  --frame-padding: clamp(0.65rem, 2vw, 1.1rem);
+  --frame-mat-padding: clamp(0.35rem, 1vw, 0.7rem);
+  --frame-radius: var(--radius-sm);
 
-  /* Elevation and stacking. */
-  --shadow-surface: 0 18px 40px rgb(42 24 12 / 18%);
-  --shadow-raised: 0 30px 70px rgb(42 24 12 / 28%);
-  --shadow-interactive: 0 34px 76px rgb(53 35 18 / 20%);
-  --shadow-inset-border: inset 0 0 0 1px rgb(42 25 15 / 22%);
+  /* Header geometry is consumed by the static shell before R3-06. */
+  --header-inset: clamp(var(--space-4), 2vw, var(--space-6));
+  --header-block-padding: var(--space-4);
+  --header-content-gap: var(--space-5);
+
+  /* Stacking. */
   --layer-background: -1;
   --layer-decor: 0;
   --layer-content: 1;
@@ -98,24 +68,145 @@
   --layer-dialog: 1100;
   --layer-toast: 1200;
 
-  /* Interaction and motion. */
-  --focus-ring-color: var(--palette-paint-blue);
+  /* Motion. Theme-independent and reduced below when requested. */
+  --motion-duration-instant: 0ms;
+  --motion-duration-fast: 160ms;
+  --motion-duration-medium: 220ms;
+  --motion-duration-base: 260ms;
+  --motion-duration-slow: 420ms;
+  --motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --motion-easing-enter: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-easing-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-distance-sm: 2px;
+  --motion-distance-md: 8px;
+}
+
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  /* Warm workshop wall and surfaces. */
+  --color-wall: #cda384;
+  --color-wall-muted: #d8b397;
+  --color-wall-strong: #b77f61;
+  --color-surface: #bd8564;
+  --color-surface-muted: rgb(201 149 116 / 72%);
+  --color-surface-strong: #b57b5c;
+
+  /* Text and the single interactive accent. */
+  --color-text: #291d17;
+  --color-text-muted: #664b3d;
+  --color-text-on-accent: #fff8ed;
+  --color-accent: #bd4028;
+  --color-accent-strong: #9f301e;
+  --color-accent-muted: rgb(189 64 40 / 16%);
+
+  /* Workshop materials. Lamp is illumination, never a second CTA color. */
+  --color-wood: #75482f;
+  --color-wood-strong: #4f2e1d;
+  --color-wood-highlight: #a06b4a;
+  --color-linen: #e2caab;
+  --color-linen-muted: #cfad87;
+  --color-linen-strong: #f1dec4;
+  --color-lamp: #fff0c2;
+  --color-lamp-muted: rgb(255 240 194 / 34%);
+  --color-lamp-glow: rgb(255 240 194 / 64%);
+
+  /* Borders, status colors and overlays. */
+  --color-border: rgb(79 46 29 / 38%);
+  --color-border-subtle: rgb(79 46 29 / 22%);
+  --color-border-strong: rgb(79 46 29 / 58%);
+  --color-status-success: #345b31;
+  --color-status-warning: #795316;
+  --color-status-danger: #8a2f20;
+  --color-overlay: rgb(40 27 21 / 66%);
+  --focus-ring-color: var(--color-accent-strong);
+
+  /* Warm shadows share one top-left light source. */
+  --shadow-surface: 0 1rem 2.25rem rgb(76 43 27 / 18%);
+  --shadow-raised: 0 1.75rem 4rem rgb(66 36 23 / 26%);
+  --shadow-interactive: 0 2rem 4.5rem rgb(76 43 27 / 24%);
+  --shadow-inset-border: inset 0 0 0 1px rgb(79 46 29 / 26%);
+  --shadow-frame: 0 1.625rem 3.5rem rgb(66 36 23 / 28%);
+  --shadow-lamp: 0 0 3rem rgb(255 240 194 / 26%);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-wall: #281b15;
+  --color-wall-muted: #312019;
+  --color-wall-strong: #1d130f;
+  --color-surface: #38271f;
+  --color-surface-muted: rgb(74 50 39 / 72%);
+  --color-surface-strong: #4a3227;
+
+  --color-text: #f4e9da;
+  --color-text-muted: #c7b49f;
+  --color-text-on-accent: #281b15;
+  --color-accent: #df5737;
+  --color-accent-strong: #ef6c4b;
+  --color-accent-muted: rgb(223 87 55 / 20%);
+
+  --color-wood: #71482f;
+  --color-wood-strong: #4f301f;
+  --color-wood-highlight: #956442;
+  --color-linen: #ddc6a5;
+  --color-linen-muted: #b99c78;
+  --color-linen-strong: #f1ddbf;
+  --color-lamp: #efc98e;
+  --color-lamp-muted: rgb(239 201 142 / 24%);
+  --color-lamp-glow: rgb(239 201 142 / 42%);
+
+  --color-border: rgb(221 198 165 / 28%);
+  --color-border-subtle: rgb(221 198 165 / 16%);
+  --color-border-strong: rgb(221 198 165 / 44%);
+  --color-status-success: #9ac18f;
+  --color-status-warning: #e4b56b;
+  --color-status-danger: #ff927a;
+  --color-overlay: rgb(16 10 7 / 76%);
+  --focus-ring-color: var(--color-accent-strong);
+
+  --shadow-surface: 0 1rem 2.25rem rgb(12 7 5 / 30%);
+  --shadow-raised: 0 1.75rem 4rem rgb(10 6 4 / 42%);
+  --shadow-interactive: 0 2rem 4.5rem rgb(10 6 4 / 38%);
+  --shadow-inset-border: inset 0 0 0 1px rgb(221 198 165 / 20%);
+  --shadow-frame: 0 1.625rem 3.5rem rgb(10 6 4 / 46%);
+  --shadow-lamp: 0 0 3rem rgb(239 201 142 / 18%);
+}
+
+:root {
+  /* Shared semantic aliases used by the current component API. */
+  --color-canvas-top: var(--color-wall-muted);
+  --color-canvas-bottom: var(--color-wall-strong);
+  --color-muted: var(--color-surface-muted);
+  --color-success: var(--color-status-success);
   --focus-ring-width: 3px;
   --focus-ring-offset: 3px;
   --focus-ring-shadow: 0 0 0 var(--focus-ring-width) var(--focus-ring-color);
-  --motion-duration-instant: 0ms;
-  --motion-duration-fast: 150ms;
-  --motion-duration-base: 220ms;
-  --motion-duration-slow: 350ms;
-  --motion-easing-standard: ease;
-  --motion-easing-enter: cubic-bezier(0.22, 1, 0.36, 1);
-  --motion-distance-sm: 2px;
-  --motion-distance-md: 8px;
+
+  /* Temporary compatibility aliases. They no longer expose multiple accents. */
+  --palette-parchment-50: var(--color-linen-strong);
+  --palette-parchment-100: var(--color-linen-strong);
+  --palette-parchment-200: var(--color-linen);
+  --palette-sand-300: var(--color-linen-muted);
+  --palette-sand-400: var(--color-wall);
+  --palette-umber-500: var(--color-accent);
+  --palette-umber-600: var(--color-wall-strong);
+  --palette-umber-700: var(--color-wood);
+  --palette-umber-800: var(--color-accent-strong);
+  --palette-umber-900: var(--color-wood-strong);
+  --palette-ink-950: var(--color-text);
+  --palette-paint-red: var(--color-accent);
+  --palette-paint-blue: var(--color-accent);
+  --palette-paint-green: var(--color-accent);
+  --palette-paint-yellow: var(--color-lamp);
 }
 
 @media (prefers-reduced-motion: reduce) {
   :root {
     --motion-duration-fast: var(--motion-duration-instant);
+    --motion-duration-medium: var(--motion-duration-instant);
     --motion-duration-base: var(--motion-duration-instant);
     --motion-duration-slow: var(--motion-duration-instant);
     --motion-distance-sm: 0;

@@ -8,6 +8,7 @@
 
 html {
   min-width: 20rem;
+  background: var(--color-wall-strong);
   scroll-behavior: smooth;
 }
 
@@ -15,15 +16,28 @@ body {
   min-height: 100vh;
   margin: 0;
   color: var(--color-text);
-  background: linear-gradient(
-    180deg,
-    var(--palette-parchment-200),
-    var(--palette-sand-400)
-  );
+  background:
+    radial-gradient(
+      circle at 14% -8%,
+      var(--color-lamp-glow),
+      transparent 30rem
+    ),
+    linear-gradient(
+      165deg,
+      var(--color-wall-muted),
+      var(--color-wall) 42%,
+      var(--color-wall-strong)
+    );
+  background-color: var(--color-wall);
   font-family: var(--font-family-body);
   font-size: var(--font-size-300);
   line-height: var(--line-height-body);
   overflow-wrap: break-word;
+}
+
+::selection {
+  color: var(--color-text-on-accent);
+  background: var(--color-accent);
 }
 
 a {
@@ -53,6 +67,7 @@ button,
 input,
 select,
 textarea {
+  accent-color: var(--color-accent);
   font: inherit;
 }
 
@@ -126,22 +141,22 @@ code {
 .site-header,
 .site-main,
 .site-footer {
-  width: min(75rem, calc(100% - 2 * var(--space-4)));
+  width: min(var(--layout-max-width), calc(100% - 2 * var(--layout-gutter)));
   margin-inline: auto;
 }
 
 .site-header {
-  padding-block: var(--space-6);
+  padding-block: var(--header-block-padding);
 }
 
 .site-header__content {
-  margin-top: var(--space-6);
+  margin-top: var(--header-content-gap);
 }
 
 .site-main {
   display: grid;
   align-content: start;
-  gap: var(--space-6);
+  gap: var(--layout-content-gap);
   padding-block: var(--space-8) var(--section-gap);
 }
 
@@ -150,14 +165,6 @@ code {
   border-top: 1px solid var(--color-border);
   color: var(--color-text-muted);
   font-size: var(--font-size-200);
-}
-
-@media (min-width: 48rem) {
-  .site-header,
-  .site-main,
-  .site-footer {
-    width: min(75rem, calc(100% - 2 * var(--space-8)));
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
