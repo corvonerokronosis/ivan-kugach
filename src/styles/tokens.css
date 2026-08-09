@@ -61,9 +61,10 @@
   --frame-mat-padding: clamp(0.35rem, 1vw, 0.7rem);
   --frame-radius: var(--radius-sm);
 
-  /* Header geometry is consumed by the static shell before R3-06. */
-  --header-inset: clamp(var(--space-4), 2vw, var(--space-6));
-  --header-block-padding: var(--space-4);
+  /* Static shell geometry. Theme and menu controllers remain separate. */
+  --header-safe-inset: clamp(var(--space-4), 2vw, var(--space-6));
+  --header-navigation-height: 4.125rem;
+  --header-scroll-offset: var(--space-4);
   --header-content-gap: var(--space-5);
 
   /* Stacking. */
@@ -219,5 +220,14 @@
     --motion-duration-slow: var(--motion-duration-instant);
     --motion-distance-sm: 0;
     --motion-distance-md: 0;
+  }
+}
+
+@media (min-width: 70rem) {
+  :root {
+    --header-scroll-offset: calc(
+      var(--header-safe-inset) + var(--header-navigation-height) +
+        var(--space-2)
+    );
   }
 }

@@ -10,6 +10,7 @@ html {
   min-width: 20rem;
   background: var(--color-wall-strong);
   scroll-behavior: smooth;
+  scroll-padding-top: var(--header-scroll-offset);
 }
 
 body {
@@ -152,7 +153,7 @@ code {
 }
 
 .site-header {
-  padding-block: var(--header-block-padding);
+  padding-block: var(--header-safe-inset) 0;
 }
 
 .site-header__content {
@@ -171,6 +172,14 @@ code {
   border-top: 1px solid var(--color-border);
   color: var(--color-text-muted);
   font-size: var(--font-size-200);
+}
+
+@media (min-width: 70rem) {
+  .site-header {
+    position: sticky;
+    z-index: var(--layer-sticky);
+    top: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
