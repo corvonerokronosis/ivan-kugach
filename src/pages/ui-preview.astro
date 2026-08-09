@@ -12,12 +12,30 @@ import SectionHeader from "../components/common/SectionHeader.astro";
 import ColorRevealEnginePreview from "../components/experience/ColorRevealEnginePreview.astro";
 import ZoomPanEnginePreview from "../components/experience/ZoomPanEnginePreview.astro";
 import NarrativeSequence from "../components/narrative/NarrativeSequence.astro";
-import { getNarrativeSequence } from "../data/repository";
+import ArtworkCatalogCard from "../components/works/ArtworkCatalogCard.astro";
+import {
+  artworkAvailabilityLabels,
+  getCatalogArtworks,
+  getNarrativeSequence,
+} from "../data/repository";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
 const introSequence = getNarrativeSequence("intro");
 const lightBridgeSequence = getNarrativeSequence("lightBridge");
+const catalogArtworks = getCatalogArtworks();
+const landscapeArtwork =
+  catalogArtworks.find((artwork) => artwork.id === "dor-3518") ??
+  catalogArtworks[0];
+const portraitArtwork =
+  catalogArtworks.find((artwork) => artwork.id === "dsc-8578") ??
+  catalogArtworks.at(-1);
 const joinText = (...parts: string[]): string => parts.join(" ");
+const getPrimaryImage = (artwork: (typeof catalogArtworks)[number]) =>
+  artwork.images.find((image) => image.role === "primary") ?? artwork.images[0];
+const formatPrice = (artwork: (typeof catalogArtworks)[number]): string =>
+  artwork.priceType === "request"
+    ? "Цена по запросу"
+    : (artwork.price ?? "Цена уточняется");
 const narrativePreviewDescription = joinText(
   "Один компонент получает контент извне и работает с блоками разной длины.",
   "Первый пример содержит три окна, второй — два.",
@@ -43,45 +61,145 @@ const zoomPreviewDescription = joinText(
     title="Общие UI-компоненты"
     description="Маршрут нужен только для ручной проверки дизайн-системы до переноса продуктовых страниц."
   >
-    <MetaBadge slot="meta" tone="accent">Astro</MetaBadge>
+    <MetaBadge slot="meta" tone="accent">R3-10 foundation gate</MetaBadge>
     <MetaBadge slot="meta" tone="success">Доступно с клавиатуры</MetaBadge>
   </SectionHeader>
 
-  <section class="preview-section" aria-labelledby="preview-actions-title">
+  <section
+    id="preview-actions"
+    class="preview-section"
+    aria-labelledby="preview-actions-title"
+  >
     <SectionHeader
       id="preview-actions-title"
       level="h2"
       title="Действия и состояния"
+      description="Реальные варианты controls, статусов, сообщений и progress без искусственных loading-состояний."
     />
-    <div class="preview-row">
-      <Action href="/experience/">Основное действие</Action>
-      <Action href="/works/" variant="secondary">Вторичное действие</Action>
-      <Action variant="quiet">Обычная кнопка</Action>
-      <Action variant="secondary" disabled>Недоступное действие</Action>
+
+    <div class="preview-example-group">
+      <h3>Action</h3>
+      <div class="preview-row">
+        <Action href="/experience/">Основное действие</Action>
+        <Action href="/works/" variant="secondary">Вторичное действие</Action>
+        <Action variant="quiet">Обычная кнопка</Action>
+        <Action size="small">Компактное действие</Action>
+        <Action variant="secondary" disabled>Недоступное действие</Action>
+        <Action href="/works/" variant="quiet" disabled>
+          Недоступная ссылка
+        </Action>
+      </div>
     </div>
-    <MessageState title="Информационное состояние">
-      <p>
-        Компонент принимает тон и live-режим, не обращаясь к глобальному DOM.
-      </p>
-    </MessageState>
-    <MessageState title="Успешное состояние" tone="success">
-      <p>Общее подтверждение использует тот же каркас и семантический цвет.</p>
-    </MessageState>
-    <MessageState title="Состояние ошибки" tone="error">
-      <p>Ошибка остаётся заметной в светлой и тёмной теме.</p>
-    </MessageState>
-    <ProgressIndicator
-      label="Просмотренные детали"
-      value={2}
-      max={5}
-      valueLabel="2 из 5"
-    />
+
+    <div class="preview-example-group">
+      <h3>MetaBadge</h3>
+      <div class="preview-row" data-preview-badges>
+        <MetaBadge>Нейтральный</MetaBadge>
+        <MetaBadge tone="accent">Акцент</MetaBadge>
+        <MetaBadge tone="success">Доступно</MetaBadge>
+        <MetaBadge tone="warning">В резерве</MetaBadge>
+        <MetaBadge tone="danger">Ошибка</MetaBadge>
+      </div>
+    </div>
+
+    <div class="preview-state-grid" data-preview-message-states>
+      <MessageState title="Информационное состояние">
+        <p>
+          Компонент принимает тон и live-режим, не обращаясь к глобальному DOM.
+        </p>
+      </MessageState>
+      <MessageState title="Успешное состояние" tone="success">
+        <p>
+          Общее подтверждение использует тот же каркас и семантический цвет.
+        </p>
+      </MessageState>
+      <MessageState title="Предупреждение" tone="warning">
+        <p>Состояние сообщает об ограничении, но не блокирует весь сценарий.</p>
+      </MessageState>
+      <MessageState title="Состояние ошибки" tone="error">
+        <p>Ошибка остаётся заметной в светлой и тёмной теме.</p>
+      </MessageState>
+    </div>
+
+    <div class="preview-progress-grid" data-preview-progress-states>
+      <ProgressIndicator
+        label="Маршрут не начат"
+        value={0}
+        max={5}
+        valueLabel="0 из 5"
+      />
+      <ProgressIndicator
+        label="Просмотренные детали"
+        value={2}
+        max={5}
+        valueLabel="2 из 5"
+      />
+      <ProgressIndicator
+        label="Маршрут завершён"
+        value={5}
+        max={5}
+        valueLabel="5 из 5"
+      />
+    </div>
   </section>
 
-  <section class="preview-section">
+  <section
+    id="preview-media"
+    class="preview-section"
+    aria-labelledby="preview-media-title"
+  >
     <SectionHeader
+      id="preview-media-title"
       level="h2"
-      title="Картина и карточка запуска"
+      title="Рама и стабильная геометрия"
+      description="Одинаковый landscape-slot принимает альбомный и портретный исходник без изменения внешней высоты; отдельный portrait-slot показывает вертикальную пропорцию."
+    />
+
+    <div class="preview-media-grid" data-preview-media-grid>
+      {
+        landscapeArtwork && (
+          <div class="preview-media-sample">
+            <FramedArtwork
+              src={getPrimaryImage(landscapeArtwork).src}
+              alt={getPrimaryImage(landscapeArtwork).alt}
+              caption="Landscape source · landscape slot · contain"
+              fit="contain"
+              slotRatio="landscape"
+            />
+          </div>
+        )
+      }
+      {
+        portraitArtwork && (
+          <div class="preview-media-sample">
+            <FramedArtwork
+              src={getPrimaryImage(portraitArtwork).src}
+              alt={getPrimaryImage(portraitArtwork).alt}
+              caption="Portrait source · landscape slot · contain"
+              fit="contain"
+              slotRatio="landscape"
+            />
+          </div>
+        )
+      }
+      {
+        portraitArtwork && (
+          <div class="preview-media-sample preview-media-sample--portrait">
+            <FramedArtwork
+              src={getPrimaryImage(portraitArtwork).src}
+              alt={getPrimaryImage(portraitArtwork).alt}
+              caption="Portrait source · portrait slot · contain"
+              fit="contain"
+              slotRatio="portrait"
+            />
+          </div>
+        )
+      }
+    </div>
+
+    <SectionHeader
+      level="h3"
+      title="Карточка запуска"
       description="Рама, метаданные и CTA собираются из независимых компонентов."
     />
     <InteractiveLaunchCard
@@ -104,9 +222,44 @@ const zoomPreviewDescription = joinText(
     </InteractiveLaunchCard>
   </section>
 
-  <section class="preview-section preview-grid">
+  <section
+    id="preview-catalog"
+    class="preview-section"
+    aria-labelledby="preview-catalog-title"
+  >
+    <SectionHeader
+      id="preview-catalog-title"
+      level="h2"
+      title="Реальные карточки каталога"
+      description="Foundation проверяется на production-компоненте с доступной работой, ценой по запросу и резервом."
+    />
+    <ul class="preview-catalog-grid" aria-label="Примеры карточек каталога">
+      {
+        catalogArtworks.map((artwork) => (
+          <li>
+            <ArtworkCatalogCard
+              artwork={artwork}
+              statusLabel={artworkAvailabilityLabels[artwork.availability]}
+              priceLabel={formatPrice(artwork)}
+            />
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section
+    id="preview-form-dialog"
+    class="preview-section preview-grid"
+    aria-labelledby="preview-form-title"
+  >
     <div>
-      <SectionHeader level="h2" title="Поля формы" />
+      <SectionHeader
+        id="preview-form-title"
+        level="h2"
+        title="Поля формы"
+        description="Default, select, invalid и disabled состояния общего FormField."
+      />
       <form class="preview-form">
         <FormField
           id="preview-name"
@@ -134,6 +287,13 @@ const zoomPreviewDescription = joinText(
           error="Введите корректный адрес электронной почты."
           required
         />
+        <FormField
+          id="preview-disabled-note"
+          label="Комментарий недоступен"
+          control="textarea"
+          value="Поле заблокировано в текущем состоянии сценария."
+          disabled
+        />
       </form>
     </div>
 
@@ -141,8 +301,25 @@ const zoomPreviewDescription = joinText(
       <SectionHeader
         level="h2"
         title="Dialog"
-        description="Общий modal-механизм с title, description, Escape, trap focus и возвратом фокуса к кнопке открытия."
+        description="Видимый preview показывает surface, а кнопка ниже открывает реальный modal с Escape, trap focus и возвратом фокуса."
       />
+
+      <DialogShell
+        id="preview-dialog-surface"
+        title="Видимое состояние dialog"
+        description="Статический режим нужен только для визуальной проверки оболочки в обеих темах."
+        preview
+        open
+      >
+        <p>
+          Содержимое и actions остаются внутри общего семантического каркаса.
+        </p>
+        <div slot="actions" class="preview-row">
+          <Action size="small">Основное действие</Action>
+          <Action size="small" variant="secondary">Вторичное</Action>
+        </div>
+      </DialogShell>
+
       <Action type="button" data-preview-dialog-open> Открыть dialog </Action>
 
       <DialogShell
@@ -219,12 +396,69 @@ const zoomPreviewDescription = joinText(
     gap: var(--space-5);
     padding-block: var(--space-6);
     border-top: 1px solid var(--color-border);
+    scroll-margin-top: var(--header-scroll-offset);
   }
 
   .preview-row {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
+  }
+
+  .preview-example-group {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .preview-example-group h3 {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-300);
+  }
+
+  .preview-state-grid,
+  .preview-progress-grid,
+  .preview-media-grid,
+  .preview-catalog-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .preview-state-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  }
+
+  .preview-progress-grid {
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-surface);
+  }
+
+  .preview-media-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    align-items: start;
+  }
+
+  .preview-media-sample {
+    min-width: 0;
+  }
+
+  .preview-media-sample--portrait {
+    width: min(100%, 22rem);
+    justify-self: center;
+  }
+
+  .preview-catalog-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .preview-catalog-grid li {
+    min-width: 0;
   }
 
   .preview-grid {
