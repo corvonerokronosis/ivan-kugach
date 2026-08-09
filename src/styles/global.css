@@ -37,6 +37,12 @@ body {
   overflow-wrap: break-word;
 }
 
+html[data-mobile-menu-open],
+html[data-mobile-menu-open] body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 ::selection {
   color: var(--color-text-on-accent);
   background: var(--color-accent);
