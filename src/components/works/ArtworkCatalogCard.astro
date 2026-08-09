@@ -35,7 +35,8 @@ const actionUrl = `/works/?work=${encodeURIComponent(artwork.id)}#work-inquiry`;
       src={primaryImage.src}
       alt={primaryImage.alt}
       caption={artwork.series?.title}
-      fit="cover"
+      fit="contain"
+      slotRatio="landscape"
     />
   </a>
 

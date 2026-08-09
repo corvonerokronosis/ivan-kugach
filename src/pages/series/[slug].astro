@@ -89,9 +89,10 @@ function formatPrice(artwork: ArtworkSummary): string {
           src={series.cover.src}
           alt={series.cover.alt}
           caption={series.cover.caption}
-          fit="cover"
+          fit="contain"
           priority
           variant="hero"
+          slotRatio="landscape"
         />
       ) : (
         <div class="series-overview__placeholder" aria-hidden="true">

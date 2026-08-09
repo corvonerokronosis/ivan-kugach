@@ -38,7 +38,8 @@ const artworkByKey = {
           caption="Работа из текущей коллекции проекта"
           priority
           variant="hero"
-          aspectRatio="4 / 3"
+          fit="contain"
+          slotRatio="landscape"
         />
       </div>
     </section>
@@ -96,7 +97,8 @@ const artworkByKey = {
                 src={artworkByKey[series.artworkKey]}
                 alt=""
                 caption="Изображение из текущей коллекции проекта"
-                aspectRatio="4 / 3"
+                fit="contain"
+                slotRatio="landscape"
               />
               <div class="artist-series-card__copy">
                 <h3>{series.title}</h3>

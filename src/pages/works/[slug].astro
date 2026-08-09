@@ -72,10 +72,10 @@ const structuredData = createArtworkStructuredData({
         src={primaryImage.src}
         alt={primaryImage.alt}
         caption={primaryImage.caption ?? artwork.series?.title}
-        fit="cover"
+        fit="contain"
         priority
         variant="hero"
-        aspectRatio="1 / 1"
+        slotRatio="square"
       />
     </div>
 
@@ -156,7 +156,7 @@ const structuredData = createArtworkStructuredData({
                 image.caption ?? (index === 0 ? "Основной вид" : undefined)
               }
               fit={image.role === "detail" ? "cover" : "contain"}
-              aspectRatio="4 / 3"
+              slotRatio="landscape"
             />
           </li>
         ))

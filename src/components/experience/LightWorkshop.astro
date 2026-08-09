@@ -114,7 +114,12 @@ const lightStateCountStyle = `--light-state-count: ${states.length}`;
               aria-label={`Выбрать ${work.title}`}
               aria-pressed={work.id === defaults.workId}
             >
-              <OptimizedImage src={work.image.src} alt="" variant="thumbnail" />
+              <OptimizedImage
+                src={work.image.src}
+                alt=""
+                variant="thumbnail"
+                fit="cover"
+              />
               <span>{work.title}</span>
             </button>
           ))
