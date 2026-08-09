@@ -36,8 +36,8 @@ const Heading = level;
 <style>
   .section-header {
     display: grid;
-    gap: var(--space-3);
-    max-width: 48rem;
+    gap: var(--space-2);
+    max-width: var(--measure-copy);
   }
 
   .section-header--center {
@@ -51,17 +51,19 @@ const Heading = level;
     color: var(--color-accent-strong);
     font-family: var(--font-family-ui);
     font-size: var(--font-size-100);
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-semibold);
     letter-spacing: var(--letter-spacing-label);
     text-transform: uppercase;
   }
 
   .section-header__title {
+    max-width: var(--measure-heading);
     margin: 0;
     font-size: var(--font-size-heading-md);
   }
 
   .section-header__description {
+    max-width: var(--measure-copy);
     margin: 0;
     color: var(--color-text-muted);
     font-size: var(--font-size-400);

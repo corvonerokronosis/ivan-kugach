@@ -116,7 +116,6 @@ import { withBasePath } from "../utils/site-path";
     display: grid;
     gap: clamp(var(--space-8), 6vw, var(--space-13));
     align-items: center;
-    min-height: min(44rem, calc(100vh - 14rem));
     overflow: hidden;
     padding: clamp(var(--space-6), 6vw, 4.5rem);
     border: 0.5rem solid var(--color-wood-strong);
@@ -170,9 +169,9 @@ import { withBasePath } from "../utils/site-path";
   .not-found h1 {
     max-width: 12ch;
     margin: 0;
-    font-size: clamp(2.75rem, 7vw, 5.25rem);
+    font-size: var(--font-size-heading-xl);
     font-weight: var(--font-weight-semibold);
-    line-height: 0.94;
+    line-height: var(--line-height-heading);
   }
 
   .not-found__lead {
@@ -321,10 +320,6 @@ import { withBasePath } from "../utils/site-path";
       padding: var(--space-5);
       border-width: 0.375rem;
       border-radius: var(--radius-lg);
-    }
-
-    .not-found h1 {
-      font-size: clamp(2.55rem, 13vw, 3.55rem);
     }
 
     .not-found__actions,
