@@ -1,8 +1,12 @@
 ---
 import colorArtwork from "../assets/images/interactive/color-reveal/kugach-picture-1.png";
 import detailsArtwork from "../assets/images/interactive/details/kugach-picture-2.png";
+import artistArtwork from "../assets/images/interactive/light/dor-6263.jpg";
+import heroArtwork from "../assets/images/works/dor-3571.jpg";
 import salesArtwork from "../assets/images/works/dor-3518.jpg";
 import lightArtwork from "../assets/images/interactive/light/dor-6258.jpg";
+import worksPortraitArtwork from "../assets/images/works/dsc-8599.jpg";
+import worksSmallArtwork from "../assets/images/works/dsc-8578.jpg";
 import Action from "../components/common/Action.astro";
 import FramedArtwork from "../components/common/FramedArtwork.astro";
 import InteractiveLaunchCard from "../components/common/InteractiveLaunchCard.astro";
@@ -47,14 +51,6 @@ const catalogDescription = joinText(
         рассказывает о живописи Кугача, задаёт музейное настроение и даёт
         понятную точку входа в опыт.
       </p>
-      <span class="home-hero__brush" aria-hidden="true"></span>
-    </div>
-
-    <div class="home-hero__aside">
-      <blockquote>
-        Мир Кугача держится на тепле повседневности: в его работах важны свет,
-        человеческое присутствие и ощущение живой, узнаваемой среды.
-      </blockquote>
       <div class="home-hero__actions">
         <Action href={introRoute.pathname}>Перейти к интерактиву</Action>
         <Action href="#interactive-entries" variant="secondary">
@@ -62,13 +58,27 @@ const catalogDescription = joinText(
         </Action>
         <Action href="/works/" variant="quiet">Работы для покупки</Action>
       </div>
-      <div class="home-hero__palette" aria-hidden="true">
-        <span class="home-hero__palette-hole"></span>
-        <span class="home-hero__paint home-hero__paint--red"></span>
-        <span class="home-hero__paint home-hero__paint--blue"></span>
-        <span class="home-hero__paint home-hero__paint--green"></span>
-        <span class="home-hero__paint home-hero__paint--yellow"></span>
+      <span class="home-hero__brush" aria-hidden="true"></span>
+    </div>
+
+    <div class="home-hero__visual">
+      <div class="home-easel">
+        <FramedArtwork
+          src={heroArtwork.src}
+          alt="Залитый светом лес на картине Ивана Кугача"
+          loading="eager"
+          priority
+          variant="feature"
+          fit="cover"
+          slotRatio="landscape"
+        />
+        <span class="home-easel__mast" aria-hidden="true"></span>
+        <span class="home-easel__ledge" aria-hidden="true"></span>
       </div>
+      <blockquote>
+        Мир Кугача держится на тепле повседневности: в его работах важны свет,
+        человеческое присутствие и ощущение живой, узнаваемой среды.
+      </blockquote>
     </div>
   </section>
 
@@ -77,9 +87,9 @@ const catalogDescription = joinText(
     class="home-launch-grid"
     aria-labelledby="interactive-entries-title"
   >
-    <h2 id="interactive-entries-title" class="visually-hidden">
-      Интерактивы и каталог
-    </h2>
+    <header class="home-section-heading">
+      <h2 id="interactive-entries-title">Интерактивы и каталог</h2>
+    </header>
 
     <InteractiveLaunchCard
       headingLevel="h3"
@@ -158,20 +168,33 @@ const catalogDescription = joinText(
 
     <InteractiveLaunchCard
       headingLevel="h3"
-      layout="stacked"
+      layout="split"
       title="Работы для покупки"
       description={catalogDescription}
       href="/works/"
       actionLabel="Открыть каталог"
     >
-      <FramedArtwork
-        slot="media"
-        src={salesArtwork.src}
-        alt="Берёзовый лес на работе из каталога Ивана Кугача"
-        caption="Спокойная страница с каталогом, статусами, ценами и заявкой."
-        fit="contain"
-        slotRatio="near-square"
-      />
+      <div slot="media" class="home-works-gallery">
+        <FramedArtwork
+          src={salesArtwork.src}
+          alt="Берёзовый лес на работе из каталога Ивана Кугача"
+          caption="Спокойная страница с каталогом, статусами, ценами и заявкой."
+          fit="contain"
+          slotRatio="landscape"
+        />
+        <FramedArtwork
+          src={worksPortraitArtwork.src}
+          alt="Работа Ивана Кугача с птицами"
+          fit="contain"
+          slotRatio="portrait"
+        />
+        <FramedArtwork
+          src={worksSmallArtwork.src}
+          alt="Кирпичная стена с окном на работе Ивана Кугача"
+          fit="contain"
+          slotRatio="landscape"
+        />
+      </div>
       <div slot="details">
         <strong>Покупка через заявку</strong>
         <p>
@@ -182,12 +205,18 @@ const catalogDescription = joinText(
     </InteractiveLaunchCard>
   </section>
 
-  <section class="home-facts" aria-labelledby="home-facts-title">
-    <h2 id="home-facts-title" class="visually-hidden">
-      Краткое описание проекта
-    </h2>
-    <article aria-labelledby="home-fact-artist-title">
-      <h3 id="home-fact-artist-title">О художнике</h3>
+  <section class="home-artist" aria-labelledby="home-artist-title">
+    <div class="home-artist__media">
+      <FramedArtwork
+        src={artistArtwork.src}
+        alt="Пейзаж Ивана Кугача с рекой и деревьями"
+        fit="cover"
+        slotRatio="landscape"
+      />
+    </div>
+
+    <div class="home-artist__copy studio-reading-plane">
+      <h2 id="home-artist-title">О художнике</h2>
       <p>
         Иван Кугач известен вниманием к тихим сюжетам, человеческому масштабу и
         мягкой живописной атмосфере.
@@ -195,60 +224,68 @@ const catalogDescription = joinText(
       <Action href="/artist/" variant="quiet" size="small">
         Узнать о художнике
       </Action>
-    </article>
-    <article aria-labelledby="home-fact-prototype-title">
-      <h3 id="home-fact-prototype-title">О прототипе</h3>
-      <p>
-        Пользователь не просто смотрит на произведение, а постепенно раскрывает
-        его цвет, словно участвуя в деликатной реставрации.
-      </p>
-    </article>
-    <article aria-labelledby="home-fact-entry-title">
-      <h3 id="home-fact-entry-title">О входе</h3>
-      <p>
-        Каждый сценарий имеет самостоятельный адрес, поэтому его можно открыть
-        напрямую и сохранить как обычную ссылку.
-      </p>
-    </article>
+    </div>
+
+    <div class="home-artist__notes" aria-label="Краткое описание проекта">
+      <article aria-labelledby="home-fact-prototype-title">
+        <h3 id="home-fact-prototype-title">О прототипе</h3>
+        <p>
+          Пользователь не просто смотрит на произведение, а постепенно
+          раскрывает его цвет, словно участвуя в деликатной реставрации.
+        </p>
+      </article>
+      <article aria-labelledby="home-fact-entry-title">
+        <h3 id="home-fact-entry-title">О входе</h3>
+        <p>
+          Каждый сценарий имеет самостоятельный адрес, поэтому его можно открыть
+          напрямую и сохранить как обычную ссылку.
+        </p>
+      </article>
+    </div>
   </section>
 </BaseLayout>
 
 <style>
+  :global(body.has-studio-decoration .studio-decoration) {
+    display: none;
+  }
+
   .home-hero {
     position: relative;
     display: grid;
-    gap: var(--space-7);
-    overflow: hidden;
-    padding: clamp(var(--space-6), 5vw, var(--space-13));
-    border: 0.5rem solid var(--color-wood-strong);
-    border-radius: var(--radius-xl);
-    color: var(--color-text-on-light);
+    min-height: min(42rem, calc(100dvh - 8.5rem));
+    gap: clamp(var(--space-7), 5vw, var(--space-12));
+    align-items: center;
+    overflow: clip;
+    padding: clamp(var(--space-6), 5vw, var(--space-12));
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-2xl);
+    color: var(--color-text);
     background:
       radial-gradient(
-        circle at 85% 78%,
-        rgb(215 163 58 / 18%),
-        transparent 24%
+        circle at 76% 24%,
+        var(--color-lamp-glow),
+        transparent 34%
       ),
-      linear-gradient(140deg, rgb(255 252 246 / 94%), rgb(242 226 199 / 90%));
-    box-shadow:
-      inset 0 0 0 0.25rem rgb(235 199 129 / 28%),
-      var(--shadow-raised);
+      linear-gradient(125deg, var(--color-surface), var(--color-surface-strong));
+    box-shadow: var(--shadow-raised);
   }
 
   .home-hero::before {
     position: absolute;
-    inset: 0;
+    inset: auto 0 0;
+    height: 29%;
     background: linear-gradient(
-      120deg,
-      rgb(255 255 255 / 26%),
-      transparent 42%
+      180deg,
+      transparent,
+      color-mix(in srgb, var(--color-wood) 14%, transparent)
     );
     pointer-events: none;
     content: "";
   }
 
   .home-hero__copy,
-  .home-hero__aside {
+  .home-hero__visual {
     position: relative;
     z-index: 1;
   }
@@ -257,11 +294,11 @@ const catalogDescription = joinText(
     display: grid;
     align-content: start;
     justify-items: start;
-    gap: var(--space-4);
+    gap: var(--space-5);
   }
 
   .home-hero h1 {
-    max-width: 11ch;
+    max-width: 10ch;
     margin: 0;
     font-size: var(--font-size-heading-xl);
     font-weight: var(--font-weight-semibold);
@@ -269,42 +306,112 @@ const catalogDescription = joinText(
   }
 
   .home-hero__lead {
+    max-width: 39rem;
     margin: 0;
-    color: var(--color-text-muted-on-light);
-    font-size: clamp(var(--font-size-400), 2.2vw, var(--font-size-600));
+    color: var(--color-text-muted);
+    font-size: clamp(var(--font-size-300), 1.7vw, var(--font-size-500));
     line-height: 1.5;
   }
 
   .home-hero__brush {
-    width: min(11rem, 55%);
-    height: 0.75rem;
+    width: min(9rem, 45%);
+    height: 0.45rem;
     border-radius: var(--radius-pill);
     background:
       linear-gradient(90deg, var(--color-wood) 0 18%, transparent 18%),
-      linear-gradient(
-        90deg,
-        var(--color-text-muted-on-light),
-        var(--color-wood)
-      );
+      linear-gradient(90deg, var(--color-accent), var(--color-wood));
     transform: rotate(-3deg);
   }
 
-  .home-hero__aside {
+  .home-hero__visual {
     display: grid;
-    align-content: center;
-    gap: var(--space-4);
+    min-width: 0;
+    align-items: end;
+    padding: 0 clamp(var(--space-2), 2vw, var(--space-5)) var(--space-7);
+  }
+
+  .home-easel {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 34rem);
+    justify-self: center;
+    padding: var(--space-5) var(--space-5) var(--space-7);
+  }
+
+  .home-easel::before,
+  .home-easel::after,
+  .home-easel__mast,
+  .home-easel__ledge {
+    position: absolute;
+    display: block;
+    background: linear-gradient(
+      90deg,
+      var(--color-wood-strong),
+      var(--color-wood-highlight) 42%,
+      var(--color-wood-strong)
+    );
+    box-shadow: var(--shadow-frame);
+    content: "";
+  }
+
+  .home-easel::before,
+  .home-easel::after {
+    top: 56%;
+    bottom: 0;
+    z-index: -2;
+    width: 0.9rem;
+    transform-origin: top;
+  }
+
+  .home-easel::before {
+    left: 21%;
+    transform: rotate(8deg);
+  }
+
+  .home-easel::after {
+    right: 21%;
+    transform: rotate(-8deg);
+  }
+
+  .home-easel__mast {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    z-index: -2;
+    width: 0.875rem;
+    transform: translateX(-50%);
+  }
+
+  .home-easel__ledge {
+    right: 1%;
+    bottom: var(--space-5);
+    left: 1%;
+    z-index: 2;
+    height: 0.9rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .home-easel :global(.framed-artwork) {
+    --frame-padding: clamp(0.35rem, 0.8vw, 0.6rem);
+    --frame-mat-padding: clamp(0.25rem, 0.7vw, 0.5rem);
+    --frame-border-width: clamp(0.35rem, 0.7vw, 0.55rem);
+
+    transform: rotate(1.2deg);
   }
 
   .home-hero blockquote {
-    margin: 0;
-    padding: var(--space-5);
+    position: relative;
+    z-index: 3;
+    width: min(25rem, 88%);
+    margin: clamp(-4.5rem, -6vw, -3rem) 0 0 auto;
+    padding: var(--space-4) var(--space-5);
     border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     color: var(--color-text-muted-on-dark);
     background: var(--color-surface-strong);
     box-shadow: var(--shadow-surface);
-    font-size: var(--font-size-400);
-    line-height: 1.6;
+    font-size: var(--font-size-300);
+    line-height: 1.55;
   }
 
   .home-hero__actions {
@@ -313,83 +420,151 @@ const catalogDescription = joinText(
     gap: var(--space-3);
   }
 
-  .home-hero__palette {
-    position: relative;
-    justify-self: end;
-    width: 8.75rem;
-    height: 6.5rem;
-    border-radius: 60% 45% 55% 48%;
-    background: #cfa46c;
-    box-shadow: var(--shadow-surface);
-    transform: rotate(-8deg);
-  }
-
-  .home-hero__palette-hole,
-  .home-hero__paint {
-    position: absolute;
-    width: 1.25rem;
-    height: 1.25rem;
-    border-radius: var(--radius-round);
-  }
-
-  .home-hero__palette-hole {
-    top: 1.25rem;
-    left: 1.35rem;
-    border: 0.3rem solid rgb(62 40 27 / 32%);
-    background: transparent;
-  }
-
-  .home-hero__paint--red {
-    top: 1.1rem;
-    right: 1.65rem;
-    background: var(--palette-paint-red);
-  }
-
-  .home-hero__paint--blue {
-    right: 1.9rem;
-    bottom: 1.2rem;
-    background: var(--palette-paint-blue);
-  }
-
-  .home-hero__paint--green {
-    right: 0.75rem;
-    bottom: 2.1rem;
-    width: 1rem;
-    height: 1rem;
-    background: var(--palette-paint-green);
-  }
-
-  .home-hero__paint--yellow {
-    bottom: 1.05rem;
-    left: 2.2rem;
-    width: 1.1rem;
-    height: 1.1rem;
-    background: var(--palette-paint-yellow);
-  }
-
   .home-launch-grid {
     display: grid;
     gap: var(--space-6);
     scroll-margin-top: var(--space-6);
   }
 
-  .home-facts {
-    display: grid;
-    gap: var(--space-4);
+  .home-section-heading {
+    display: flex;
+    grid-column: 1 / -1;
+    align-items: end;
+    justify-content: space-between;
+    padding: var(--space-6) 0 var(--space-2);
+    border-bottom: 1px solid var(--color-border);
   }
 
-  .home-facts article {
+  .home-section-heading h2 {
+    max-width: 13ch;
+    margin: 0;
+    font-size: var(--font-size-heading-lg);
+  }
+
+  .home-works-gallery {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    min-height: 28rem;
+    align-items: start;
+    padding: var(--space-3) var(--space-3) var(--space-7);
+    isolation: isolate;
+  }
+
+  .home-works-gallery::before {
+    position: absolute;
+    inset: 12% 3% 6%;
+    z-index: -1;
+    border-radius: 48% 52% 44% 56%;
+    background: color-mix(in srgb, var(--color-lamp) 14%, transparent);
+    filter: blur(1rem);
+    content: "";
+  }
+
+  .home-works-gallery :global(.framed-artwork) {
+    min-width: 0;
+  }
+
+  .home-works-gallery :global(.framed-artwork:nth-child(1)) {
+    grid-column: 1 / 7;
+    grid-row: 1 / 8;
+    width: 92%;
+    transform: rotate(-1.5deg);
+  }
+
+  .home-works-gallery :global(.framed-artwork:nth-child(2)) {
+    z-index: 2;
+    grid-column: 6 / 9;
+    grid-row: 2 / 7;
+    width: 100%;
+    transform: rotate(2.5deg);
+  }
+
+  .home-works-gallery :global(.framed-artwork:nth-child(3)) {
+    z-index: 1;
+    grid-column: 2 / 6;
+    grid-row: 6 / 10;
+    width: 88%;
+    justify-self: end;
+    transform: rotate(1deg);
+  }
+
+  .home-works-gallery :global(figcaption) {
+    max-width: 34rem;
+  }
+
+  .home-artist {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: end;
+    gap: var(--space-6) 0;
+    padding: var(--space-8) 0 var(--space-4);
+    isolation: isolate;
+  }
+
+  .home-artist::before {
+    position: absolute;
+    inset: 20% 3% 8% 18%;
+    z-index: -1;
+    background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+    clip-path: polygon(2% 4%, 98% 0, 100% 94%, 0 100%);
+    content: "";
+  }
+
+  .home-artist__media {
+    grid-column: 1 / 10;
+    grid-row: 1;
+    min-width: 0;
+    padding: var(--space-3) var(--space-3) var(--space-8);
+  }
+
+  .home-artist__media :global(.framed-artwork) {
+    transform: rotate(-1deg);
+  }
+
+  .home-artist__copy {
+    --framed-artwork-caption-color: var(--color-text-muted);
+
+    display: grid;
+    z-index: 2;
+    grid-column: 7 / 13;
+    grid-row: 1;
+    gap: var(--space-4);
+    margin-bottom: var(--space-3);
+    padding: clamp(var(--space-6), 4vw, var(--space-10));
+  }
+
+  .home-artist__copy h2 {
+    max-width: 9ch;
+    margin: 0;
+    font-size: var(--font-size-heading-lg);
+  }
+
+  .home-artist__copy p {
+    max-width: 40ch;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-400);
+  }
+
+  .home-artist__notes {
+    display: grid;
+    grid-column: 2 / 12;
+    grid-row: 2;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+
+  .home-artist__notes article {
     display: grid;
     align-content: start;
     gap: var(--space-3);
-    padding: var(--space-5);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-surface);
+    padding: var(--space-4) var(--space-2) 0;
+    border-top: 1px solid var(--color-border);
   }
 
-  .home-facts h3 {
+  .home-artist__notes h3 {
     color: var(--color-text-muted);
     font-family: var(--font-family-ui);
     font-size: var(--font-size-100);
@@ -397,13 +572,13 @@ const catalogDescription = joinText(
     text-transform: uppercase;
   }
 
-  .home-facts p {
+  .home-artist__notes p {
     margin: 0;
   }
 
   @media (min-width: 56rem) {
     .home-hero {
-      grid-template-columns: minmax(0, 1.2fr) minmax(19rem, 0.8fr);
+      grid-template-columns: minmax(20rem, 0.88fr) minmax(25rem, 1.12fr);
       align-items: center;
     }
 
@@ -411,15 +586,27 @@ const catalogDescription = joinText(
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .home-facts {
+    .home-launch-grid > :global(.launch-card:last-child) {
+      grid-column: 1 / -1;
+      grid-template-columns: minmax(0, 1.3fr) minmax(18rem, 0.7fr);
+      align-items: center;
+    }
+  }
+
+  @media (min-width: 72rem) {
+    .home-launch-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .home-launch-grid > :global(.launch-card:last-child) {
+      grid-column: 1 / -1;
     }
   }
 
   @media (max-width: 45rem) {
     .home-hero {
+      min-height: auto;
       padding: var(--space-5);
-      border-width: 0.375rem;
       border-radius: var(--radius-lg);
     }
 
@@ -427,12 +614,52 @@ const catalogDescription = joinText(
       width: 100%;
     }
 
-    .home-hero__palette {
-      position: absolute;
-      right: -1rem;
-      bottom: -1rem;
-      opacity: 0.4;
-      transform: scale(0.76) rotate(-8deg);
+    .home-hero__visual {
+      padding: 0;
+    }
+
+    .home-easel {
+      padding-inline: var(--space-3);
+    }
+
+    .home-hero blockquote {
+      width: calc(100% - var(--space-4));
+      margin-top: -2rem;
+    }
+
+    .home-section-heading {
+      padding-top: var(--space-4);
+    }
+
+    .home-works-gallery {
+      min-height: 22rem;
+      padding-inline: 0;
+    }
+
+    .home-artist {
+      display: block;
+      padding-top: var(--space-5);
+    }
+
+    .home-artist::before {
+      inset: 24% 0 4% var(--space-4);
+    }
+
+    .home-artist__media {
+      padding: 0 var(--space-3) var(--space-6) 0;
+    }
+
+    .home-artist__copy {
+      position: relative;
+      width: calc(100% - var(--space-4));
+      margin: -3rem 0 0 auto;
+      padding: var(--space-6);
+    }
+
+    .home-artist__notes {
+      grid-template-columns: 1fr;
+      margin-top: var(--space-6);
+      gap: var(--space-5);
     }
   }
 </style>

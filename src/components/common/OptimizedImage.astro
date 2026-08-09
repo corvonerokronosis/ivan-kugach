@@ -2,7 +2,7 @@
 import { Picture } from "astro:assets";
 import { getProductionImageAsset } from "../../utils/image-assets";
 
-type ImageVariant = "hero" | "thumbnail" | "detail" | "interactive";
+type ImageVariant = "hero" | "feature" | "thumbnail" | "detail" | "interactive";
 type ImageFit = "cover" | "contain";
 
 interface Props {
@@ -20,6 +20,10 @@ const variantProfiles: Record<
   ImageVariant,
   { widths: number[]; sizes: string }
 > = {
+  feature: {
+    widths: [320, 480, 640],
+    sizes: "(min-width: 56rem) 34rem, calc(100vw - 4rem)",
+  },
   hero: {
     widths: [480, 768, 1024, 1440, 1920],
     sizes: "(min-width: 72rem) 70rem, 100vw",
