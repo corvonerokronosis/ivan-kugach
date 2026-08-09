@@ -2,6 +2,7 @@
 import DialogShell from "../common/DialogShell.astro";
 import { getHotspots } from "../../data/repository";
 import type { Hotspot } from "../../types/hotspot";
+import Action from "../common/Action.astro";
 import OptimizedImage from "../common/OptimizedImage.astro";
 
 const hotspots = getHotspots();
@@ -66,11 +67,22 @@ function getHotspotPositionStyle(hotspot: Hotspot): string {
   </div>
 
   <div class="zoom-preview__actions">
-    <button type="button" data-zoom-pan-in>Приблизить</button>
-    <button type="button" data-zoom-pan-out>Отдалить</button>
-    <button type="button" data-zoom-pan-reset>Сбросить</button>
-    <button type="button" data-zoom-pan-remount>Перезапустить стенд</button>
-    <button type="button" data-zoom-pan-destroy>Отключить стенд</button>
+    <Action type="button" size="small" data-zoom-pan-in>Приблизить</Action>
+    <Action type="button" size="small" data-zoom-pan-out>Отдалить</Action>
+    <Action type="button" size="small" variant="secondary" data-zoom-pan-reset>
+      Сбросить
+    </Action>
+    <Action
+      type="button"
+      size="small"
+      variant="secondary"
+      data-zoom-pan-remount
+    >
+      Перезапустить стенд
+    </Action>
+    <Action type="button" size="small" variant="quiet" data-zoom-pan-destroy>
+      Отключить стенд
+    </Action>
   </div>
 
   <DialogShell
@@ -82,7 +94,7 @@ function getHotspotPositionStyle(hotspot: Hotspot): string {
     <h3 data-hotspot-dialog-title></h3>
     <p data-hotspot-dialog-text></p>
     <div slot="actions">
-      <button type="button" data-hotspot-dialog-close>Закрыть</button>
+      <Action type="button" data-hotspot-dialog-close>Закрыть</Action>
     </div>
   </DialogShell>
 </section>
@@ -173,23 +185,6 @@ function getHotspotPositionStyle(hotspot: Hotspot): string {
     font-family: var(--font-family-ui);
   }
 
-  .zoom-preview__actions button {
-    min-height: 2.5rem;
-    padding: var(--space-2) var(--space-4);
-    border: 1px solid rgb(255 255 255 / 32%);
-    border-radius: var(--radius-pill);
-    color: #fff;
-    background: var(--color-wood-strong);
-    font-family: var(--font-family-ui);
-    font-weight: var(--font-weight-semibold);
-    cursor: pointer;
-  }
-
-  .zoom-preview__actions button:hover:not(:disabled),
-  .zoom-preview__actions button:focus-visible {
-    background: var(--color-accent-strong);
-  }
-
   .zoom-preview__dialog-label {
     margin: 0 0 var(--space-2);
     color: var(--color-accent-strong);
@@ -203,24 +198,5 @@ function getHotspotPositionStyle(hotspot: Hotspot): string {
     margin: 0 0 var(--space-3);
     color: var(--color-text);
     font-size: var(--font-size-heading-sm);
-  }
-
-  .zoom-preview :global(.dialog-shell__actions button) {
-    min-height: 2.5rem;
-    padding: var(--space-2) var(--space-4);
-    border: 1px solid transparent;
-    border-radius: var(--radius-pill);
-    color: #fff;
-    background: var(--color-accent-strong);
-    font-family: var(--font-family-ui);
-    font-weight: var(--font-weight-semibold);
-    cursor: pointer;
-  }
-
-  .zoom-preview__actions button:disabled {
-    color: rgb(255 255 255 / 72%);
-    background: rgb(47 36 25 / 54%);
-    cursor: not-allowed;
-    opacity: 1;
   }
 </style>

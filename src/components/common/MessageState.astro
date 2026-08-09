@@ -26,15 +26,20 @@ const role = tone === "error" ? "alert" : live === "off" ? undefined : "status";
     gap: var(--space-1);
     max-width: 44rem;
     padding: var(--space-4) var(--space-5);
-    border: 1px solid var(--message-color);
+    border: 1px solid color-mix(in srgb, var(--message-color) 46%, transparent);
     border-left-width: 0.3rem;
-    border-radius: var(--radius-lg);
+    border-left-color: var(--message-color);
+    border-radius: var(--radius-md);
     color: var(--color-text);
-    background: var(--color-surface-muted);
+    background: color-mix(
+      in srgb,
+      var(--message-color) 7%,
+      var(--color-surface-muted)
+    );
   }
 
   .message-state--info {
-    --message-color: var(--palette-paint-blue);
+    --message-color: var(--color-accent-strong);
   }
 
   .message-state--success {

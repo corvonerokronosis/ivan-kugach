@@ -1,5 +1,6 @@
 ---
 import artwork from "../../assets/images/interactive/color-reveal/kugach-picture-1.png";
+import Action from "../common/Action.astro";
 import OptimizedImage from "../common/OptimizedImage.astro";
 ---
 
@@ -27,9 +28,15 @@ import OptimizedImage from "../common/OptimizedImage.astro";
   </div>
 
   <div class="reveal-preview__actions">
-    <button type="button" data-reveal-remount>Смонтировать повторно</button>
-    <button type="button" data-reveal-reset>Сбросить</button>
-    <button type="button" data-reveal-destroy>Демонтировать</button>
+    <Action type="button" size="small" data-reveal-remount>
+      Смонтировать повторно
+    </Action>
+    <Action type="button" size="small" variant="secondary" data-reveal-reset>
+      Сбросить
+    </Action>
+    <Action type="button" size="small" variant="quiet" data-reveal-destroy>
+      Демонтировать
+    </Action>
   </div>
 </section>
 
@@ -101,17 +108,5 @@ import OptimizedImage from "../common/OptimizedImage.astro";
   .reveal-preview__status {
     color: var(--color-text-muted);
     font-family: var(--font-family-ui);
-  }
-
-  .reveal-preview__actions button {
-    min-height: 2.5rem;
-    padding: var(--space-2) var(--space-4);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-pill);
-    color: var(--color-text);
-    background: var(--color-surface-strong);
-    font-family: var(--font-family-ui);
-    font-weight: var(--font-weight-semibold);
-    cursor: pointer;
   }
 </style>

@@ -1,6 +1,7 @@
 ---
 import Action from "../common/Action.astro";
 import FramedArtwork from "../common/FramedArtwork.astro";
+import MetaBadge from "../common/MetaBadge.astro";
 import type { ArtworkSummary } from "../../types/artwork";
 import { withBasePath } from "../../utils/site-path";
 
@@ -15,6 +16,12 @@ const primaryImage =
   artwork.images.find((image) => image.role === "primary") ?? artwork.images[0];
 const artworkUrl = withBasePath(`/works/${artwork.slug}/`);
 const isSold = artwork.availability === "sold";
+const statusTone =
+  artwork.availability === "available"
+    ? "success"
+    : artwork.availability === "reserved"
+      ? "warning"
+      : "neutral";
 const actionLabel = isSold
   ? "Узнать о похожих работах"
   : artwork.priceType === "request"
@@ -42,14 +49,9 @@ const actionUrl = `/works/?work=${encodeURIComponent(artwork.id)}#work-inquiry`;
 
   <div class="artwork-catalog-card__body">
     <div class="artwork-catalog-card__meta">
-      <span
-        class:list={[
-          "artwork-catalog-card__status",
-          `artwork-catalog-card__status--${artwork.availability}`,
-        ]}
-      >
+      <MetaBadge tone={statusTone}>
         {statusLabel}
-      </span>
+      </MetaBadge>
       <span>{artwork.year}</span>
     </div>
 
@@ -99,6 +101,14 @@ const actionUrl = `/works/?work=${encodeURIComponent(artwork.id)}#work-inquiry`;
     border-radius: var(--radius-lg);
     background: var(--color-surface);
     box-shadow: var(--shadow-surface);
+    transition:
+      border-color var(--motion-duration-fast) var(--motion-easing-standard),
+      box-shadow var(--motion-duration-fast) var(--motion-easing-standard);
+  }
+
+  .artwork-catalog-card:focus-within {
+    border-color: var(--color-accent);
+    box-shadow: var(--focus-ring-shadow), var(--shadow-surface);
   }
 
   .artwork-catalog-card--sold {
@@ -152,24 +162,6 @@ const actionUrl = `/works/?work=${encodeURIComponent(artwork.id)}#work-inquiry`;
     align-items: center;
     color: var(--color-text-muted);
     font-size: var(--font-size-200);
-  }
-
-  .artwork-catalog-card__status {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.2rem 0.55rem;
-    border-radius: var(--radius-pill);
-    color: var(--color-text);
-    background: var(--color-accent-muted);
-    font-weight: 700;
-  }
-
-  .artwork-catalog-card__status--reserved {
-    background: var(--color-surface-muted);
-  }
-
-  .artwork-catalog-card__status--sold {
-    background: var(--color-muted);
   }
 
   .artwork-catalog-card__facts {

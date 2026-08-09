@@ -15,6 +15,7 @@ const routes = {
   colorReveal: "/experience/color-return/",
   details: "/experience/details/",
   light: "/experience/light/",
+  uiPreview: "/ui-preview/",
 };
 
 if (!existsSync(distDir)) {
@@ -34,6 +35,7 @@ const runtimeErrors = [];
 
 try {
   await smokeContentRoutes();
+  await smokeUiPrimitives();
   await smokeColorReveal();
   await smokeDetailsExplorer();
   await smokeLightWorkshop();
@@ -52,6 +54,47 @@ try {
   await context.close();
   await browser.close();
   await server.close();
+}
+
+async function smokeUiPrimitives() {
+  const page = await newSmokePage();
+
+  await page.goto(toUrl(routes.uiPreview));
+  await assertVisible(
+    page.getByRole("heading", { level: 1, name: "Общие UI-компоненты" }),
+  );
+
+  const disabledAction = page.getByRole("button", {
+    name: "Недоступное действие",
+  });
+  assert(
+    await disabledAction.isDisabled(),
+    "Недоступное Action-действие должно оставаться disabled.",
+  );
+  await assertVisible(page.getByRole("alert"));
+
+  await page.getByRole("button", { name: "Открыть dialog" }).click();
+  await page.locator("#preview-dialog[open]").waitFor();
+  await page.getByRole("button", { name: "Остаться" }).click();
+  await page.locator("#preview-dialog[open]").waitFor({ state: "detached" });
+
+  await page.evaluate(() => {
+    globalThis.document.documentElement.dataset.theme = "dark";
+  });
+  await assertVisible(page.getByText("Успешное состояние"));
+
+  await page.setViewportSize(mobileMediaViewport);
+  const hasHorizontalOverflow = await page.evaluate(
+    () =>
+      globalThis.document.documentElement.scrollWidth >
+      globalThis.window.innerWidth,
+  );
+  assert(
+    !hasHorizontalOverflow,
+    "UI primitives не должны создавать горизонтальный overflow на mobile.",
+  );
+
+  await page.close();
 }
 
 async function smokeContentRoutes() {

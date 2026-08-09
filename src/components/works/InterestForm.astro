@@ -202,10 +202,33 @@ function formatPrice(artwork: ArtworkSummary): string {
     border-radius: var(--radius-md);
     color: var(--color-text);
     background: var(--color-surface-strong);
+    font: inherit;
+    transition:
+      border-color var(--motion-duration-fast) var(--motion-easing-standard),
+      box-shadow var(--motion-duration-fast) var(--motion-easing-standard);
+  }
+
+  .interest-form__field select:hover {
+    border-color: var(--color-border-strong);
+  }
+
+  .interest-form__field select:focus-visible {
+    border-color: var(--color-accent);
+    outline: none;
+    box-shadow: var(--focus-ring-shadow);
   }
 
   .interest-form__field select[aria-invalid="true"] {
     border-color: var(--color-status-danger);
+  }
+
+  .interest-form__field select[aria-invalid="true"]:focus-visible,
+  .interest-form__consent input[aria-invalid="true"]:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 var(--focus-ring-offset) var(--color-surface-strong),
+      0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width))
+        var(--color-status-danger);
   }
 
   .interest-form__consent label {
@@ -219,6 +242,11 @@ function formatPrice(artwork: ArtworkSummary): string {
     height: 1.15rem;
     margin-block-start: 0.15rem;
     accent-color: var(--color-accent-strong);
+  }
+
+  .interest-form__consent input:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring-shadow);
   }
 
   .interest-form__note {
@@ -258,10 +286,20 @@ function formatPrice(artwork: ArtworkSummary): string {
 
   .interest-form__message[data-message-tone="error"] {
     border-color: var(--color-status-danger);
+    background: color-mix(
+      in srgb,
+      var(--color-status-danger) 7%,
+      var(--color-surface-muted)
+    );
   }
 
   .interest-form__message[data-message-tone="prepared"] {
     border-color: var(--color-status-success);
+    background: color-mix(
+      in srgb,
+      var(--color-status-success) 7%,
+      var(--color-surface-muted)
+    );
   }
 
   @media (min-width: 48rem) {
