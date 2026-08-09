@@ -19,6 +19,7 @@
 
 - `src/pages/index.astro` и Astro route `/` — единственная поддерживаемая исходная главная страница.
 - `src/` содержит актуальные Astro-страницы, компоненты, данные, стили, клиентские модули и production-изображения.
+- `src/layouts/BaseLayout.astro` владеет общей оболочкой: статическим header, обязательным footer, подключением глобальной темы и progressive-enhancement мобильного меню. Route-файлы не дублируют эту ответственность.
 - `archive/index_masterskaya.html` — исторический legacy-reference; не участвует в build и production.
 - `src/README.md` фиксирует ответственность директорий и правила именования нового кода.
 - `experiments/` — отдельные визуальные и механические эксперименты.
@@ -71,6 +72,7 @@ rg -n "\.sales-|\.explore-|\.light-|\.narrative-|\.modal" archive/index_mastersk
 ## Работа с документацией
 
 - Используй `docs/README.md` как индекс активных документов.
+- `docs/` намеренно является local-only директорией через `.gitignore`: актуализируй документы в общей рабочей папке, но не добавляй их в Git принудительно без отдельного решения пользователя об изменении этой политики.
 - Не создавай отдельный changelog, одноразовый аудит или новый план, если
   актуальный результат можно зафиксировать в существующем рабочем документе.
 - Завершённую историю оставляй Git; не возвращай удалённые до-Astro документы
@@ -87,14 +89,21 @@ npm.cmd install
 npm.cmd run dev
 npm.cmd run check
 npm.cmd run lint
+npm.cmd run test:unit
 npm.cmd run format
 npm.cmd run format:check
 npm.cmd run build
 npm.cmd run preview
+npm.cmd run test:smoke
+npm.cmd run test:smoke:dist
+npm.cmd run performance:budget
 npm.cmd run verify
 ```
 
-`lint` проверяет новый Astro/TypeScript-код через ESLint. `format` исправляет форматирование нового production-контура и активной документации, а `format:check` только проверяет его.
+`lint` проверяет новый Astro/TypeScript-код через ESLint. `format` исправляет форматирование нового production-контура и активной документации, а `format:check` только проверяет его. Обе команды явно используют `.prettierignore`, поэтому local-only `docs/` проверяется несмотря на правило в `.gitignore`.
+
+`verify` последовательно запускает typecheck, lint, unit-тесты, format-check,
+production build, performance budget и browser smoke по готовому `dist/`.
 
 Архивный legacy HTML, `archive/`, `experiments/`, generated output и временные директории исключены из ESLint и Prettier.
 
