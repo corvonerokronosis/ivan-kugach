@@ -186,6 +186,10 @@
 
 :root {
   /* Shared semantic aliases used by the current component API. */
+  --color-text-on-light: #291d17;
+  --color-text-muted-on-light: #664b3d;
+  --color-text-on-dark: #fff8ed;
+  --color-text-muted-on-dark: #e2caab;
   --color-canvas-top: var(--color-wall-muted);
   --color-canvas-bottom: var(--color-wall-strong);
   --color-muted: var(--color-surface-muted);

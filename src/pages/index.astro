@@ -222,6 +222,7 @@ const catalogDescription = joinText(
     padding: clamp(var(--space-6), 5vw, var(--space-13));
     border: 0.5rem solid var(--color-wood-strong);
     border-radius: var(--radius-xl);
+    color: var(--color-text-on-light);
     background:
       radial-gradient(
         circle at 85% 78%,
@@ -269,7 +270,7 @@ const catalogDescription = joinText(
 
   .home-hero__lead {
     margin: 0;
-    color: var(--color-text-muted);
+    color: var(--color-text-muted-on-light);
     font-size: clamp(var(--font-size-400), 2.2vw, var(--font-size-600));
     line-height: 1.5;
   }
@@ -280,7 +281,11 @@ const catalogDescription = joinText(
     border-radius: var(--radius-pill);
     background:
       linear-gradient(90deg, var(--color-wood) 0 18%, transparent 18%),
-      linear-gradient(90deg, var(--color-text-muted), var(--color-wood));
+      linear-gradient(
+        90deg,
+        var(--color-text-muted-on-light),
+        var(--color-wood)
+      );
     transform: rotate(-3deg);
   }
 
@@ -295,7 +300,7 @@ const catalogDescription = joinText(
     padding: var(--space-5);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-xl);
-    color: var(--color-text-muted);
+    color: var(--color-text-muted-on-dark);
     background: var(--color-surface-strong);
     box-shadow: var(--shadow-surface);
     font-size: var(--font-size-400);

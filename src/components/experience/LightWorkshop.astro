@@ -259,6 +259,7 @@ const lightStateCountStyle = `--light-state-count: ${states.length}`;
     padding: clamp(var(--space-3), 2.3vw, var(--space-6));
     overflow: hidden;
     border-radius: var(--radius-2xl);
+    color: var(--color-text-on-light);
     background:
       radial-gradient(
         circle at top left,
@@ -348,7 +349,7 @@ const lightStateCountStyle = `--light-state-count: ${states.length}`;
     padding: var(--space-3) var(--space-4);
     border: 1px solid rgb(235 207 156 / 28%);
     border-radius: var(--radius-sm);
-    color: var(--color-text-on-accent);
+    color: var(--color-text-on-dark);
     background: rgb(42 27 18 / 84%);
     box-shadow: 0 14px 26px rgb(20 12 7 / 24%);
     font-family: var(--font-family-ui);
@@ -388,7 +389,7 @@ const lightStateCountStyle = `--light-state-count: ${states.length}`;
     padding: var(--space-2);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-sm);
-    color: inherit;
+    color: var(--color-text);
     background: var(--color-surface-muted);
     font: inherit;
     text-align: left;
@@ -424,6 +425,7 @@ const lightStateCountStyle = `--light-state-count: ${states.length}`;
 
   .light-workshop__work[aria-pressed="true"] {
     border-color: var(--color-accent);
+    color: var(--color-text-on-light);
     background: var(--palette-parchment-100);
     box-shadow: inset 0 0 0 1px var(--color-accent-muted);
   }
@@ -437,7 +439,7 @@ const lightStateCountStyle = `--light-state-count: ${states.length}`;
   .light-workshop__control label,
   .light-workshop__progress strong,
   .light-workshop__note-kicker {
-    color: var(--color-text-muted);
+    color: var(--color-text-muted-on-light);
     font-family: var(--font-family-ui);
     font-size: var(--font-size-100);
     font-weight: var(--font-weight-bold);
@@ -462,7 +464,7 @@ const lightStateCountStyle = `--light-state-count: ${states.length}`;
   }
 
   .light-workshop__scale {
-    color: var(--color-text-muted);
+    color: var(--color-text-muted-on-light);
     font-family: var(--font-family-ui);
     font-size: var(--font-size-100);
   }
@@ -479,6 +481,7 @@ const lightStateCountStyle = `--light-state-count: ${states.length}`;
     padding: var(--space-4);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-sm);
+    color: var(--color-text-on-light);
     background: rgb(255 253 248 / 78%);
   }
 
@@ -489,7 +492,11 @@ const lightStateCountStyle = `--light-state-count: ${states.length}`;
   }
 
   .light-workshop__note p,
-  .light-workshop__progress p,
+  .light-workshop__progress p {
+    margin: 0;
+    color: var(--color-text-muted-on-light);
+  }
+
   .light-workshop__instructions {
     margin: 0;
     color: var(--color-text-muted);
