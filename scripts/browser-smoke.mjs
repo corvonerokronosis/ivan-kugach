@@ -8,6 +8,7 @@ const rootDir = process.cwd();
 const distDir = path.join(rootDir, "dist");
 const siteBase = "/ivan-kugach";
 const smokeViewport = { width: 1280, height: 820 };
+const mobileMediaViewport = { width: 390, height: 844 };
 const routes = {
   home: "/",
   catalog: "/works/",
@@ -67,6 +68,11 @@ async function smokeContentRoutes() {
     page.getByRole("heading", { level: 1, name: "Каталог работ" }),
   );
 
+  await assertStableCatalogMedia(page);
+  await page.setViewportSize(mobileMediaViewport);
+  await assertStableCatalogMedia(page);
+  await page.setViewportSize(smokeViewport);
+
   const firstWorkLink = page
     .locator(`a[href^="${siteBase}/works/"]:not([href="${siteBase}/works/"])`)
     .first();
@@ -78,6 +84,7 @@ async function smokeContentRoutes() {
   await firstWorkLink.click();
   await page.waitForURL(toUrl(firstWorkHref));
   await assertVisible(page.getByRole("heading", { level: 1 }).first());
+  await assertStableWorkMedia(page);
 
   await page.getByRole("button", { name: "Подготовить заявку" }).click();
   await assertVisible(page.getByText("Проверьте отмеченные поля."));
@@ -89,6 +96,96 @@ async function smokeContentRoutes() {
   await assertVisible(page.getByText(/подготовлена для проверки/i));
 
   await page.close();
+}
+
+async function assertStableCatalogMedia(page) {
+  const slots = page.locator('[data-media-slot="landscape"]');
+  const slotCount = await slots.count();
+  const sourceOrientations = new Set();
+
+  assert(slotCount > 1, "В каталоге ожидается несколько медиаслотов.");
+
+  for (let index = 0; index < slotCount; index += 1) {
+    const slot = slots.nth(index);
+    const image = slot.locator("img");
+    const frameRatio = await slot
+      .locator(".framed-artwork__frame")
+      .evaluate((element) => {
+        const { width, height } = element.getBoundingClientRect();
+
+        return width / height;
+      });
+    const dimensions = await assertReservedImageDimensions(image);
+    const objectFit = await image.evaluate((element) => {
+      const view = element.ownerDocument.defaultView;
+
+      if (!view) {
+        throw new Error("Window недоступен для проверки object-fit.");
+      }
+
+      return view.getComputedStyle(element).objectFit;
+    });
+
+    assert(
+      Math.abs(frameRatio - 4 / 3) < 0.02,
+      `Медиаслот каталога должен сохранять 4:3, получено ${frameRatio}.`,
+    );
+    assert(
+      (await slot.getAttribute("data-media-fit")) === "contain",
+      'Медиаслот каталога должен явно использовать fit="contain".',
+    );
+    assert(
+      (await image.getAttribute("data-image-fit")) === "contain" &&
+        objectFit === "contain",
+      "Изображение каталога должно применять object-fit: contain.",
+    );
+
+    sourceOrientations.add(
+      dimensions.width > dimensions.height ? "landscape" : "portrait",
+    );
+  }
+
+  assert(
+    sourceOrientations.has("landscape") && sourceOrientations.has("portrait"),
+    "Каталог должен проверять единый слот на альбомном и портретном исходниках.",
+  );
+}
+
+async function assertStableWorkMedia(page) {
+  const primarySlot = page.locator('[data-media-slot="square"]').first();
+  const primaryImage = primarySlot.locator("img");
+  const frameRatio = await primarySlot
+    .locator(".framed-artwork__frame")
+    .evaluate((element) => {
+      const { width, height } = element.getBoundingClientRect();
+
+      return width / height;
+    });
+
+  await assertReservedImageDimensions(primaryImage);
+  assert(
+    Math.abs(frameRatio - 1) < 0.02,
+    `Основной медиаслот работы должен быть квадратным, получено ${frameRatio}.`,
+  );
+  assert(
+    (await primarySlot.getAttribute("data-media-fit")) === "contain",
+    'Основная работа должна явно использовать fit="contain".',
+  );
+}
+
+async function assertReservedImageDimensions(image) {
+  const width = Number(await image.getAttribute("width"));
+  const height = Number(await image.getAttribute("height"));
+
+  assert(
+    Number.isFinite(width) &&
+      width > 0 &&
+      Number.isFinite(height) &&
+      height > 0,
+    "OptimizedImage должен резервировать положительные width и height.",
+  );
+
+  return { width, height };
 }
 
 async function smokeColorReveal() {

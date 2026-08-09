@@ -3,11 +3,13 @@ import { Picture } from "astro:assets";
 import { getProductionImageAsset } from "../../utils/image-assets";
 
 type ImageVariant = "hero" | "thumbnail" | "detail" | "interactive";
+type ImageFit = "cover" | "contain";
 
 interface Props {
   src: string;
   alt: string;
   variant: ImageVariant;
+  fit: ImageFit;
   priority?: boolean;
   loading?: "eager" | "lazy";
   class?: string;
@@ -40,12 +42,17 @@ const {
   src,
   alt,
   variant,
+  fit,
   priority = false,
   loading = "lazy",
+  class: className,
   ...attributes
 } = Astro.props;
 const asset = getProductionImageAsset(src);
 const profile = variantProfiles[variant];
+const imageClass = ["optimized-image", `optimized-image--${fit}`, className]
+  .filter(Boolean)
+  .join(" ");
 const widths = profile.widths.filter((width) => width <= asset.width);
 
 if (
@@ -65,5 +72,19 @@ if (
   loading={priority ? "eager" : loading}
   fetchpriority={priority ? "high" : "auto"}
   decoding="async"
+  width={asset.width}
+  height={asset.height}
   {...attributes}
+  class={imageClass}
+  data-image-fit={fit}
 />
+
+<style>
+  :global(.optimized-image--cover) {
+    object-fit: cover;
+  }
+
+  :global(.optimized-image--contain) {
+    object-fit: contain;
+  }
+</style>
