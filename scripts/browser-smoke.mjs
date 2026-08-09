@@ -7,6 +7,7 @@ import { chromium } from "playwright";
 const rootDir = process.cwd();
 const distDir = path.join(rootDir, "dist");
 const siteBase = "/ivan-kugach";
+const themeStorageKey = "ivan-kugach-theme";
 const smokeViewport = { width: 1280, height: 820 };
 const compactDesktopViewport = { width: 1180, height: 760 };
 const tabletViewport = { width: 820, height: 1180 };
@@ -37,6 +38,7 @@ const runtimeErrors = [];
 
 try {
   await smokeStaticHeader();
+  await smokeThemeController();
   await smokeContentRoutes();
   await smokeUiPrimitives();
   await smokeColorReveal();
@@ -57,6 +59,108 @@ try {
   await context.close();
   await browser.close();
   await server.close();
+}
+
+async function smokeThemeController() {
+  const response = await globalThis.fetch(toUrl(routes.home));
+  const html = await response.text();
+  const bootstrapIndex = html.indexOf(themeStorageKey);
+  const headEndIndex = html.indexOf("</head>");
+
+  assert(
+    response.ok && bootstrapIndex > 0 && bootstrapIndex < headEndIndex,
+    "Theme bootstrap должен быть встроен в head до первого paint.",
+  );
+
+  const systemContext = await browser.newContext({
+    colorScheme: "dark",
+    reducedMotion: "reduce",
+    viewport: compactDesktopViewport,
+  });
+  const systemPage = await newSmokePage(systemContext);
+
+  try {
+    await systemPage.goto(toUrl(routes.home));
+    await assertThemeState(systemPage, "dark", "system");
+
+    await systemPage.emulateMedia({ colorScheme: "light" });
+    await assertThemeState(systemPage, "light", "system");
+
+    const themeControl = systemPage.locator("[data-theme-control]");
+    await themeControl.selectOption("dark");
+    await assertThemeState(systemPage, "dark", "dark");
+    assert(
+      (await systemPage.evaluate(
+        (key) => globalThis.localStorage.getItem(key),
+        themeStorageKey,
+      )) === "dark",
+      "Явный выбор темы должен сохраняться в localStorage.",
+    );
+
+    await systemPage.emulateMedia({ colorScheme: "light" });
+    await assertThemeState(systemPage, "dark", "dark");
+    await systemPage.reload();
+    await assertThemeState(systemPage, "dark", "dark");
+
+    await themeControl.selectOption("system");
+    await assertThemeState(systemPage, "light", "system");
+    assert(
+      (await systemPage.evaluate(
+        (key) => globalThis.localStorage.getItem(key),
+        themeStorageKey,
+      )) === null,
+      "Системный режим должен удалять explicit theme override.",
+    );
+
+    await systemPage.emulateMedia({ colorScheme: "dark" });
+    await assertThemeState(systemPage, "dark", "system");
+  } finally {
+    await systemContext.close();
+  }
+
+  const blockedStorageContext = await browser.newContext({
+    colorScheme: "dark",
+    reducedMotion: "reduce",
+    viewport: compactDesktopViewport,
+  });
+  await blockedStorageContext.addInitScript(() => {
+    Object.defineProperty(globalThis, "localStorage", {
+      configurable: true,
+      get() {
+        throw new Error("Storage unavailable for smoke test");
+      },
+    });
+  });
+  const blockedStoragePage = await newSmokePage(blockedStorageContext);
+
+  try {
+    await blockedStoragePage.goto(toUrl(routes.home));
+    await assertThemeState(blockedStoragePage, "dark", "system");
+    await blockedStoragePage
+      .locator("[data-theme-control]")
+      .selectOption("light");
+    await assertThemeState(blockedStoragePage, "light", "light");
+  } finally {
+    await blockedStorageContext.close();
+  }
+}
+
+async function assertThemeState(page, theme, preference) {
+  await page.waitForFunction(
+    (expectedTheme) =>
+      globalThis.document.documentElement.dataset.theme === expectedTheme,
+    theme,
+  );
+  const control = page.locator("[data-theme-control]");
+
+  assert(
+    await control.isEnabled(),
+    "Theme control должен быть доступен после init.",
+  );
+  assert(
+    (await control.inputValue()) === preference,
+    `Theme control должен показывать preference ${preference}.`,
+  );
 }
 
 async function smokeStaticHeader() {
@@ -129,6 +233,19 @@ async function smokeStaticHeader() {
       "No-JS navigation link должен оставаться видимым на tablet.",
     );
   }
+  assert(
+    await page.locator("[data-theme-control]").isVisible(),
+    "Theme control должен оставаться видимым на tablet.",
+  );
+  const hasTabletHorizontalOverflow = await page.evaluate(
+    () =>
+      globalThis.document.documentElement.scrollWidth >
+      globalThis.window.innerWidth,
+  );
+  assert(
+    !hasTabletHorizontalOverflow,
+    "Theme control не должен создавать горизонтальный overflow на tablet.",
+  );
 
   await page.close();
 
@@ -159,23 +276,32 @@ async function assertDesktopHeaderGeometry(page) {
     }
 
     const navigation = header.querySelector(".site-navigation");
+    const themeControl = header.querySelector("[data-theme-control]");
     const items = Array.from(
       header.querySelectorAll(".site-navigation__list li"),
     );
 
-    if (!(navigation instanceof view.HTMLElement) || items.length === 0) {
+    if (
+      !(navigation instanceof view.HTMLElement) ||
+      !(themeControl instanceof view.HTMLElement) ||
+      items.length === 0
+    ) {
       throw new Error("Navigation geometry недоступна.");
     }
 
     const navigationRect = navigation.getBoundingClientRect();
+    const themeControlRect = themeControl.getBoundingClientRect();
     const itemTops = items.map((item) => item.getBoundingClientRect().top);
 
     return {
       headerPosition: view.getComputedStyle(header).position,
       itemTopDelta: Math.max(...itemTops) - Math.min(...itemTops),
       navigationLeft: navigationRect.left,
+      navigationBottom: navigationRect.bottom,
       navigationRight: navigationRect.right,
       navigationTop: navigationRect.top,
+      themeControlBottom: themeControlRect.bottom,
+      themeControlRight: themeControlRect.right,
       viewportWidth: view.innerWidth,
     };
   });
@@ -193,6 +319,11 @@ async function assertDesktopHeaderGeometry(page) {
       geometry.navigationRight <= geometry.viewportWidth - 16 &&
       geometry.navigationTop >= 16,
     "Sticky navigation должна сохранять safe inset 16–24px от viewport.",
+  );
+  assert(
+    geometry.themeControlRight <= geometry.navigationRight &&
+      geometry.themeControlBottom <= geometry.navigationBottom,
+    "Theme control не должен обрезаться внутри desktop navigation.",
   );
 }
 
@@ -485,8 +616,8 @@ async function smokeLightWorkshop() {
   await page.close();
 }
 
-async function newSmokePage() {
-  const page = await context.newPage();
+async function newSmokePage(pageContext = context) {
+  const page = await pageContext.newPage();
 
   page.on("console", (message) => {
     if (message.type() === "error") {

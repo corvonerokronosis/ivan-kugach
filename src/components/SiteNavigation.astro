@@ -69,6 +69,15 @@ const isCurrentSection = (section: NavigationItem["section"]) => {
       ))
     }
   </ul>
+
+  <label class="site-navigation__theme">
+    <span class="site-navigation__theme-label">Тема</span>
+    <select class="site-navigation__theme-select" data-theme-control disabled>
+      <option value="system">Как в системе</option>
+      <option value="light">Светлая</option>
+      <option value="dark">Тёмная</option>
+    </select>
+  </label>
 </nav>
 
 <style>
@@ -180,9 +189,54 @@ const isCurrentSection = (section: NavigationItem["section"]) => {
     transform: rotate(-1deg);
   }
 
+  .site-navigation__theme {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-2);
+    width: min(100%, 15rem);
+    color: var(--color-text-muted);
+    font-family: var(--font-family-ui);
+  }
+
+  .site-navigation__theme-label {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  .site-navigation__theme-select {
+    min-width: 0;
+    min-height: 2.5rem;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    background: var(--color-surface-strong);
+    font: inherit;
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .site-navigation__theme-select:hover:not(:disabled) {
+    border-color: var(--color-border-strong);
+  }
+
+  .site-navigation__theme-select:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+  }
+
+  .site-navigation__theme-select:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring-shadow);
+  }
+
   @media (min-width: 70rem) {
     .site-navigation {
-      grid-template-columns: max-content minmax(0, 1fr);
+      grid-template-columns: max-content minmax(0, 1fr) max-content;
       align-items: center;
       gap: clamp(var(--space-4), 2vw, var(--space-8));
       min-height: var(--header-navigation-height);
@@ -201,6 +255,17 @@ const isCurrentSection = (section: NavigationItem["section"]) => {
       min-height: 2.5rem;
       padding-inline: clamp(var(--space-2), 0.9vw, var(--space-4));
       white-space: nowrap;
+    }
+
+    .site-navigation__theme {
+      grid-column: auto;
+      grid-template-columns: max-content 8.25rem;
+      gap: var(--space-1);
+      width: auto;
+    }
+
+    .site-navigation__theme-label {
+      padding-inline: 0;
     }
   }
 </style>
