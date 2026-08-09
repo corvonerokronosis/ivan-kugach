@@ -1,0 +1,49 @@
+---
+import { withBasePath } from "../utils/site-path";
+
+interface Props {
+  studioDecoration?: boolean;
+}
+
+const { studioDecoration = false } = Astro.props;
+
+const footerLinks = [
+  { href: "/artist/", label: "Художник" },
+  { href: "/experience/", label: "Интерактивный маршрут" },
+  { href: "/works/", label: "Каталог" },
+  { href: "/archive/", label: "Архив" },
+];
+---
+
+<footer
+  class:list={["site-footer", { "studio-reading-plane": studioDecoration }]}
+  data-menu-background
+>
+  <div class="site-footer__summary">
+    <a
+      class="site-footer__identity"
+      href={withBasePath("/")}
+      aria-label="Иван Кугач — на главную"
+    >
+      <span class="site-footer__name">Иван Кугач</span>
+      <span class="site-footer__caption">Мастерская художника</span>
+    </a>
+    <p class="site-footer__description">
+      Интерактивный музейный прототип о живописи Ивана Кугача.
+    </p>
+  </div>
+
+  <nav class="site-footer__navigation" aria-label="Разделы сайта">
+    <ul class="site-footer__list">
+      {
+        footerLinks.map((item) => (
+          <li>
+            <a class="site-footer__link" href={withBasePath(item.href)}>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</footer>

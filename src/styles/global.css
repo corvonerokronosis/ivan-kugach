@@ -174,10 +174,102 @@ code {
 }
 
 .site-footer {
+  display: grid;
+  align-items: end;
+  gap: var(--space-5);
   padding-block: var(--space-6);
   border-top: 1px solid var(--color-border);
   color: var(--color-text-muted);
   font-size: var(--font-size-200);
+}
+
+.site-footer__summary {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 38rem;
+}
+
+.site-footer__identity {
+  display: grid;
+  width: fit-content;
+  color: var(--color-text);
+  line-height: var(--line-height-tight);
+  text-decoration: none;
+  transition: color var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.site-footer__identity:hover {
+  color: var(--color-accent-strong);
+}
+
+.site-footer__identity:focus-visible,
+.site-footer__link:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-shadow);
+}
+
+.site-footer__name {
+  font-size: var(--font-size-300);
+  font-weight: var(--font-weight-bold);
+}
+
+.site-footer__caption {
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-family: var(--font-family-ui);
+  font-size: 0.6875rem;
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+}
+
+.site-footer__description {
+  max-width: 52ch;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.site-footer__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-footer__link {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding-block: var(--space-2);
+  color: var(--color-text-muted);
+  font-family: var(--font-family-ui);
+  font-weight: var(--font-weight-semibold);
+  text-decoration-color: var(--color-border-strong);
+  text-underline-offset: 0.22em;
+  transition:
+    color var(--motion-duration-fast) var(--motion-easing-standard),
+    text-decoration-color var(--motion-duration-fast)
+      var(--motion-easing-standard);
+}
+
+.site-footer__link:hover {
+  color: var(--color-accent-strong);
+  text-decoration-color: currentColor;
+}
+
+@media (min-width: 48rem) {
+  .site-footer {
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+
+  .site-footer__navigation {
+    justify-self: end;
+  }
+
+  .site-footer__list {
+    justify-content: flex-end;
+  }
 }
 
 @media (min-width: 70rem) {

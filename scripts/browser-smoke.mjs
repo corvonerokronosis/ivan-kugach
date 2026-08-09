@@ -14,11 +14,18 @@ const tabletViewport = { width: 820, height: 1180 };
 const mobileMediaViewport = { width: 390, height: 844 };
 const routes = {
   home: "/",
+  artist: "/artist/",
+  experience: "/experience/",
+  storyIntro: "/experience/story/intro/",
   catalog: "/works/",
+  workDetail: "/works/dor-3518/",
+  series: "/series/demo-series-needs-title/",
+  archive: "/archive/",
   colorReveal: "/experience/color-return/",
   details: "/experience/details/",
   light: "/experience/light/",
   uiPreview: "/ui-preview/",
+  notFound: "/404.html",
 };
 
 if (!existsSync(distDir)) {
@@ -39,6 +46,7 @@ const runtimeErrors = [];
 try {
   await smokeStaticHeader();
   await smokeThemeController();
+  await smokeSharedFooter();
   await smokeContentRoutes();
   await smokeUiPrimitives();
   await smokeColorReveal();
@@ -325,6 +333,13 @@ async function smokeStaticHeader() {
 
   try {
     await noJsPage.goto(toUrl(routes.home));
+    const noJsNavigation = noJsPage.getByRole("navigation", {
+      name: "Основная навигация",
+    });
+    const noJsCatalogLink = noJsNavigation.getByRole("link", {
+      name: "Каталог",
+      exact: true,
+    });
     assert(
       !(await noJsPage
         .getByRole("button", { name: "Меню", exact: true })
@@ -332,16 +347,14 @@ async function smokeStaticHeader() {
       "Menu toggle должен оставаться скрытым без JS.",
     );
     assert(
-      await noJsPage
-        .getByRole("link", { name: "Каталог", exact: true })
-        .isVisible(),
+      await noJsCatalogLink.isVisible(),
       "Navigation links должны оставаться доступными без JS на tablet.",
     );
     assert(
       await noJsPage.locator("[data-theme-control]").isVisible(),
       "Theme control должен оставаться видимым без JS на tablet.",
     );
-    await noJsPage.getByRole("link", { name: "Каталог", exact: true }).click();
+    await noJsCatalogLink.click();
     await noJsPage.waitForURL(toUrl(routes.catalog));
     await assertVisible(
       noJsPage.getByRole("heading", { level: 1, name: "Каталог работ" }),
@@ -409,6 +422,86 @@ async function assertDesktopHeaderGeometry(page) {
       geometry.themeControlBottom <= geometry.navigationBottom,
     "Theme control не должен обрезаться внутри desktop navigation.",
   );
+}
+
+async function smokeSharedFooter() {
+  const page = await newSmokePage();
+  const sharedFooterRoutes = [
+    routes.home,
+    routes.artist,
+    routes.experience,
+    routes.storyIntro,
+    routes.colorReveal,
+    routes.details,
+    routes.light,
+    routes.catalog,
+    routes.workDetail,
+    routes.series,
+    routes.archive,
+    routes.uiPreview,
+    routes.notFound,
+  ];
+
+  for (const route of sharedFooterRoutes) {
+    await page.goto(toUrl(route));
+
+    const footer = page.locator(".site-footer");
+    assert(
+      (await footer.count()) === 1 && (await footer.isVisible()),
+      `Route ${route} должен содержать один видимый shared footer.`,
+    );
+
+    const geometry = await footer.evaluate((element) => {
+      const view = element.ownerDocument.defaultView;
+      const main = element.ownerDocument.querySelector(".site-main");
+
+      if (!view || !main) {
+        throw new Error("Shared footer geometry недоступна.");
+      }
+
+      const footerRect = element.getBoundingClientRect();
+      const mainRect = main.getBoundingClientRect();
+
+      return {
+        footerTop: footerRect.top,
+        mainBottom: mainRect.bottom,
+        position: view.getComputedStyle(element).position,
+      };
+    });
+
+    assert(
+      ["static", "relative"].includes(geometry.position),
+      `Shared footer на ${route} должен оставаться в flow.`,
+    );
+    assert(
+      geometry.footerTop >= geometry.mainBottom - 1,
+      `Shared footer на ${route} не должен перекрывать main.`,
+    );
+  }
+
+  await assertVisible(
+    page
+      .locator(".site-footer")
+      .getByText("Интерактивный музейный прототип о живописи Ивана Кугача.", {
+        exact: true,
+      }),
+  );
+  await assertVisible(
+    page
+      .locator(".site-footer")
+      .getByRole("navigation", { name: "Разделы сайта" }),
+  );
+
+  await page.evaluate(() => {
+    globalThis.document.documentElement.dataset.theme = "dark";
+  });
+  await assertVisible(
+    page
+      .locator(".site-footer")
+      .getByRole("link", { name: "Каталог", exact: true }),
+  );
+
+  await page.close();
 }
 
 async function smokeUiPrimitives() {

@@ -1,6 +1,7 @@
 ---
 import StudioDecoration from "../components/StudioDecoration.astro";
 import PageMetadata from "../components/common/PageMetadata.astro";
+import SiteFooter from "../components/SiteFooter.astro";
 import SiteNavigation from "../components/SiteNavigation.astro";
 import { themeBootstrapScript } from "../scripts/theme-controller";
 import "../styles/global.css";
@@ -31,7 +32,6 @@ const {
   studioDecoration = false,
 } = Astro.props;
 const hasHeaderContent = Astro.slots.has("header");
-const hasFooter = Astro.slots.has("footer");
 ---
 
 <!doctype html>
@@ -80,19 +80,7 @@ const hasFooter = Astro.slots.has("footer");
         <slot />
       </main>
 
-      {
-        hasFooter && (
-          <footer
-            class:list={[
-              "site-footer",
-              { "studio-reading-plane": studioDecoration },
-            ]}
-            data-menu-background
-          >
-            <slot name="footer" />
-          </footer>
-        )
-      }
+      <SiteFooter studioDecoration={studioDecoration} />
     </div>
 
     <script>
