@@ -80,6 +80,7 @@ function setupNarrativeSequence(root: HTMLElement): void {
 
     if (announceChange) {
       dispatchNarrativeEvent("narrative:slidechange");
+      root.scrollIntoView({ block: "start" });
     }
   }
 

@@ -172,35 +172,41 @@ const pageDescription = [
 </BaseLayout>
 
 <style>
+  :global(body.has-studio-decoration .studio-decoration) {
+    display: none;
+  }
+
   .route-hero {
     position: relative;
     display: grid;
-    gap: var(--space-7);
-    overflow: hidden;
-    padding: clamp(var(--space-6), 5vw, var(--space-13));
-    border: 0.5rem solid var(--color-wood-strong);
-    border-radius: var(--radius-xl);
-    color: var(--color-text-on-light);
+    min-height: min(39rem, calc(100dvh - 8.5rem));
+    gap: clamp(var(--space-7), 5vw, var(--space-12));
+    align-items: stretch;
+    overflow: clip;
+    padding: clamp(var(--space-6), 5vw, var(--space-12));
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-2xl);
+    color: var(--color-text);
     background:
       radial-gradient(
-        circle at 78% 18%,
-        rgb(215 163 58 / 22%),
-        transparent 28%
+        circle at 72% 18%,
+        var(--color-lamp-glow),
+        transparent 32%
       ),
-      linear-gradient(140deg, rgb(255 252 246 / 96%), rgb(235 215 183 / 92%));
-    box-shadow:
-      inset 0 0 0 0.25rem rgb(235 199 129 / 28%),
-      var(--shadow-raised);
+      linear-gradient(125deg, var(--color-surface), var(--color-surface-strong));
+    box-shadow: var(--shadow-raised);
   }
 
-  .route-hero::after {
+  .route-hero::before {
     position: absolute;
-    right: -4rem;
-    bottom: -6rem;
-    width: 16rem;
-    height: 16rem;
-    border: 2.5rem solid rgb(94 39 23 / 8%);
-    border-radius: var(--radius-round);
+    inset: auto 0 0;
+    height: 31%;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      color-mix(in srgb, var(--color-wood) 14%, transparent)
+    );
+    pointer-events: none;
     content: "";
   }
 
@@ -218,7 +224,7 @@ const pageDescription = [
   }
 
   .route-hero h1 {
-    max-width: 12ch;
+    max-width: 11ch;
     margin: 0;
     font-size: var(--font-size-heading-xl);
     font-weight: var(--font-weight-semibold);
@@ -226,10 +232,11 @@ const pageDescription = [
   }
 
   .route-hero__copy > p {
-    max-width: 42rem;
+    max-width: 39rem;
     margin: 0;
-    color: var(--color-text-muted-on-light);
-    font-size: clamp(var(--font-size-400), 2vw, var(--font-size-600));
+    color: var(--color-text-muted);
+    font-size: clamp(var(--font-size-300), 1.7vw, var(--font-size-500));
+    line-height: 1.5;
   }
 
   .route-hero__actions {
@@ -240,52 +247,66 @@ const pageDescription = [
 
   .route-hero__note {
     display: grid;
-    align-content: end;
-    gap: var(--space-3);
-    min-height: 20rem;
-    padding: var(--space-6);
-    border: 1px solid rgb(255 245 224 / 22%);
-    border-radius: var(--radius-xl);
+    align-content: space-between;
+    gap: var(--space-5);
+    min-height: 24rem;
+    padding: clamp(var(--space-5), 3vw, var(--space-8));
+    border: 1px solid color-mix(in srgb, var(--color-linen) 18%, transparent);
+    border-radius: var(--radius-lg);
     color: var(--color-text-on-dark);
     background:
-      linear-gradient(160deg, rgb(41 29 20 / 72%), rgb(94 39 23 / 94%)),
+      radial-gradient(
+        circle at 85% 8%,
+        color-mix(in srgb, var(--color-lamp) 15%, transparent),
+        transparent 35%
+      ),
+      linear-gradient(
+        155deg,
+        color-mix(in srgb, var(--color-text) 24%, transparent),
+        transparent
+      ),
       var(--color-wood-strong);
-    box-shadow: var(--shadow-surface);
+    box-shadow: var(--shadow-frame);
+    transform: rotate(0.7deg);
   }
 
   .route-hero__note-number {
-    position: absolute;
-    top: var(--space-5);
-    right: var(--space-5);
-    color: rgb(255 245 224 / 28%);
+    color: color-mix(in srgb, var(--color-linen) 34%, transparent);
     font-family: var(--font-family-ui);
     font-size: clamp(2.5rem, 7vw, 5rem);
     font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-heading);
     line-height: 1;
   }
 
   .route-hero__note h2 {
-    max-width: 12ch;
+    max-width: 18ch;
     margin: 0;
     font-size: var(--font-size-heading-sm);
+    hyphens: none;
+    overflow-wrap: normal;
+    word-break: normal;
   }
 
   .route-hero__note p {
     margin: 0;
-    color: rgb(255 245 224 / 78%);
+    color: var(--color-text-muted-on-dark);
   }
 
   .route-stages {
     display: grid;
-    gap: var(--space-8);
+    gap: var(--space-6);
     scroll-margin-top: var(--space-6);
+    padding-top: var(--space-6);
   }
 
   .route-stages__header {
     display: grid;
     gap: var(--space-5);
     align-items: end;
-    padding: clamp(var(--space-5), 4vw, var(--space-8));
+    padding: var(--space-6) clamp(var(--space-4), 4vw, var(--space-8))
+      var(--space-4);
+    border-bottom: 1px solid var(--color-border);
   }
 
   .route-stages__header h2,
@@ -313,34 +334,44 @@ const pageDescription = [
 
   .route-list {
     display: grid;
-    gap: var(--space-6);
+    gap: clamp(var(--space-8), 6vw, var(--space-13));
     margin: 0;
-    padding: 0;
+    padding: var(--space-6) 0;
     list-style: none;
   }
 
   .route-stage {
     position: relative;
     display: grid;
-    gap: var(--space-6);
+    gap: clamp(var(--space-6), 4vw, var(--space-10));
     align-items: center;
-    padding: clamp(var(--space-5), 4vw, var(--space-8));
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-2xl);
-    background:
-      linear-gradient(135deg, rgb(255 255 255 / 30%), transparent 42%),
-      var(--color-surface);
-    box-shadow: var(--shadow-surface);
+    padding: 0 clamp(var(--space-2), 3vw, var(--space-6));
+  }
+
+  .route-stage::before {
+    position: absolute;
+    inset: 12% 0 5% 8%;
+    z-index: -1;
+    border: 1px solid var(--color-border-subtle);
+    background: color-mix(in srgb, var(--color-surface) 58%, transparent);
+    clip-path: polygon(1% 4%, 99% 0, 100% 95%, 0 100%);
+    content: "";
+  }
+
+  .route-stage--reverse::before {
+    inset: 8% 7% 7% 0;
+    clip-path: polygon(0 0, 99% 4%, 100% 100%, 2% 94%);
   }
 
   .route-stage__rail {
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    color: var(--color-accent-strong);
+    color: var(--color-text-muted);
     font-family: var(--font-family-ui);
-    font-size: var(--font-size-300);
+    font-size: var(--font-size-200);
     font-weight: var(--font-weight-bold);
+    font-variant-numeric: tabular-nums;
   }
 
   .route-stage__rail::after {
@@ -355,6 +386,8 @@ const pageDescription = [
     align-content: center;
     justify-items: start;
     gap: var(--space-4);
+    padding: clamp(var(--space-5), 4vw, var(--space-8));
+    border-top: 1px solid var(--color-border);
   }
 
   .route-stage__copy h3 {
@@ -373,11 +406,8 @@ const pageDescription = [
     display: grid;
     gap: var(--space-5);
     align-items: center;
-    padding: clamp(var(--space-5), 4vw, var(--space-8));
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-2xl);
-    background: var(--color-surface-strong);
-    box-shadow: var(--shadow-surface);
+    padding: clamp(var(--space-5), 4vw, var(--space-8)) 0;
+    border-block: 1px solid var(--color-border);
   }
 
   .route-catalog h2 {
@@ -400,7 +430,7 @@ const pageDescription = [
   .route-catalog__mark span {
     display: block;
     width: 1rem;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-sm);
     background: var(--color-accent);
   }
 
@@ -410,12 +440,12 @@ const pageDescription = [
 
   .route-catalog__mark span:nth-child(2) {
     height: 4rem;
-    background: var(--palette-paint-blue);
+    background: var(--color-accent-strong);
   }
 
   .route-catalog__mark span:nth-child(3) {
     height: 1.75rem;
-    background: var(--palette-paint-yellow);
+    background: color-mix(in srgb, var(--color-accent) 46%, var(--color-wood));
   }
 
   @media (min-width: 56rem) {
@@ -428,7 +458,7 @@ const pageDescription = [
     }
 
     .route-stage {
-      grid-template-columns: 3rem minmax(18rem, 0.9fr) minmax(20rem, 1.1fr);
+      grid-template-columns: 2.5rem minmax(18rem, 1.05fr) minmax(20rem, 0.95fr);
     }
 
     .route-stage__rail {
@@ -450,6 +480,11 @@ const pageDescription = [
       grid-row: 1;
     }
 
+    .route-stage--reverse .route-stage__rail {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
     .route-catalog {
       grid-template-columns: auto minmax(0, 1fr) auto;
     }
@@ -458,7 +493,6 @@ const pageDescription = [
   @media (max-width: 45rem) {
     .route-hero {
       padding: var(--space-5);
-      border-width: 0.375rem;
       border-radius: var(--radius-lg);
     }
 
@@ -470,11 +504,17 @@ const pageDescription = [
     }
 
     .route-hero__note {
-      min-height: 17rem;
+      min-height: 19rem;
+      transform: none;
     }
 
     .route-stage {
-      border-radius: var(--radius-xl);
+      padding: 0;
+    }
+
+    .route-stage::before,
+    .route-stage--reverse::before {
+      inset: 8% 0 2% var(--space-3);
     }
   }
 </style>
