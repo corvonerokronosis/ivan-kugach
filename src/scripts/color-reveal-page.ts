@@ -109,7 +109,10 @@ function setupColorRevealPage(root: HTMLElement): void {
   }
 
   function openCompletionDialog(): void {
-    completionDialogController.open({ initialFocus: continueLink });
+    completionDialogController.open({
+      initialFocus: continueLink,
+      trigger: resetButton,
+    });
   }
 
   engine = mountColorRevealEngine({

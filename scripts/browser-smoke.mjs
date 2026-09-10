@@ -959,17 +959,35 @@ async function assertReservedImageDimensions(image) {
 
 async function smokeColorReveal() {
   const page = await newSmokePage();
+  const resetButton = page.locator("[data-reveal-reset]");
+  const completeButton = page.locator("[data-reveal-complete]");
+  const completionDialog = page.locator("#color-reveal-complete-dialog[open]");
 
   await page.goto(toUrl(routes.colorReveal));
   await assertVisible(
     page.getByRole("heading", { level: 1, name: "Возвращение цвета" }),
   );
-  await page.locator("[data-reveal-complete]").click();
-  await page.locator("#color-reveal-complete-dialog[open]").waitFor();
+  await completeButton.click();
+  await completionDialog.waitFor();
+  await page.keyboard.press("Escape");
+  await completionDialog.waitFor({ state: "detached" });
+  await page.waitForFunction(
+    () =>
+      globalThis.document.activeElement ===
+      globalThis.document.querySelector("[data-reveal-reset]"),
+  );
+  assert(
+    await resetButton.evaluate(
+      (element) => element === element.ownerDocument.activeElement,
+    ),
+    "После Escape фокус должен вернуться на доступную кнопку сброса.",
+  );
+
+  await resetButton.click();
+  await completeButton.click();
+  await completionDialog.waitFor();
   await page.locator("[data-reveal-dialog-close]").click();
-  await page.locator("#color-reveal-complete-dialog[open]").waitFor({
-    state: "detached",
-  });
+  await completionDialog.waitFor({ state: "detached" });
 
   await page.close();
 }

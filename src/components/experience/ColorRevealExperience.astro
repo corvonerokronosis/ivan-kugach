@@ -12,70 +12,74 @@ const { bridgePath } = Astro.props;
 ---
 
 <section class="color-reveal" data-color-reveal-page>
-  <div class="color-reveal__frame" aria-describedby="color-reveal-hint">
-    <div class="color-reveal__stage" data-reveal-container>
-      <canvas data-reveal-base aria-hidden="true"></canvas>
-      <OptimizedImage
-        data-reveal-source
-        src={artwork.src}
-        alt=""
-        variant="interactive"
-        fit="contain"
-        priority
-        hidden
-        crossorigin="anonymous"
-      />
-      <canvas
-        data-reveal-layer
-        aria-label="Картина Ивана Кугача: проведите по полотну, чтобы раскрыть цвет"
-      ></canvas>
-      <span class="color-reveal__brush" data-reveal-brush aria-hidden="true"
-      ></span>
-    </div>
-  </div>
-
-  <div class="color-reveal__hud">
-    <div class="color-reveal__copy">
-      <h2>Возвращение цвета</h2>
-      <p>Большая мягкая кисть и ускоренное раскрытие рядом с мазком.</p>
-    </div>
-
-    <div class="color-reveal__progress">
-      <div class="color-reveal__progress-row">
-        <span>Прогресс</span>
-        <strong data-reveal-progress-text>0%</strong>
+  <div class="color-reveal__workspace">
+    <div class="color-reveal__frame" aria-describedby="color-reveal-hint">
+      <div class="color-reveal__stage" data-reveal-container>
+        <canvas data-reveal-base aria-hidden="true"></canvas>
+        <OptimizedImage
+          data-reveal-source
+          src={artwork.src}
+          alt=""
+          variant="interactive"
+          fit="contain"
+          priority
+          hidden
+          crossorigin="anonymous"
+        />
+        <canvas
+          data-reveal-layer
+          aria-label="Картина Ивана Кугача: проведите по полотну, чтобы раскрыть цвет"
+        ></canvas>
+        <span class="color-reveal__brush" data-reveal-brush aria-hidden="true"
+        ></span>
       </div>
-      <progress data-reveal-progress value="0" max="100">0%</progress>
     </div>
 
-    <Action
-      class="color-reveal__control color-reveal__control--quiet"
-      variant="quiet"
-      type="button"
-      data-reveal-reset
-      aria-label="Сбросить раскрытие цвета"
-    >
-      Сбросить
-    </Action>
-    <Action
-      class="color-reveal__control color-reveal__control--primary"
-      type="button"
-      data-reveal-complete
-      aria-label="Раскрыть картину полностью без жеста"
-    >
-      Показать полностью
-    </Action>
-  </div>
+    <aside class="color-reveal__hud" aria-label="Управление раскрытием цвета">
+      <div class="color-reveal__copy">
+        <h2>Возвращение цвета</h2>
+        <p>Большая мягкая кисть и ускоренное раскрытие рядом с мазком.</p>
+      </div>
 
-  <p
-    id="color-reveal-hint"
-    class="color-reveal__hint"
-    data-reveal-status
-    aria-live="polite"
-  >
-    Зажмите и ведите курсором или пальцем по картине либо нажмите «Показать
-    полностью».
-  </p>
+      <div class="color-reveal__progress">
+        <div class="color-reveal__progress-row">
+          <span>Прогресс</span>
+          <strong data-reveal-progress-text>0%</strong>
+        </div>
+        <progress data-reveal-progress value="0" max="100">0%</progress>
+      </div>
+
+      <div class="color-reveal__controls">
+        <Action
+          class="color-reveal__control color-reveal__control--primary"
+          type="button"
+          data-reveal-complete
+          aria-label="Раскрыть картину полностью без жеста"
+        >
+          Показать полностью
+        </Action>
+        <Action
+          class="color-reveal__control color-reveal__control--quiet"
+          variant="quiet"
+          type="button"
+          data-reveal-reset
+          aria-label="Сбросить раскрытие цвета"
+        >
+          Сбросить
+        </Action>
+      </div>
+
+      <p
+        id="color-reveal-hint"
+        class="color-reveal__hint"
+        data-reveal-status
+        aria-live="polite"
+      >
+        Зажмите и ведите курсором или пальцем по картине либо нажмите «Показать
+        полностью».
+      </p>
+    </aside>
+  </div>
 
   <DialogShell
     id="color-reveal-complete-dialog"
@@ -107,15 +111,12 @@ const { bridgePath } = Astro.props;
   .color-reveal {
     display: grid;
     gap: var(--space-4);
-    padding: clamp(var(--space-3), 2vw, var(--space-6));
-    border-radius: var(--radius-2xl);
-    color: var(--color-text-on-light);
-    background: linear-gradient(
-      180deg,
-      rgb(255 248 236 / 72%),
-      rgb(247 234 211 / 88%)
-    );
-    box-shadow: var(--shadow-raised);
+  }
+
+  .color-reveal__workspace {
+    display: grid;
+    gap: clamp(var(--space-5), 3vw, var(--space-8));
+    align-items: stretch;
   }
 
   .color-reveal__frame {
@@ -123,19 +124,45 @@ const { bridgePath } = Astro.props;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 18rem;
+    min-width: 0;
+    min-height: 20rem;
+    padding: clamp(var(--space-4), 2.4vw, var(--space-7));
     overflow: hidden;
-    border: 0.5rem solid var(--color-wood-strong);
-    border-radius: var(--radius-xl);
-    aspect-ratio: 1.96 / 1;
+    border: var(--frame-border-width) solid var(--color-wood-strong);
+    border-radius: var(--frame-radius);
+    aspect-ratio: 1.46 / 1;
     background:
-      linear-gradient(135deg, rgb(255 255 255 / 14%), transparent 48%),
-      var(--palette-sand-300);
+      linear-gradient(135deg, var(--color-lamp-muted), transparent 42%),
+      repeating-linear-gradient(
+        105deg,
+        var(--color-border-subtle) 0 1px,
+        transparent 1px 1.75rem
+      ),
+      var(--color-linen);
     box-shadow:
-      0 0 0 0.9rem rgb(255 245 224 / 78%),
-      var(--shadow-surface);
+      inset 0 0 0 var(--frame-inner-border-width) var(--color-wood-highlight),
+      inset 0 0 0 calc(var(--frame-inner-border-width) + 0.25rem)
+        var(--color-wood),
+      var(--shadow-frame);
     touch-action: none;
     user-select: none;
+  }
+
+  .color-reveal__frame::after {
+    position: absolute;
+    right: 8%;
+    bottom: 0;
+    left: 8%;
+    height: 0.9rem;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(
+      90deg,
+      var(--color-wood-strong),
+      var(--color-wood-highlight),
+      var(--color-wood-strong)
+    );
+    box-shadow: var(--shadow-surface);
+    content: "";
   }
 
   .color-reveal__stage {
@@ -145,7 +172,10 @@ const { bridgePath } = Astro.props;
     height: 100%;
     max-height: 100%;
     overflow: hidden;
+    border: 1px solid var(--color-border-strong);
     aspect-ratio: 579 / 480;
+    background: var(--color-linen-muted);
+    box-shadow: var(--shadow-surface);
     touch-action: none;
     user-select: none;
   }
@@ -157,7 +187,7 @@ const { bridgePath } = Astro.props;
 
   .color-reveal__stage [data-reveal-base] {
     z-index: 1;
-    background: var(--palette-sand-300);
+    background: var(--color-linen-muted);
   }
 
   .color-reveal__stage [data-reveal-layer] {
@@ -189,13 +219,18 @@ const { bridgePath } = Astro.props;
 
   .color-reveal__hud {
     display: grid;
-    gap: var(--space-3);
-    align-items: center;
-    padding: var(--space-3) var(--space-4);
-    border-radius: var(--radius-lg);
-    color: var(--color-text-on-dark);
-    background: rgb(34 26 19 / 78%);
-    backdrop-filter: blur(0.625rem);
+    grid-template-rows: auto auto auto 1fr;
+    gap: var(--space-5);
+    align-content: start;
+    min-width: 0;
+    padding: clamp(var(--space-5), 3vw, var(--space-7));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    background:
+      linear-gradient(145deg, var(--color-lamp-muted), transparent 38%),
+      color-mix(in srgb, var(--color-surface) 88%, var(--color-wall));
+    box-shadow: var(--shadow-surface);
   }
 
   .color-reveal__copy {
@@ -205,15 +240,12 @@ const { bridgePath } = Astro.props;
 
   .color-reveal__copy h2 {
     margin: 0;
-    font-size: var(--font-size-300);
-    letter-spacing: 0.03em;
-    line-height: 1.15;
-    text-transform: uppercase;
+    font-size: var(--font-size-heading-sm);
   }
 
   .color-reveal__copy p {
     margin: 0;
-    color: rgb(255 247 236 / 80%);
+    color: var(--color-text-muted);
     font-size: var(--font-size-200);
   }
 
@@ -231,20 +263,21 @@ const { bridgePath } = Astro.props;
     font-family: var(--font-family-ui);
     font-size: var(--font-size-200);
     font-weight: var(--font-weight-semibold);
+    font-variant-numeric: tabular-nums;
   }
 
   .color-reveal__progress progress {
     width: 100%;
     height: 0.75rem;
-    border: 1px solid rgb(255 248 236 / 22%);
+    border: 1px solid var(--color-border-strong);
     border-radius: var(--radius-sm);
-    background: rgb(255 248 236 / 18%);
+    background: var(--color-wall-muted);
     overflow: hidden;
   }
 
   .color-reveal__progress progress::-webkit-progress-bar {
     border-radius: inherit;
-    background: rgb(255 248 236 / 18%);
+    background: var(--color-wall-muted);
   }
 
   .color-reveal__progress progress::-webkit-progress-value {
@@ -257,55 +290,54 @@ const { bridgePath } = Astro.props;
     background: var(--color-accent);
   }
 
+  .color-reveal__controls {
+    display: grid;
+    gap: var(--space-2);
+  }
+
   .color-reveal__hud :global(.color-reveal__control) {
-    min-height: 2.5rem;
-    padding: var(--space-2) var(--space-4);
+    width: 100%;
+    min-height: 2.75rem;
+    justify-content: center;
   }
 
   .color-reveal__hud :global(.color-reveal__control--quiet) {
-    border-color: rgb(255 248 236 / 22%);
-    color: var(--color-text-on-dark);
-    background: rgb(255 248 236 / 14%);
+    border-color: var(--color-border);
+    color: var(--color-text);
+    background: transparent;
   }
 
   .color-reveal__hud :global(.color-reveal__control--primary) {
-    border-color: rgb(255 248 236 / 28%);
+    border-color: var(--color-accent-strong);
     color: var(--color-text-on-accent);
     background: var(--color-accent-strong);
   }
 
   .color-reveal__hint {
     margin: 0;
-    padding-inline: var(--space-2);
-    color: var(--color-text-muted-on-light);
+    align-self: end;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border-subtle);
+    color: var(--color-text-muted);
     font-size: var(--font-size-200);
-    text-align: center;
+    text-wrap: pretty;
   }
 
-  @media (min-width: 48rem) {
-    .color-reveal__hud {
-      grid-template-columns: minmax(11rem, 0.34fr) minmax(0, 1fr) auto auto;
+  @media (min-width: 62rem) {
+    .color-reveal__workspace {
+      grid-template-columns: minmax(0, 1fr) minmax(17rem, 0.34fr);
     }
   }
 
   @media (max-width: 45rem) {
-    .color-reveal {
-      padding: var(--space-3);
-      border-radius: var(--radius-xl);
-    }
-
     .color-reveal__frame {
-      min-height: 17.5rem;
+      min-height: 16rem;
+      padding: var(--space-4);
       border-width: 0.375rem;
-      border-radius: var(--radius-md);
       aspect-ratio: 1.08 / 1;
-      box-shadow:
-        0 0 0 0.625rem rgb(255 245 224 / 78%),
-        var(--shadow-surface);
     }
 
     .color-reveal__hud,
-    .color-reveal__hud :global(.action),
     .color-reveal :global(.dialog-shell__actions .action) {
       width: 100%;
     }

@@ -23,7 +23,7 @@ const pageDescription = [
   studioDecoration
 >
   <section class="color-return" aria-labelledby="color-return-title">
-    <div class="color-return__topbar">
+    <div class="color-return__topbar studio-reading-plane">
       <div class="color-return__title">
         <h1 id="color-return-title">Возвращение цвета</h1>
         <p>
@@ -45,15 +45,15 @@ const pageDescription = [
 <style>
   .color-return {
     display: grid;
-    gap: var(--space-5);
+    gap: clamp(var(--space-5), 3vw, var(--space-8));
   }
 
   .color-return__topbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-4);
-    align-items: end;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-5);
+    align-items: center;
+    padding: clamp(var(--space-5), 3vw, var(--space-8));
   }
 
   .color-return__title {
@@ -64,22 +64,24 @@ const pageDescription = [
   .color-return h1 {
     margin: 0;
     font-size: var(--font-size-heading-lg);
+    max-width: 14ch;
   }
 
   .color-return__title > p:last-child {
     margin: 0;
     color: var(--color-text-muted);
     font-size: var(--font-size-400);
+    max-width: 52ch;
   }
 
   @media (max-width: 42rem) {
-    .color-return__topbar,
     .color-return__topbar :global(.action) {
       width: 100%;
     }
 
     .color-return__topbar {
-      align-items: stretch;
+      grid-template-columns: 1fr;
+      align-items: start;
     }
   }
 </style>
