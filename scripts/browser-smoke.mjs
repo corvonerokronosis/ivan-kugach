@@ -17,6 +17,9 @@ const routes = {
   artist: "/artist/",
   experience: "/experience/",
   storyIntro: "/experience/story/intro/",
+  storyBridge: "/experience/story/bridge/",
+  storyLightBridge: "/experience/story/light-bridge/",
+  storyFinale: "/experience/story/finale/",
   catalog: "/works/",
   workDetail: "/works/dor-3518/",
   series: "/series/demo-series-needs-title/",
@@ -47,6 +50,7 @@ try {
   await smokeStaticHeader();
   await smokeThemeController();
   await smokeSharedFooter();
+  await smokeNarrativeRoute();
   await smokeContentRoutes();
   await smokeUiPrimitives();
   await smokeColorReveal();
@@ -504,6 +508,136 @@ async function smokeSharedFooter() {
   await page.close();
 }
 
+async function smokeNarrativeRoute() {
+  const page = await newSmokePage();
+  const scenarios = [
+    {
+      entry: routes.experience,
+      story: routes.storyIntro,
+      completion: routes.colorReveal,
+      skipLabel: "Пропустить вступление",
+    },
+    {
+      entry: routes.colorReveal,
+      story: routes.storyBridge,
+      completion: routes.details,
+      skipLabel: "Пропустить вставку",
+    },
+    {
+      entry: routes.details,
+      story: routes.storyLightBridge,
+      completion: routes.light,
+      skipLabel: "Пропустить вставку",
+    },
+    {
+      entry: routes.light,
+      story: routes.storyFinale,
+      completion: routes.home,
+      skipLabel: "Пропустить блок",
+    },
+  ];
+
+  for (const scenario of scenarios) {
+    await page.goto(toUrl(scenario.story));
+    await page.waitForLoadState("networkidle");
+
+    const sequence = page.locator("[data-narrative-sequence]");
+    await assertVisible(sequence);
+    assert(
+      (await sequence.getAttribute("data-current-index")) === "0",
+      `Direct entry ${scenario.story} должен начинаться с первого кадра.`,
+    );
+
+    await page.getByRole("button", { name: "Далее" }).click();
+    await page.waitForLoadState("networkidle");
+    assert(
+      (await sequence.getAttribute("data-current-index")) === "1",
+      `Narrative ${scenario.story} должен переключаться на следующий кадр.`,
+    );
+
+    await page.reload();
+    await page.waitForLoadState("networkidle");
+    assert(
+      (await sequence.getAttribute("data-current-index")) === "0",
+      `Reload ${scenario.story} должен сбрасывать локальный slide state.`,
+    );
+
+    await page.goto(toUrl(scenario.entry));
+    await page.waitForLoadState("networkidle");
+    await page.goto(toUrl(scenario.story));
+    await page.waitForLoadState("networkidle");
+    await page.getByRole("button", { name: scenario.skipLabel }).click();
+    await page.waitForURL(toUrl(scenario.completion));
+    await page.waitForLoadState("networkidle");
+
+    await page.goBack();
+    await page.waitForURL(toUrl(scenario.entry));
+    await page.waitForLoadState("networkidle");
+    await page.goForward();
+    await page.waitForURL(toUrl(scenario.completion));
+    await page.waitForLoadState("networkidle");
+  }
+
+  await page.goto(toUrl(routes.experience));
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("link", { name: "Начать с первого этапа" }).click();
+  await page.waitForURL(toUrl(routes.storyIntro));
+  await page.waitForLoadState("networkidle");
+  await assertVisible(
+    page.getByRole("heading", {
+      level: 3,
+      name: "В музейном зале становится тише",
+    }),
+  );
+
+  const sequence = page.locator("[data-narrative-sequence]");
+  const nextButton = page.getByRole("button", { name: "Далее" });
+  await nextButton.press("ArrowRight");
+  await page.waitForLoadState("networkidle");
+  await assertVisible(
+    page.getByRole("heading", {
+      level: 3,
+      name: "Перед нами картина, будто приглушённая временем",
+    }),
+  );
+
+  const sequenceTop = await sequence.evaluate(
+    (element) => element.getBoundingClientRect().top,
+  );
+  assert(
+    sequenceTop >= 0,
+    "После смены narrative-кадра начало последовательности должно возвращаться в viewport.",
+  );
+
+  await nextButton.click();
+  await page.waitForLoadState("networkidle");
+  await assertVisible(
+    page.getByRole("heading", {
+      level: 3,
+      name: "Следующий шаг — прикоснуться к поверхности",
+    }),
+  );
+  await page.getByRole("button", { name: "Перейти к интерактиву" }).click();
+  await page.waitForURL(toUrl(routes.colorReveal));
+  await page.waitForLoadState("networkidle");
+
+  await page.goBack();
+  await page.waitForURL(toUrl(routes.experience));
+  await page.waitForLoadState("networkidle");
+  await assertVisible(
+    page.getByRole("heading", {
+      level: 1,
+      name: /Смотреть на картину/i,
+    }),
+  );
+
+  await page.goForward();
+  await page.waitForURL(toUrl(routes.colorReveal));
+  await page.waitForLoadState("networkidle");
+
+  await page.close();
+}
+
 async function smokeUiPrimitives() {
   const page = await newSmokePage();
 
@@ -921,7 +1055,7 @@ async function newSmokePage(pageContext = context) {
   page.on("requestfailed", (request) => {
     const failure = request.failure();
 
-    if (failure) {
+    if (failure && failure.errorText !== "net::ERR_ABORTED") {
       runtimeErrors.push(
         `request failed: ${request.url()} (${failure.errorText})`,
       );

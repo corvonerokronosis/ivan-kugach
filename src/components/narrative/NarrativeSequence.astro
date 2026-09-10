@@ -30,6 +30,7 @@ const Heading = headingLevel;
 >
   <header class="narrative-sequence__header">
     <div>
+      <span class="narrative-sequence__eyebrow">{sequence.eyebrow}</span>
       <Heading id={`${id}-title`}>Сюжетная последовательность</Heading>
       <p id={`${id}-lead`} class="narrative-sequence__lead">
         {sequence.lead}
@@ -51,12 +52,33 @@ const Heading = headingLevel;
               src={slide.image.src}
               alt={slide.image.alt}
               variant="detail"
-              fit="cover"
+              fit="contain"
             />
             <p>{slide.image.caption}</p>
           </div>
 
           <div class="narrative-slide__copy">
+            <div class="narrative-slide__index-row">
+              <span class="narrative-slide__index">
+                {String(index + 1).padStart(2, "0")} /{" "}
+                {String(slides.length).padStart(2, "0")}
+              </span>
+              <span class="narrative-slide__progress" aria-hidden="true">
+                {slides.map((_, markerIndex) => (
+                  <span
+                    class:list={{
+                      "is-reached": markerIndex <= index,
+                      "is-current": markerIndex === index,
+                    }}
+                  />
+                ))}
+              </span>
+            </div>
+            <ul class="narrative-slide__meta" aria-label="Метки сюжетного окна">
+              {slide.meta.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
             <h3>{slide.title}</h3>
             <p class="narrative-slide__text">{slide.text}</p>
             <aside class="narrative-slide__secondary">
@@ -105,14 +127,20 @@ const Heading = headingLevel;
 <style>
   .narrative-sequence {
     display: grid;
-    gap: var(--space-5);
-    padding: clamp(var(--space-4), 3vw, var(--space-7));
-    border: 1px solid var(--color-border);
+    gap: var(--space-6);
+    padding: clamp(var(--space-5), 4vw, var(--space-10));
+    overflow: clip;
+    border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-2xl);
     background:
-      linear-gradient(145deg, rgb(255 255 255 / 32%), transparent 45%),
-      var(--color-surface);
-    box-shadow: var(--shadow-surface);
+      radial-gradient(
+        circle at 72% 10%,
+        var(--color-lamp-glow),
+        transparent 29rem
+      ),
+      linear-gradient(135deg, var(--color-surface), var(--color-surface-strong));
+    box-shadow: var(--shadow-raised);
+    scroll-margin-top: var(--header-scroll-offset);
   }
 
   .narrative-sequence:focus-visible {
@@ -124,6 +152,8 @@ const Heading = headingLevel;
     display: grid;
     gap: var(--space-4);
     align-items: end;
+    padding-bottom: var(--space-5);
+    border-bottom: 1px solid var(--color-border);
   }
 
   .narrative-sequence__keyboard-hint {
@@ -131,14 +161,29 @@ const Heading = headingLevel;
   }
 
   .narrative-sequence__header :is(h1, h2) {
-    margin: 0;
-    font-size: var(--font-size-heading-sm);
+    max-width: 18ch;
+    margin: var(--space-2) 0 0;
+    font-size: var(--font-size-heading-lg);
+    hyphens: none;
+    overflow-wrap: normal;
+  }
+
+  .narrative-sequence__eyebrow,
+  .narrative-slide__index,
+  .narrative-slide__meta {
+    color: var(--color-text-muted);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
   }
 
   .narrative-sequence__lead {
-    max-width: 48rem;
+    max-width: 43rem;
     margin: var(--space-2) 0 0;
     color: var(--color-text-muted);
+    font-size: var(--font-size-400);
   }
 
   .narrative-sequence__viewport {
@@ -147,11 +192,8 @@ const Heading = headingLevel;
 
   .narrative-slide {
     display: grid;
-    gap: var(--space-5);
-    overflow: hidden;
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-xl);
-    background: var(--color-surface-strong);
+    gap: clamp(var(--space-6), 4vw, var(--space-10));
+    align-items: stretch;
     animation: narrative-slide-in var(--motion-duration-slow)
       var(--motion-easing-enter);
   }
@@ -162,23 +204,29 @@ const Heading = headingLevel;
 
   .narrative-slide__media {
     display: grid;
+    grid-template-rows: minmax(18rem, 1fr) auto;
     align-content: start;
+    overflow: hidden;
+    border: var(--frame-border-width) solid var(--color-wood-strong);
+    border-radius: var(--frame-radius);
     background: var(--color-wood-strong);
+    box-shadow: var(--shadow-frame);
+    transform: rotate(-0.5deg);
   }
 
-  .narrative-slide__media img {
+  .narrative-slide__media :global(.optimized-image) {
     display: block;
     width: 100%;
     height: 100%;
-    min-height: 18rem;
-    max-height: 32rem;
-    object-fit: cover;
+    min-height: 0;
+    padding: var(--frame-mat-padding);
+    background: var(--color-linen);
   }
 
   .narrative-slide__media p {
     margin: 0;
     padding: var(--space-3) var(--space-4);
-    color: rgb(255 245 224 / 78%);
+    color: var(--color-text-muted-on-dark);
     font-family: var(--font-family-ui);
     font-size: var(--font-size-100);
     line-height: 1.45;
@@ -188,27 +236,77 @@ const Heading = headingLevel;
     display: grid;
     align-content: center;
     gap: var(--space-4);
-    padding: clamp(var(--space-4), 3vw, var(--space-7));
+    padding: clamp(var(--space-2), 2vw, var(--space-5)) 0;
+  }
+
+  .narrative-slide__index-row {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+  }
+
+  .narrative-slide__index {
+    flex: 0 0 auto;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .narrative-slide__progress {
+    display: grid;
+    width: min(13rem, 100%);
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: var(--space-2);
+  }
+
+  .narrative-slide__progress > span {
+    height: 0.1875rem;
+    background: var(--color-border);
+  }
+
+  .narrative-slide__progress > .is-reached {
+    background: var(--color-accent);
+  }
+
+  .narrative-slide__progress > .is-current {
+    transform: scaleY(2);
+    transform-origin: center;
+  }
+
+  .narrative-slide__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .narrative-slide__meta li:not(:last-child)::after {
+    margin-left: var(--space-4);
+    color: var(--color-accent);
+    content: "·";
   }
 
   .narrative-slide__copy h3 {
+    max-width: 17ch;
     margin: 0;
-    font-size: var(--font-size-heading-md);
+    font-size: var(--font-size-heading-lg);
     line-height: var(--line-height-tight);
   }
 
   .narrative-slide__text {
     margin: 0;
     color: var(--color-text-muted);
-    font-size: var(--font-size-400);
+    font-size: clamp(var(--font-size-300), 1.5vw, var(--font-size-400));
+    line-height: 1.62;
   }
 
   .narrative-slide__secondary {
     display: grid;
     gap: var(--space-2);
-    padding: var(--space-4);
-    border-left: 0.25rem solid var(--color-accent);
-    background: var(--color-accent-muted);
+    max-width: 36rem;
+    padding: var(--space-4) 0 var(--space-1) var(--space-5);
+    border-left: 0.1875rem solid var(--color-accent);
   }
 
   .narrative-slide__secondary strong {
@@ -230,13 +328,15 @@ const Heading = headingLevel;
 
   .narrative-sequence__controls {
     justify-content: space-between;
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border);
   }
 
   .narrative-sequence__keyboard-hint {
     margin: 0;
     color: var(--color-text-muted);
     font-size: var(--font-size-100);
-    text-align: center;
+    text-align: left;
   }
 
   @keyframes narrative-slide-in {
@@ -248,7 +348,8 @@ const Heading = headingLevel;
 
   @media (min-width: 58rem) {
     .narrative-slide {
-      grid-template-columns: minmax(18rem, 0.9fr) minmax(22rem, 1.1fr);
+      grid-template-columns: minmax(22rem, 1.08fr) minmax(22rem, 0.92fr);
+      min-height: 31rem;
     }
   }
 
@@ -257,8 +358,13 @@ const Heading = headingLevel;
       border-radius: var(--radius-xl);
     }
 
-    .narrative-slide__media img {
-      min-height: 13rem;
+    .narrative-slide__media {
+      grid-template-rows: minmax(14rem, 55vw) auto;
+      transform: none;
+    }
+
+    .narrative-slide__copy h3 {
+      font-size: var(--font-size-heading-md);
     }
 
     .narrative-sequence__controls,
