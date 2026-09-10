@@ -1,6 +1,8 @@
 # Project-local Codex exec rules for Playwright CLI QA on Windows.
-# Goal: once a named Playwright session is being used, routine browser actions
-# (click/screenshot/snapshot/eval/etc.) should not request approval one by one.
+# Goal: once a named Playwright session is being used, all routine browser
+# actions (click/navigation/screenshot/snapshot/eval/etc.) run without repeated
+# user approval. AGENTS.md requires the main agent and all subagents to preserve
+# this exact direct argv prefix.
 #
 # Intentionally DO NOT allow a broad `pwsh -Command` / `powershell -Command`
 # prefix: that would effectively allow arbitrary PowerShell outside the sandbox.
@@ -19,12 +21,17 @@ prefix_rule(
         "npx.cmd --package @playwright/cli playwright-cli --session kugach-qa snapshot",
         "npx.cmd --package @playwright/cli playwright-cli --session kugach-qa click e15",
         "npx.cmd --package @playwright/cli playwright-cli --session kugach-qa screenshot",
+        "npx.cmd --package @playwright/cli playwright-cli --session kugach-qa reload",
+        "npx.cmd --package @playwright/cli playwright-cli --session kugach-qa fill e8 Example",
+        "npx.cmd --package @playwright/cli playwright-cli --session kugach-qa press Enter",
         "npx.cmd --package @playwright/cli playwright-cli --session kugach-qa open http://127.0.0.1:4321/ --headed",
     ],
     not_match = [
         "npx.cmd --package @playwright/cli playwright-cli screenshot",
         "npx.cmd --package some-other-package playwright-cli --session kugach-qa screenshot",
         "npx.cmd --package @playwright/cli some-other-cli --session kugach-qa screenshot",
+        "pwsh.exe -Command npx.cmd --package @playwright/cli playwright-cli --session kugach-qa snapshot",
+        "cmd.exe /c npx.cmd --package @playwright/cli playwright-cli --session kugach-qa snapshot",
     ],
 )
 
@@ -43,6 +50,7 @@ prefix_rule(
         "npx.cmd --yes --package @playwright/cli playwright-cli --session kugach-qa snapshot",
         "npx.cmd --yes --package @playwright/cli playwright-cli --session kugach-qa click e15",
         "npx.cmd --yes --package @playwright/cli playwright-cli --session kugach-qa screenshot",
+        "npx.cmd --yes --package @playwright/cli playwright-cli --session kugach-qa reload",
     ],
     not_match = [
         "npx.cmd --yes --package @playwright/cli playwright-cli screenshot",

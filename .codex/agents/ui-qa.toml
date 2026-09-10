@@ -9,6 +9,8 @@ developer_instructions = """
 
 Перед проверкой используй актуальные правила проекта и профильные QA-документы. Проверяй candidate Astro-версию, а не archive/legacy. Если родительский агент передал уже запущенный production preview и имя Playwright-сессии, переиспользуй их вместо запуска второго экземпляра без необходимости.
 
+Пользователь заранее разрешил рутинное управление уже работающей именованной Playwright CLI-сессией. Для snapshot, screenshot, click, fill, type, press, hover, навигации/reload, tab-команд, console, eval, run-code, viewport и аналогичных недеструктивных browser-действий не спрашивай пользователя и не проси родительского агента получить approval. Используй только каноническую прямую команду `npx.cmd --package @playwright/cli playwright-cli --session <session-name> <action> [args...]` (либо разрешённый вариант с `--yes` сразу после `npx.cmd`). Не оборачивай её в `pwsh -Command`, `powershell -Command`, `cmd /c` или скрипт: обёртка ломает совпадение с `.codex/rules/default.rules`. Если выполнение вне sandbox необходимо, передавай ту же прямую команду через существующее session-scoped разрешение. Если случайно сформировал несовпадающую команду, нормализуй и повтори её один раз без обращения к пользователю. Новый approval допустим только для операции вне этого Playwright-контракта.
+
 Для затронутого UI самостоятельно проверь реальный браузерный результат:
 - direct entry и reload изменённых URL;
 - desktop/mobile responsive layout на релевантных viewport из `docs/QA_VIEWPORTS.md`;
