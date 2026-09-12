@@ -31,7 +31,7 @@ const pageDescription = [
   studioDecoration
 >
   <section class="light-page" aria-labelledby="light-page-title">
-    <div class="light-page__topbar">
+    <div class="light-page__topbar studio-reading-plane">
       <div class="light-page__title">
         <h1 id="light-page-title">Свет в мастерской</h1>
         <p>
@@ -61,37 +61,42 @@ const pageDescription = [
   .light-page {
     display: grid;
     min-width: 0;
-    gap: var(--space-5);
-    overflow-x: clip;
+    gap: clamp(var(--space-5), 3vw, var(--space-8));
   }
 
   .light-page__topbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-4);
-    align-items: start;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-5);
+    align-items: center;
+    padding: clamp(var(--space-5), 3vw, var(--space-8));
   }
 
   .light-page__title {
     display: grid;
-    max-width: 48rem;
+    min-width: 0;
     gap: var(--space-2);
   }
 
   .light-page h1 {
     margin: 0;
     font-size: var(--font-size-heading-lg);
+    max-width: 16ch;
   }
 
   .light-page__title > p:last-child {
     margin: 0;
     color: var(--color-text-muted);
     font-size: var(--font-size-400);
+    max-width: 62ch;
   }
 
-  @media (max-width: 45rem) {
-    .light-page__topbar,
+  @media (max-width: 42rem) {
+    .light-page__topbar {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+
     .light-page__topbar :global(.action) {
       width: 100%;
     }
