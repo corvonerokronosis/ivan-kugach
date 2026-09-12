@@ -27,7 +27,7 @@ const pageDescription = [
   studioDecoration
 >
   <section class="details-page" aria-labelledby="details-page-title">
-    <div class="details-page__topbar">
+    <div class="details-page__topbar studio-reading-plane">
       <div class="details-page__title">
         <h1 id="details-page-title">Приблизить детали</h1>
         <p>
@@ -56,37 +56,42 @@ const pageDescription = [
   .details-page {
     display: grid;
     min-width: 0;
-    gap: var(--space-5);
-    overflow-x: clip;
+    gap: clamp(var(--space-5), 3vw, var(--space-8));
   }
 
   .details-page__topbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-4);
-    align-items: start;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-5);
+    align-items: center;
+    padding: clamp(var(--space-5), 3vw, var(--space-8));
   }
 
   .details-page__title {
     display: grid;
-    max-width: 48rem;
+    min-width: 0;
     gap: var(--space-2);
   }
 
   .details-page h1 {
     margin: 0;
     font-size: var(--font-size-heading-lg);
+    max-width: 16ch;
   }
 
   .details-page__title > p:last-child {
     margin: 0;
     color: var(--color-text-muted);
     font-size: var(--font-size-400);
+    max-width: 64ch;
   }
 
-  @media (max-width: 45rem) {
-    .details-page__topbar,
+  @media (max-width: 42rem) {
+    .details-page__topbar {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+
     .details-page__topbar :global(.action) {
       width: 100%;
     }
