@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -19,11 +22,11 @@
     "verify": "npm run check && npm run lint && npm run test:unit && npm run format:check && npm run build && npm run performance:budget && npm run test:smoke:dist"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.7.3",
-    "astro": "^6.4.8"
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.2"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.9",
+    "@astrojs/check": "^0.9.10",
     "@eslint/js": "^10.0.1",
     "@playwright/cli": "^0.1.19",
     "eslint": "^10.5.0",

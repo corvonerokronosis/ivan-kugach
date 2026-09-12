@@ -13,7 +13,7 @@ proof-of-concept сохранён как исторический reference в
 ## Требования
 
 - Windows + PowerShell.
-- Node.js версии, совместимой с Astro 6.
+- Node.js 22.12.0 или новее (поддерживаемая чётная major-версия для Astro 7).
 - npm из установленного Node.js.
 
 На Windows используйте `npm.cmd`, не меняя PowerShell execution policy.

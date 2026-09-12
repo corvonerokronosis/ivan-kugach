@@ -10,6 +10,8 @@ export default defineConfig({
   site,
   base,
   output: "static",
+  // Preserve Astro 6 whitespace semantics during the Astro 7 migration.
+  compressHTML: true,
   integrations: [
     sitemap({
       filter: (page) => {
