@@ -1,6 +1,5 @@
 ---
 import Action from "../../components/common/Action.astro";
-import SectionHeader from "../../components/common/SectionHeader.astro";
 import ArtworkCatalogCard from "../../components/works/ArtworkCatalogCard.astro";
 import InterestForm from "../../components/works/InterestForm.astro";
 import {
@@ -23,26 +22,42 @@ function formatPrice(artwork: (typeof artworks)[number]): string {
 <BaseLayout
   title="Каталог работ — Иван Кугач"
   description="Каталог доступных и зарезервированных работ Ивана Кугача."
+  studioDecoration
 >
-  <SectionHeader
-    level="h1"
-    title="Каталог работ"
-    description="Здесь собраны доступные и зарезервированные произведения. Проданные работы вынесены в отдельный архив."
-  />
+  <section class="works-hero" aria-labelledby="works-title">
+    <div class="works-hero__copy">
+      <h1 id="works-title">Каталог работ</h1>
+      <p>
+        Здесь собраны доступные и зарезервированные произведения. Проданные
+        работы вынесены в отдельный архив.
+      </p>
+      <div class="works-hero__actions">
+        <Action href="/archive/">Открыть архив</Action>
+      </div>
+    </div>
 
-  <section class="works-section" aria-labelledby="active-works-title">
-    <div class="works-section__header">
+    <div class="works-hero__wall" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <aside class="works-hero__note studio-reading-plane">
       <h2 id="active-works-title">Доступные и зарезервированные</h2>
       <p>Эти карточки остаются в основном каталоге для заявочного сценария.</p>
-    </div>
-    <ul class="works-grid" aria-label="Работы основного каталога">
+    </aside>
+  </section>
+
+  <section class="works-section" aria-label="Развеска работ основного каталога">
+    <ul class="works-hanging" aria-label="Работы основного каталога">
       {
-        artworks.map((artwork) => (
-          <li>
+        artworks.map((artwork, index) => (
+          <li class={`works-hanging__item works-hanging__item--${index + 1}`}>
             <ArtworkCatalogCard
               artwork={artwork}
               statusLabel={artworkAvailabilityLabels[artwork.availability]}
               priceLabel={formatPrice(artwork)}
+              presentation="wall"
             />
           </li>
         ))
@@ -51,8 +66,10 @@ function formatPrice(artwork: (typeof artworks)[number]): string {
   </section>
 
   <div class="works-actions">
-    <Action href="/archive/">Открыть архив</Action>
-    <Action href="/artist/" variant="secondary">О художнике</Action>
+    <div>
+      <Action href="/archive/">Открыть архив</Action>
+      <Action href="/artist/" variant="secondary">О художнике</Action>
+    </div>
   </div>
 
   <section
@@ -77,40 +94,175 @@ function formatPrice(artwork: (typeof artworks)[number]): string {
 </BaseLayout>
 
 <style>
-  .works-section {
+  .works-hero {
+    position: relative;
     display: grid;
+    min-height: min(34rem, calc(100dvh - 9rem));
+    gap: clamp(var(--space-6), 5vw, var(--space-12));
+    align-items: center;
+    overflow: clip;
+    padding: clamp(var(--space-6), 5vw, var(--space-12));
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-2xl);
+    background:
+      radial-gradient(
+        circle at 77% 22%,
+        var(--color-lamp-glow),
+        transparent 29%
+      ),
+      linear-gradient(130deg, var(--color-surface), var(--color-surface-strong));
+    box-shadow: var(--shadow-raised);
+    isolation: isolate;
+  }
+
+  .works-hero::after {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: -1;
+    height: 24%;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      color-mix(in srgb, var(--color-wood) 18%, transparent)
+    );
+    content: "";
+  }
+
+  .works-hero__copy {
+    display: grid;
+    z-index: 1;
+    align-content: center;
+    justify-items: start;
     gap: var(--space-5);
   }
 
-  .works-section__header {
-    display: grid;
-    gap: var(--space-2);
-  }
-
-  .works-section__header h2 {
-    margin-block-end: 0;
-  }
-
-  .works-section__header p {
-    color: var(--color-text-muted);
-  }
-
-  .works-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-    gap: var(--space-5);
-    padding: 0;
+  .works-hero__copy h1 {
+    max-width: 9ch;
     margin: 0;
-    list-style: none;
+    font-size: var(--font-size-heading-xl);
+    font-weight: var(--font-weight-semibold);
   }
 
-  .works-actions {
+  .works-hero__copy p {
+    max-width: 39rem;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: clamp(var(--font-size-300), 1.7vw, var(--font-size-500));
+  }
+
+  .works-hero__actions,
+  .works-actions > div {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
   }
 
-  .inquiry-section,
+  .works-hero__wall {
+    position: absolute;
+    top: 9%;
+    right: 4%;
+    z-index: -1;
+    width: min(38%, 25rem);
+    aspect-ratio: 4 / 3;
+    transform: rotate(1.5deg);
+  }
+
+  .works-hero__wall span {
+    position: absolute;
+    border: var(--frame-border-width) solid var(--color-wood-strong);
+    background: var(--color-linen);
+    box-shadow: var(--shadow-frame);
+  }
+
+  .works-hero__wall span:nth-child(1) {
+    inset: 0 24% 34% 0;
+  }
+
+  .works-hero__wall span:nth-child(2) {
+    inset: 28% 0 5% 56%;
+    transform: rotate(-3deg);
+  }
+
+  .works-hero__wall span:nth-child(3) {
+    inset: 64% 38% 0 18%;
+    transform: rotate(2deg);
+  }
+
+  .works-hero__note {
+    display: grid;
+    z-index: 1;
+    align-self: end;
+    gap: var(--space-3);
+    max-width: 31rem;
+    margin-inline-start: auto;
+    padding: clamp(var(--space-5), 3vw, var(--space-7));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    transform: rotate(-0.7deg);
+  }
+
+  .works-hero__note h2,
+  .works-hero__note p {
+    margin: 0;
+  }
+
+  .works-hero__note h2 {
+    font-size: var(--font-size-heading-sm);
+  }
+
+  .works-hero__note p {
+    color: var(--color-text-muted);
+  }
+
+  .works-section {
+    display: grid;
+    scroll-margin-top: var(--space-6);
+    padding-block: clamp(var(--space-8), 6vw, var(--space-13));
+  }
+
+  .works-hanging {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: clamp(var(--space-10), 8vw, 7rem)
+      clamp(var(--space-5), 4vw, var(--space-10));
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .works-hanging__item {
+    min-width: 0;
+  }
+
+  .works-hanging__item--1 {
+    grid-column: 1 / 8;
+    grid-row: 1;
+  }
+
+  .works-hanging__item--2 {
+    grid-column: 8 / 13;
+    grid-row: 1;
+    padding-top: clamp(var(--space-8), 8vw, 7rem);
+  }
+
+  .works-hanging__item--3 {
+    grid-column: 2 / 11;
+    grid-row: 2;
+  }
+
+  .works-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-block: var(--space-6);
+    border-block: 1px solid var(--color-border);
+  }
+
+  .inquiry-section {
+    display: grid;
+    gap: clamp(var(--space-6), 4vw, var(--space-10));
+    padding-top: clamp(var(--space-6), 4vw, var(--space-10));
+  }
+
   .inquiry-section__header {
     display: grid;
     gap: var(--space-4);
@@ -124,5 +276,65 @@ function formatPrice(artwork: (typeof artworks)[number]): string {
   .inquiry-section__header p {
     max-width: 48rem;
     color: var(--color-text-muted);
+  }
+
+  @media (min-width: 56rem) {
+    .works-hero {
+      grid-template-columns: minmax(0, 1.08fr) minmax(19rem, 0.92fr);
+    }
+
+    .works-hero__note {
+      grid-column: 2;
+    }
+
+    .inquiry-section {
+      grid-template-columns: minmax(16rem, 0.65fr) minmax(0, 1.35fr);
+      align-items: start;
+    }
+  }
+
+  @media (max-width: 55.99rem) {
+    .works-hanging {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .works-hanging__item--1,
+    .works-hanging__item--2,
+    .works-hanging__item--3 {
+      grid-column: 1;
+      grid-row: auto;
+    }
+
+    .works-hanging__item--2 {
+      padding-top: 0;
+    }
+  }
+
+  @media (max-width: 45rem) {
+    .works-hero {
+      min-height: auto;
+      padding: var(--space-5);
+      border-radius: var(--radius-lg);
+    }
+
+    .works-hero__wall {
+      display: none;
+    }
+
+    .works-hero__note {
+      margin-inline-start: 0;
+      transform: none;
+    }
+
+    .works-hero__actions,
+    .works-hero__actions :global(.action),
+    .works-actions > div,
+    .works-actions :global(.action) {
+      width: 100%;
+    }
+
+    .works-hanging {
+      gap: var(--space-10);
+    }
   }
 </style>
