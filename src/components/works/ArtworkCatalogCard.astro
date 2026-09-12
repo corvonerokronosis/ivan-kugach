@@ -9,9 +9,10 @@ interface Props {
   artwork: ArtworkSummary;
   statusLabel: string;
   priceLabel: string;
+  presentation?: "card" | "wall";
 }
 
-const { artwork, statusLabel, priceLabel } = Astro.props;
+const { artwork, statusLabel, priceLabel, presentation = "card" } = Astro.props;
 const primaryImage =
   artwork.images.find((image) => image.role === "primary") ?? artwork.images[0];
 const artworkUrl = withBasePath(`/works/${artwork.slug}/`);
@@ -34,6 +35,7 @@ const actionUrl = `/works/?work=${encodeURIComponent(artwork.id)}#work-inquiry`;
   class:list={[
     "artwork-catalog-card",
     `artwork-catalog-card--${artwork.availability}`,
+    `artwork-catalog-card--${presentation}`,
   ]}
   aria-labelledby={`artwork-${artwork.id}-title`}
 >
@@ -189,5 +191,71 @@ const actionUrl = `/works/?work=${encodeURIComponent(artwork.id)}#work-inquiry`;
     flex-wrap: wrap;
     gap: var(--space-2);
     align-items: center;
+  }
+
+  .artwork-catalog-card--wall {
+    gap: var(--space-5);
+    height: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .artwork-catalog-card--wall:focus-within {
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .artwork-catalog-card--wall .artwork-catalog-card__media-link {
+    display: block;
+  }
+
+  .artwork-catalog-card--wall .artwork-catalog-card__body {
+    position: relative;
+    width: calc(100% - clamp(var(--space-3), 4vw, var(--space-8)));
+    margin-inline-start: clamp(var(--space-3), 4vw, var(--space-8));
+    padding: clamp(var(--space-4), 2.5vw, var(--space-6));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+    box-shadow: var(--shadow-surface);
+  }
+
+  .artwork-catalog-card--wall .artwork-catalog-card__body::before {
+    position: absolute;
+    top: 0;
+    left: clamp(var(--space-4), 5vw, var(--space-8));
+    width: clamp(2.5rem, 8vw, 5rem);
+    height: 0.2rem;
+    background: var(--color-accent);
+    content: "";
+  }
+
+  .artwork-catalog-card--wall .artwork-catalog-card__facts {
+    padding-block: var(--space-3);
+    border-block: 1px solid var(--color-border-subtle);
+  }
+
+  @media (min-width: 44rem) {
+    .artwork-catalog-card--wall .artwork-catalog-card__facts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+  }
+
+  @media (max-width: 45rem) {
+    .artwork-catalog-card--wall .artwork-catalog-card__body {
+      width: calc(100% - var(--space-3));
+      margin-inline-start: var(--space-3);
+    }
+
+    .artwork-catalog-card--wall .artwork-catalog-card__actions,
+    .artwork-catalog-card--wall
+      .artwork-catalog-card__actions
+      :global(.action) {
+      width: 100%;
+    }
   }
 </style>
