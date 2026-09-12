@@ -1032,22 +1032,17 @@ async function smokeLightWorkshop() {
 
   const range = page.locator("[data-light-range]");
   const max = Number(await range.getAttribute("max"));
+  const step = Number(await range.getAttribute("step"));
   assert(
     Number.isFinite(max) && max > 0,
     "У света должен быть range с max > 0.",
   );
+  assert(step === 1, "Состояния света должны переключаться одним нажатием.");
 
-  for (let value = 0; value <= max; value += 1) {
-    await range.evaluate((element, nextValue) => {
-      const view = element.ownerDocument.defaultView;
-
-      if (!view) {
-        throw new Error("Window недоступен для range input.");
-      }
-
-      element.value = String(nextValue);
-      element.dispatchEvent(new view.Event("input", { bubbles: true }));
-    }, value);
+  await range.focus();
+  await range.press("Home");
+  for (let value = 1; value <= max; value += 1) {
+    await range.press("ArrowRight");
   }
 
   await page.locator("#light-workshop-complete-dialog[open]").waitFor();
