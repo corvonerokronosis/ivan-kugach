@@ -11,6 +11,7 @@ interface Props {
   idPrefix?: string;
   labelledBy?: string;
   describedBy?: string;
+  presentation?: "panel" | "work-sheet";
 }
 
 const {
@@ -20,6 +21,7 @@ const {
   idPrefix = "interest",
   labelledBy,
   describedBy,
+  presentation = "panel",
 } = Astro.props;
 const selectedWork = artworks.find((artwork) => artwork.id === selectedWorkId);
 const initialComment =
@@ -35,7 +37,7 @@ function formatPrice(artwork: ArtworkSummary): string {
 ---
 
 <form
-  class="interest-form"
+  class:list={["interest-form", `interest-form--${presentation}`]}
   data-interest-form
   data-form-status="idle"
   aria-labelledby={labelledBy}
@@ -73,6 +75,7 @@ function formatPrice(artwork: ArtworkSummary): string {
       <label for={`${idPrefix}-work`}>
         Выбранная работа <span aria-hidden="true">*</span>
       </label>
+      <!-- Native select is intentional: the operating-system popup is acceptable here. -->
       <select
         id={`${idPrefix}-work`}
         name="workId"
@@ -167,6 +170,7 @@ function formatPrice(artwork: ArtworkSummary): string {
 
 <style>
   .interest-form {
+    position: relative;
     display: grid;
     gap: var(--space-5);
     padding: clamp(var(--space-4), 4vw, var(--space-6));
@@ -174,6 +178,29 @@ function formatPrice(artwork: ArtworkSummary): string {
     border-radius: var(--radius-lg);
     background: var(--color-surface);
     box-shadow: var(--shadow-surface);
+  }
+
+  .interest-form--work-sheet {
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background:
+      linear-gradient(
+        90deg,
+        transparent 0 calc(var(--space-6) - 1px),
+        var(--color-border-subtle) calc(var(--space-6) - 1px) var(--space-6),
+        transparent var(--space-6)
+      ),
+      color-mix(in srgb, var(--color-linen) 18%, var(--color-surface));
+  }
+
+  .interest-form--work-sheet::before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 0.2rem;
+    background: var(--color-accent);
+    content: "";
   }
 
   .interest-form__grid {
@@ -242,6 +269,7 @@ function formatPrice(artwork: ArtworkSummary): string {
     height: 1.15rem;
     margin-block-start: 0.15rem;
     accent-color: var(--color-accent-strong);
+    cursor: pointer;
   }
 
   .interest-form__consent input:focus-visible {
@@ -300,6 +328,10 @@ function formatPrice(artwork: ArtworkSummary): string {
       var(--color-status-success) 7%,
       var(--color-surface-muted)
     );
+  }
+
+  .interest-form[aria-busy="true"] {
+    cursor: progress;
   }
 
   @media (min-width: 48rem) {

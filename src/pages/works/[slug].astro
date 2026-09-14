@@ -42,6 +42,12 @@ const inquiryLabel =
     : artwork.priceType === "request"
       ? "Уточнить цену"
       : "Запросить покупку";
+const statusTone =
+  artwork.availability === "available"
+    ? "success"
+    : artwork.availability === "reserved"
+      ? "warning"
+      : "neutral";
 const pageTitle = artwork.seo?.title ?? `${artwork.title} — Иван Кугач`;
 const pageDescription = artwork.seo?.description ?? artwork.shortDescription;
 const structuredData = createArtworkStructuredData({
@@ -58,153 +64,170 @@ const structuredData = createArtworkStructuredData({
   socialImageAlt={primaryImage.alt}
   openGraphType="article"
   structuredData={structuredData}
+  studioDecoration
 >
-  <SectionHeader
-    level="h1"
-    eyebrow="Работа"
-    title={artwork.title}
-    description={artwork.shortDescription}
-  />
-
-  <section class="work-detail" aria-labelledby="work-detail-title">
-    <div class="work-detail__image">
-      <FramedArtwork
-        src={primaryImage.src}
-        alt={primaryImage.alt}
-        caption={primaryImage.caption ?? artwork.series?.title}
-        fit="contain"
-        priority
-        variant="hero"
-        slotRatio="square"
-      />
-    </div>
-
-    <div class="work-detail__summary">
-      <div class="work-detail__badges" aria-label="Краткие параметры работы">
-        <MetaBadge
-          tone={artwork.availability === "sold" ? "neutral" : "accent"}
-        >
-          {statusLabel}
-        </MetaBadge>
-        <MetaBadge>{priceLabel}</MetaBadge>
-        <MetaBadge>{artwork.year}</MetaBadge>
-      </div>
-
-      <h2 id="work-detail-title">Параметры работы</h2>
-
-      <dl class="work-facts">
-        <div>
-          <dt>Техника</dt>
-          <dd>{artwork.technique}</dd>
-        </div>
-        <div>
-          <dt>Размер</dt>
-          <dd>{artwork.dimensions.label}</dd>
-        </div>
-        <div>
-          <dt>Статус</dt>
-          <dd>{statusLabel}</dd>
-        </div>
-        <div>
-          <dt>Цена</dt>
-          <dd>{priceLabel}</dd>
-        </div>
-        {
-          artwork.series && (
-            <div>
-              <dt>Серия</dt>
-              <dd>
-                <a href={withBasePath(`/series/${artwork.series.slug}/`)}>
-                  {artwork.series.title}
-                </a>
-              </dd>
-            </div>
-          )
-        }
-      </dl>
-
-      <div class="work-detail__actions">
-        <Action href="#work-inquiry">{inquiryLabel}</Action>
-        <Action href="/works/" variant="secondary">Вернуться в каталог</Action>
-      </div>
-    </div>
-  </section>
-
-  <section class="work-description" aria-labelledby="work-description-title">
-    <h2 id="work-description-title">Описание</h2>
-    <p>{artwork.fullDescription}</p>
-  </section>
-
-  <section class="work-gallery" aria-labelledby="work-gallery-title">
-    <div class="work-gallery__header">
-      <h2 id="work-gallery-title">Галерея</h2>
-      <p>
-        Страница готова к нескольким изображениям: основному виду, деталям и
-        контекстным снимкам.
-      </p>
-    </div>
-
-    <ul class="work-gallery__list">
-      {
-        artwork.images.map((image, index) => (
-          <li>
-            <FramedArtwork
-              src={image.src}
-              alt={image.alt}
-              variant="detail"
-              caption={
-                image.caption ?? (index === 0 ? "Основной вид" : undefined)
-              }
-              fit={image.role === "detail" ? "cover" : "contain"}
-              slotRatio="landscape"
-            />
-          </li>
-        ))
-      }
-    </ul>
-  </section>
-
-  {
-    artwork.series && (
-      <section class="work-series" aria-labelledby="work-series-title">
-        <div>
-          <h2 id="work-series-title">Серия</h2>
-          <p>
-            Работа связана с серией через стабильный ID в локальных данных, а не
-            через текстовое название.
-          </p>
-        </div>
-        <Action href={`/series/${artwork.series.slug}/`} variant="secondary">
-          Открыть серию
-        </Action>
-      </section>
-    )
-  }
-
-  <section
-    id="work-inquiry"
-    class="work-inquiry"
-    aria-labelledby="work-inquiry-title"
+  <article
+    class:list={["work-page", `work-page--${artwork.availability}`]}
+    data-work-detail
+    data-work-availability={artwork.availability}
   >
-    <div class="work-inquiry__header">
-      <h2 id="work-inquiry-title">Заявка по работе</h2>
-      <p>
-        Работа уже выбрана автоматически. Можно уточнить наличие, цену, условия
-        просмотра или похожие произведения без онлайн-оплаты.
-      </p>
-    </div>
-    <InterestForm
-      artworks={inquiryArtworks}
-      availabilityLabels={artworkAvailabilityLabels}
-      selectedWorkId={artwork.id}
-      idPrefix={`work-${artwork.id}-interest`}
-      labelledBy="work-inquiry-title"
-    />
-  </section>
+    <section class="work-hero" aria-labelledby="work-title">
+      <header class="work-hero__header">
+        <SectionHeader
+          id="work-title"
+          level="h1"
+          eyebrow="Работа"
+          title={artwork.title}
+          description={artwork.shortDescription}
+        />
+      </header>
+
+      <div class="work-hero__image">
+        <FramedArtwork
+          src={primaryImage.src}
+          alt={primaryImage.alt}
+          caption={primaryImage.caption ?? artwork.series?.title}
+          fit="contain"
+          priority
+          variant="hero"
+          slotRatio="wide"
+        />
+      </div>
+
+      <aside
+        class="work-detail__summary studio-reading-plane"
+        aria-labelledby="work-detail-title"
+      >
+        <div class="work-detail__badges" aria-label="Краткие параметры работы">
+          <MetaBadge tone={statusTone}>
+            {statusLabel}
+          </MetaBadge>
+          <MetaBadge>{priceLabel}</MetaBadge>
+          <MetaBadge>{artwork.year}</MetaBadge>
+        </div>
+
+        <h2 id="work-detail-title">Параметры работы</h2>
+
+        <dl class="work-facts">
+          <div>
+            <dt>Техника</dt>
+            <dd>{artwork.technique}</dd>
+          </div>
+          <div>
+            <dt>Размер</dt>
+            <dd>{artwork.dimensions.label}</dd>
+          </div>
+          <div>
+            <dt>Статус</dt>
+            <dd>{statusLabel}</dd>
+          </div>
+          <div>
+            <dt>Цена</dt>
+            <dd>{priceLabel}</dd>
+          </div>
+          {
+            artwork.series && (
+              <div>
+                <dt>Серия</dt>
+                <dd>
+                  <a href={withBasePath(`/series/${artwork.series.slug}/`)}>
+                    {artwork.series.title}
+                  </a>
+                </dd>
+              </div>
+            )
+          }
+        </dl>
+
+        <div class="work-detail__actions">
+          <Action href="#work-inquiry">{inquiryLabel}</Action>
+          <Action href="/works/" variant="secondary">Вернуться в каталог</Action
+          >
+        </div>
+      </aside>
+    </section>
+
+    <section class="work-description" aria-labelledby="work-description-title">
+      <p class="work-description__eyebrow">О произведении</p>
+      <h2 id="work-description-title">Описание</h2>
+      <p class="work-description__copy">{artwork.fullDescription}</p>
+    </section>
+
+    <section class="work-gallery" aria-labelledby="work-gallery-title">
+      <div class="work-gallery__header">
+        <h2 id="work-gallery-title">Галерея</h2>
+        <p>
+          Страница готова к нескольким изображениям: основному виду, деталям и
+          контекстным снимкам.
+        </p>
+      </div>
+
+      <ul class="work-gallery__list">
+        {
+          artwork.images.map((image, index) => (
+            <li>
+              <FramedArtwork
+                src={image.src}
+                alt={image.alt}
+                variant="detail"
+                caption={
+                  image.caption ?? (index === 0 ? "Основной вид" : undefined)
+                }
+                fit={image.role === "detail" ? "cover" : "contain"}
+                slotRatio="landscape"
+              />
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    {
+      artwork.series && (
+        <section class="work-series" aria-labelledby="work-series-title">
+          <div>
+            <p class="work-series__eyebrow">Связанный контекст</p>
+            <h2 id="work-series-title">Серия</h2>
+            <p>
+              Работа связана с серией через стабильный ID в локальных данных, а
+              не через текстовое название.
+            </p>
+          </div>
+          <Action href={`/series/${artwork.series.slug}/`} variant="secondary">
+            Открыть серию
+          </Action>
+        </section>
+      )
+    }
+
+    <section
+      id="work-inquiry"
+      class="work-inquiry"
+      aria-labelledby="work-inquiry-title"
+    >
+      <div class="work-inquiry__header">
+        <p class="work-inquiry__eyebrow">Личный запрос</p>
+        <h2 id="work-inquiry-title">Заявка по работе</h2>
+        <p>
+          Работа уже выбрана автоматически. Можно уточнить наличие, цену,
+          условия просмотра или похожие произведения без онлайн-оплаты.
+        </p>
+      </div>
+      <InterestForm
+        artworks={inquiryArtworks}
+        availabilityLabels={artworkAvailabilityLabels}
+        selectedWorkId={artwork.id}
+        idPrefix={`work-${artwork.id}-interest`}
+        labelledBy="work-inquiry-title"
+        presentation="work-sheet"
+      />
+    </section>
+  </article>
 </BaseLayout>
 
 <style>
-  .work-detail,
+  .work-page,
+  .work-hero,
   .work-description,
   .work-gallery,
   .work-series,
@@ -213,18 +236,69 @@ const structuredData = createArtworkStructuredData({
     gap: var(--space-5);
   }
 
-  .work-detail {
-    align-items: start;
+  .work-page {
+    gap: clamp(var(--space-8), 7vw, 6.5rem);
+  }
+
+  .work-hero {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(var(--space-6), 5vw, var(--space-12));
+    padding-block: var(--space-2) var(--space-8);
+  }
+
+  .work-hero::after {
+    position: absolute;
+    right: 4%;
+    bottom: 0;
+    left: 9%;
+    height: 0.35rem;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-wood-strong) 12% 88%,
+      transparent
+    );
+    box-shadow: 0 var(--space-3) var(--space-5)
+      color-mix(in srgb, var(--color-wood-strong) 30%, transparent);
+    content: "";
+  }
+
+  .work-hero__header {
+    max-width: 49rem;
+  }
+
+  .work-hero__header :global(.section-header__title) {
+    font-size: var(--font-size-heading-xl);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .work-hero__image {
+    min-width: 0;
+  }
+
+  .work-hero__image :global(.framed-artwork) {
+    width: 100%;
+    min-width: 0;
   }
 
   .work-detail__summary {
+    position: relative;
     display: grid;
     gap: var(--space-4);
     padding: clamp(var(--space-4), 3vw, var(--space-6));
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-surface);
+    border-radius: var(--radius-sm);
+  }
+
+  .work-detail__summary::before {
+    position: absolute;
+    top: 0;
+    left: clamp(var(--space-4), 4vw, var(--space-8));
+    width: clamp(3rem, 7vw, 5.5rem);
+    height: 0.2rem;
+    background: var(--color-accent);
+    content: "";
   }
 
   .work-detail__badges,
@@ -235,7 +309,7 @@ const structuredData = createArtworkStructuredData({
     align-items: center;
   }
 
-  .work-detail h2,
+  .work-detail__summary h2,
   .work-description h2,
   .work-gallery h2,
   .work-series h2,
@@ -249,19 +323,20 @@ const structuredData = createArtworkStructuredData({
 
   .work-facts {
     display: grid;
-    gap: var(--space-3);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--space-5);
     margin: 0;
+    border-block: 1px solid var(--color-border-subtle);
   }
 
   .work-facts div {
     display: grid;
     gap: var(--space-1);
-    padding-block-end: var(--space-3);
+    padding-block: var(--space-3);
     border-bottom: 1px solid var(--color-border-subtle);
   }
 
   .work-facts div:last-child {
-    padding-block-end: 0;
     border-bottom: 0;
   }
 
@@ -281,11 +356,43 @@ const structuredData = createArtworkStructuredData({
 
   .work-description,
   .work-series {
-    padding: clamp(var(--space-4), 3vw, var(--space-6));
+    padding: clamp(var(--space-5), 4vw, var(--space-10));
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
+    border-radius: var(--radius-sm);
+    background: color-mix(in srgb, var(--color-surface) 88%, transparent);
     box-shadow: var(--shadow-surface);
+  }
+
+  .work-description {
+    position: relative;
+    max-width: 58rem;
+    margin-inline-start: clamp(0rem, 7vw, 6rem);
+  }
+
+  .work-description::before {
+    position: absolute;
+    top: var(--space-5);
+    bottom: var(--space-5);
+    left: 0;
+    width: 0.22rem;
+    background: var(--color-accent);
+    content: "";
+  }
+
+  .work-description__eyebrow,
+  .work-series__eyebrow,
+  .work-inquiry__eyebrow {
+    color: var(--color-accent-strong);
+    font-family: var(--font-family-ui);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  .work-description__copy {
+    max-width: 66ch;
+    font-size: var(--font-size-400);
   }
 
   .work-gallery__header {
@@ -301,8 +408,8 @@ const structuredData = createArtworkStructuredData({
 
   .work-gallery__list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: clamp(var(--space-5), 4vw, var(--space-10));
     padding: 0;
     margin: 0;
     list-style: none;
@@ -312,6 +419,17 @@ const structuredData = createArtworkStructuredData({
     align-items: center;
   }
 
+  .work-inquiry {
+    scroll-margin-top: var(--header-scroll-offset);
+    padding: clamp(var(--space-5), 5vw, var(--space-10));
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    background:
+      linear-gradient(120deg, var(--color-lamp-muted), transparent 34%),
+      color-mix(in srgb, var(--color-surface-strong) 86%, transparent);
+    box-shadow: var(--shadow-raised);
+  }
+
   .work-inquiry__header {
     display: grid;
     max-width: 48rem;
@@ -319,12 +437,55 @@ const structuredData = createArtworkStructuredData({
   }
 
   @media (min-width: 56rem) {
-    .work-detail {
-      grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.72fr);
+    .work-hero {
+      grid-template-columns: minmax(0, 1.28fr) minmax(19rem, 0.72fr);
+      align-items: end;
+    }
+
+    .work-hero__header {
+      grid-column: 1 / -1;
+    }
+
+    .work-detail__summary {
+      margin-block-end: clamp(var(--space-4), 4vw, var(--space-10));
+      transform: rotate(-0.45deg);
     }
 
     .work-series {
       grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .work-inquiry {
+      grid-template-columns: minmax(15rem, 0.62fr) minmax(0, 1.38fr);
+      align-items: start;
+      gap: clamp(var(--space-8), 5vw, var(--space-12));
+    }
+  }
+
+  @media (max-width: 45rem) {
+    .work-page {
+      gap: var(--space-10);
+    }
+
+    .work-hero__header :global(.section-header__title) {
+      font-size: var(--font-size-heading-lg);
+    }
+
+    .work-facts {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .work-detail__actions,
+    .work-detail__actions :global(.action) {
+      width: 100%;
+    }
+
+    .work-description {
+      margin-inline-start: 0;
+    }
+
+    .work-inquiry {
+      padding: var(--space-5);
     }
   }
 </style>

@@ -147,21 +147,39 @@ function focusFirstInvalidField(
   const firstField = fieldNames.find((fieldName) => errors[fieldName]);
 
   if (firstField) {
-    getFormControl(form, firstField).focus({ preventScroll: true });
+    getFormControl(form, firstField).focus();
   }
 }
 
 function initInterestForm(form: HTMLFormElement): () => void {
   const abortController = new AbortController();
   const { signal } = abortController;
+  const submitButton = form.querySelector<HTMLButtonElement>(
+    'button[type="submit"]',
+  );
+  let isPreparing = false;
+
+  const setPreparing = (preparing: boolean): void => {
+    isPreparing = preparing;
+    form.setAttribute("aria-busy", String(preparing));
+
+    if (submitButton) {
+      submitButton.disabled = preparing;
+    }
+  };
 
   applyWorkFromUrl(form);
   setFormStatus(form, "idle");
+  setPreparing(false);
 
   form.addEventListener(
     "submit",
     async (event) => {
       event.preventDefault();
+
+      if (isPreparing) {
+        return;
+      }
 
       const values = readFormValues(form);
       const validation = validateInterestForm(values);
@@ -178,8 +196,14 @@ function initInterestForm(form: HTMLFormElement): () => void {
       }
 
       clearFieldErrors(form);
-      const result = await inquiryAdapter.prepare(values);
-      setFormStatus(form, result.status, result.message);
+      setPreparing(true);
+
+      try {
+        const result = await inquiryAdapter.prepare(values);
+        setFormStatus(form, result.status, result.message);
+      } finally {
+        setPreparing(false);
+      }
     },
     { signal },
   );
@@ -198,6 +222,7 @@ function initInterestForm(form: HTMLFormElement): () => void {
   form.addEventListener(
     "reset",
     () => {
+      setPreparing(false);
       window.requestAnimationFrame(() => {
         clearFieldErrors(form);
         setFormStatus(form, "idle");

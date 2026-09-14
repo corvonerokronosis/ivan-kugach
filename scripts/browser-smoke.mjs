@@ -22,6 +22,8 @@ const routes = {
   storyFinale: "/experience/story/finale/",
   catalog: "/works/",
   workDetail: "/works/dor-3518/",
+  reservedWorkDetail: "/works/dsc-8578/",
+  soldWorkDetail: "/works/dsc-8599/",
   series: "/series/demo-series-needs-title/",
   archive: "/archive/",
   colorReveal: "/experience/color-return/",
@@ -857,14 +859,88 @@ async function smokeContentRoutes() {
 
   await page.getByRole("button", { name: "Подготовить заявку" }).click();
   await assertVisible(page.getByText("Проверьте отмеченные поля."));
+  assert(
+    await page
+      .locator('input[name="name"]')
+      .evaluate((element) => element === element.ownerDocument.activeElement),
+    "После ошибки фокус должен перейти на первое невалидное поле.",
+  );
 
   await page.locator('input[name="name"]').fill("Тестовый посетитель");
   await page.locator('input[name="email"]').fill("visitor@example.test");
   await page.locator('input[name="consent"]').check();
   await page.getByRole("button", { name: "Подготовить заявку" }).click();
   await assertVisible(page.getByText(/подготовлена для проверки/i));
+  const detailForm = page.locator("[data-interest-form]");
+  assert(
+    (await detailForm.getAttribute("aria-busy")) === "false" &&
+      (await detailForm
+        .getByRole("button", { name: "Подготовить заявку" })
+        .isEnabled()),
+    "После подготовки форма должна выйти из busy и снова разрешить submit.",
+  );
+
+  await detailForm.getByRole("button", { name: "Очистить форму" }).click();
+  assert(
+    (await detailForm.locator('input[name="name"]').inputValue()) === "" &&
+      (await detailForm.locator('input[name="email"]').inputValue()) === "" &&
+      !(await detailForm.locator('input[name="consent"]').isChecked()) &&
+      (await detailForm.locator('select[name="workId"]').inputValue()) ===
+        "dor-3518" &&
+      (await detailForm.locator("[data-form-message]").isHidden()),
+    "Reset должен очистить данные, скрыть message и сохранить исходную работу.",
+  );
+
+  await assertWorkDetailVariant(page, {
+    path: routes.reservedWorkDetail,
+    availability: "reserved",
+    statusLabel: "Зарезервирована",
+    actionLabel: "Запросить покупку",
+    selectedWorkId: "dsc-8578",
+  });
+  await assertWorkDetailVariant(page, {
+    path: routes.soldWorkDetail,
+    availability: "sold",
+    statusLabel: "Продана",
+    actionLabel: "Спросить о похожих работах",
+    selectedWorkId: "dsc-8599",
+    initialComment: "Интересуют похожие работы или произведения этой серии.",
+  });
 
   await page.close();
+}
+
+async function assertWorkDetailVariant(
+  page,
+  {
+    path,
+    availability,
+    statusLabel,
+    actionLabel,
+    selectedWorkId,
+    initialComment = "",
+  },
+) {
+  await page.goto(toUrl(path));
+  const detail = page.locator("[data-work-detail]");
+
+  await assertVisible(detail);
+  assert(
+    (await detail.getAttribute("data-work-availability")) === availability,
+    `Detail route должна отражать состояние ${availability}.`,
+  );
+  await assertVisible(detail.getByText(statusLabel, { exact: true }).first());
+  await assertVisible(detail.getByRole("link", { name: actionLabel }).first());
+  assert(
+    (await detail.locator('select[name="workId"]').inputValue()) ===
+      selectedWorkId,
+    "Форма detail route должна сохранять автоматически выбранную работу.",
+  );
+  assert(
+    (await detail.locator('textarea[name="comment"]').inputValue()).trim() ===
+      initialComment,
+    "Начальный комментарий должен соответствовать статусу работы.",
+  );
 }
 
 async function assertStableCatalogMedia(page) {
@@ -921,7 +997,7 @@ async function assertStableCatalogMedia(page) {
 }
 
 async function assertStableWorkMedia(page) {
-  const primarySlot = page.locator('[data-media-slot="square"]').first();
+  const primarySlot = page.locator('[data-media-slot="wide"]').first();
   const primaryImage = primarySlot.locator("img");
   const frameRatio = await primarySlot
     .locator(".framed-artwork__frame")
@@ -933,8 +1009,8 @@ async function assertStableWorkMedia(page) {
 
   await assertReservedImageDimensions(primaryImage);
   assert(
-    Math.abs(frameRatio - 1) < 0.02,
-    `Основной медиаслот работы должен быть квадратным, получено ${frameRatio}.`,
+    Math.abs(frameRatio - 16 / 10) < 0.02,
+    `Основной медиаслот работы должен сохранять 16:10, получено ${frameRatio}.`,
   );
   assert(
     (await primarySlot.getAttribute("data-media-fit")) === "contain",
