@@ -25,107 +25,544 @@ function formatPrice(artwork: (typeof artworks)[number]): string {
 <BaseLayout
   title="Архив проданных работ — Иван Кугач"
   description="Архив проданных работ Ивана Кугача и путь к похожим доступным произведениям."
+  studioDecoration
 >
-  <SectionHeader
-    level="h1"
-    title="Проданные работы"
-    description={archiveDescription}
-  />
+  <article class="archive-page">
+    <section class="archive-hero" aria-labelledby="archive-title">
+      <div class="archive-hero__copy">
+        <SectionHeader
+          id="archive-title"
+          level="h1"
+          title="Проданные работы"
+          description={archiveDescription}
+        />
 
-  <section class="archive-section" aria-labelledby="archive-list-title">
-    <div class="archive-section__header">
-      <h2 id="archive-list-title">Работы в архиве</h2>
-      <p>
-        Каждая карточка ведёт к истории произведения и возможности спросить о
-        похожих работах или серии.
-      </p>
-    </div>
+        <div class="archive-hero__actions">
+          <Action href="/works/">Смотреть доступные работы</Action>
+        </div>
+      </div>
 
-    {
-      artworks.length > 0 ? (
-        <ul class="archive-grid" aria-label="Проданные работы">
-          {artworks.map((artwork) => (
-            <li>
-              <ArtworkCatalogCard
-                artwork={artwork}
-                statusLabel={artworkAvailabilityLabels[artwork.availability]}
-                priceLabel={formatPrice(artwork)}
-              />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <MessageState title="Архив пока пуст">
-          <p>
-            Проданные работы появятся здесь автоматически после изменения
-            статуса в локальном источнике данных.
-          </p>
-          <Action href="/works/">Перейти в каталог</Action>
-        </MessageState>
-      )
-    }
-  </section>
+      <div class="archive-hero__folio" aria-hidden="true">
+        <span class="archive-hero__folio-sheet"></span>
+        <span class="archive-hero__folio-sheet"></span>
+        <span class="archive-hero__folio-tab"></span>
+      </div>
 
-  <section class="archive-interest" aria-labelledby="archive-interest-title">
-    <div>
-      <h2 id="archive-interest-title">Найти похожую работу</h2>
-      <p>
-        Откройте актуальный каталог, чтобы посмотреть доступные и
-        зарезервированные произведения.
-      </p>
-    </div>
-    <Action href="/works/">Смотреть доступные работы</Action>
-  </section>
+      <aside
+        class="archive-hero__note studio-reading-plane"
+        aria-labelledby="archive-list-title"
+      >
+        <h2 id="archive-list-title">Работы в архиве</h2>
+        <p>
+          Каждая карточка ведёт к истории произведения и возможности спросить о
+          похожих работах или серии.
+        </p>
+      </aside>
+    </section>
 
+    <section class="archive-register" aria-labelledby="archive-list-title">
+      {
+        artworks.length > 0 ? (
+          <ul class="archive-register__list" aria-label="Проданные работы">
+            {artworks.map((artwork, index) => (
+              <li class="archive-register__item">
+                <span class="archive-register__number" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <ArtworkCatalogCard
+                  artwork={artwork}
+                  statusLabel={artworkAvailabilityLabels[artwork.availability]}
+                  priceLabel={formatPrice(artwork)}
+                  presentation="archive"
+                />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div class="archive-register__empty">
+            <MessageState title="Архив пока пуст">
+              <p>
+                Проданные работы появятся здесь автоматически после изменения
+                статуса в локальном источнике данных.
+              </p>
+              <Action href="/works/">Перейти в каталог</Action>
+            </MessageState>
+          </div>
+        )
+      }
+    </section>
+
+    <section class="archive-interest" aria-labelledby="archive-interest-title">
+      <div>
+        <h2 id="archive-interest-title">Найти похожую работу</h2>
+        <p>
+          Откройте актуальный каталог, чтобы посмотреть доступные и
+          зарезервированные произведения.
+        </p>
+      </div>
+      <Action href="/works/">Смотреть доступные работы</Action>
+    </section>
+  </article>
 </BaseLayout>
 
 <style>
-  .archive-section {
-    display: grid;
-    gap: var(--space-5);
+  :global(body.has-studio-decoration) {
+    overflow-x: clip;
   }
 
-  .archive-section__header {
+  .archive-page,
+  .archive-hero,
+  .archive-hero__copy,
+  .archive-hero__note,
+  .archive-register {
     display: grid;
-    gap: var(--space-2);
   }
 
-  .archive-section__header h2,
-  .archive-section__header p,
+  .archive-page {
+    gap: clamp(var(--space-10), 8vw, 7rem);
+    padding-block: var(--space-2) var(--space-8);
+  }
+
+  .archive-hero {
+    position: relative;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    min-height: min(34rem, calc(100dvh - 9rem));
+    gap: var(--space-6) clamp(var(--space-4), 3vw, var(--space-8));
+    align-items: center;
+    padding: clamp(var(--space-5), 4vw, var(--space-10));
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-2xl);
+    background:
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--color-surface) 88%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        circle at 78% 24%,
+        var(--color-lamp-glow),
+        transparent 35%
+      ),
+      var(--color-surface-muted);
+    box-shadow: var(--shadow-raised);
+    isolation: isolate;
+  }
+
+  .archive-hero::after {
+    position: absolute;
+    right: 5%;
+    bottom: clamp(var(--space-5), 5vw, var(--space-10));
+    left: 42%;
+    z-index: -1;
+    height: 0.35rem;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-wood-strong) 8% 92%,
+      transparent
+    );
+    box-shadow: 0 var(--space-3) var(--space-8)
+      color-mix(in srgb, var(--color-wood-strong) 38%, transparent);
+    content: "";
+  }
+
+  .archive-hero__copy {
+    z-index: 2;
+    grid-column: 1 / 7;
+    grid-row: 1;
+    justify-items: start;
+    gap: var(--space-6);
+  }
+
+  .archive-hero__copy :global(.section-header__title) {
+    max-width: 10ch;
+    font-size: clamp(2.75rem, 5vw, 4.5rem);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: -0.045em;
+    line-height: 0.98;
+  }
+
+  .archive-hero__copy :global(.section-header__description) {
+    max-width: 36rem;
+    font-size: clamp(var(--font-size-300), 1.55vw, var(--font-size-500));
+  }
+
+  .archive-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .archive-hero__folio {
+    position: relative;
+    z-index: 1;
+    grid-column: 7 / 13;
+    grid-row: 1 / 3;
+    align-self: stretch;
+    min-height: 23rem;
+    transform: rotate(0.8deg);
+  }
+
+  .archive-hero__folio::before {
+    position: absolute;
+    inset: 7% 5% 9% 12%;
+    border: clamp(0.45rem, 1vw, 0.75rem) solid var(--color-wood-strong);
+    border-radius: var(--radius-sm);
+    background:
+      repeating-linear-gradient(
+        180deg,
+        transparent 0 3.25rem,
+        color-mix(in srgb, var(--color-wood) 22%, transparent) 3.25rem 3.3rem
+      ),
+      var(--color-linen);
+    box-shadow: var(--shadow-frame);
+    content: "";
+  }
+
+  .archive-hero__folio::after {
+    position: absolute;
+    inset: 13% 10% 15% 17%;
+    border: 1px solid
+      color-mix(in srgb, var(--color-text-on-light) 24%, transparent);
+    box-shadow: inset 0 0 0 var(--space-3)
+      color-mix(in srgb, var(--color-linen-strong) 72%, transparent);
+    content: "";
+  }
+
+  .archive-hero__folio-sheet {
+    position: absolute;
+    z-index: 1;
+    width: 30%;
+    aspect-ratio: 0.8;
+    border: 1px solid
+      color-mix(in srgb, var(--color-text-on-light) 28%, transparent);
+    background:
+      linear-gradient(
+        90deg,
+        var(--color-accent) 0 0.18rem,
+        transparent 0.18rem
+      ),
+      repeating-linear-gradient(
+        180deg,
+        transparent 0 1.15rem,
+        color-mix(in srgb, var(--color-text-on-light) 18%, transparent) 1.15rem
+          1.2rem
+      ),
+      var(--color-linen-strong);
+    box-shadow: var(--shadow-surface);
+  }
+
+  .archive-hero__folio-sheet:nth-child(1) {
+    top: 24%;
+    left: 26%;
+    transform: rotate(-2.5deg);
+  }
+
+  .archive-hero__folio-sheet:nth-child(2) {
+    right: 18%;
+    bottom: 20%;
+    transform: rotate(2deg);
+  }
+
+  .archive-hero__folio-tab {
+    position: absolute;
+    top: 15%;
+    right: 4%;
+    width: 18%;
+    height: 2.25rem;
+    border: 1px solid var(--color-border-strong);
+    border-left: 0;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    background: var(--color-accent);
+    box-shadow: var(--shadow-surface);
+  }
+
+  .archive-hero__note {
+    z-index: 3;
+    grid-column: 2 / 7;
+    grid-row: 2;
+    align-self: end;
+    gap: var(--space-3);
+    max-width: 33rem;
+    padding: clamp(var(--space-4), 2.5vw, var(--space-6));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    transform: translateY(var(--space-8)) rotate(-0.55deg);
+  }
+
+  .archive-hero__note::before {
+    position: absolute;
+    top: 0;
+    left: clamp(var(--space-4), 4vw, var(--space-8));
+    width: clamp(3rem, 8vw, 5.5rem);
+    height: 0.2rem;
+    background: var(--color-accent);
+    content: "";
+  }
+
+  .archive-hero__note h2,
+  .archive-hero__note p,
   .archive-interest h2,
   .archive-interest p {
     margin-block-end: 0;
   }
 
-  .archive-section__header p,
+  .archive-hero__note h2,
+  .archive-interest h2 {
+    font-size: var(--font-size-heading-sm);
+  }
+
+  .archive-hero__note p,
   .archive-interest p {
     color: var(--color-text-muted);
   }
 
-  .archive-grid {
+  .archive-register {
+    gap: var(--space-6);
+  }
+
+  .archive-register__list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-    gap: var(--space-5);
+    gap: clamp(var(--space-8), 7vw, 6rem);
     padding: 0;
     margin: 0;
     list-style: none;
   }
 
-  .archive-interest {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-4);
+  .archive-register__item {
+    position: relative;
+    min-width: 0;
+  }
+
+  :global(.artwork-catalog-card--archive) {
+    grid-template-columns: minmax(0, 1.15fr) minmax(17rem, 0.85fr);
+    gap: clamp(var(--space-5), 4vw, var(--space-10));
     align-items: center;
-    justify-content: space-between;
-    padding: clamp(var(--space-4), 4vw, var(--space-6));
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface-muted);
+    height: auto;
+    padding: clamp(var(--space-4), 3vw, var(--space-8));
+    border-color: var(--color-border-subtle);
+    border-inline: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  :global(.artwork-catalog-card--archive:focus-within) {
+    border-color: var(--color-accent);
+    box-shadow: inset 0.2rem 0 var(--color-accent);
+  }
+
+  :global(
+    .artwork-catalog-card--archive .artwork-catalog-card__media-link
+  ) {
+    display: block;
+    min-width: 0;
+  }
+
+  :global(.artwork-catalog-card--archive .artwork-catalog-card__body) {
+    position: relative;
+    gap: var(--space-4);
+    padding-block: var(--space-5);
+  }
+
+  :global(.artwork-catalog-card--archive .artwork-catalog-card__body::before) {
+    width: clamp(3rem, 8vw, 5.5rem);
+    height: 0.2rem;
+    background: var(--color-accent);
+    content: "";
+  }
+
+  :global(.artwork-catalog-card--archive .artwork-catalog-card__facts) {
+    padding-block: var(--space-3);
+    border-block: 1px solid var(--color-border-subtle);
+  }
+
+  :global(.artwork-catalog-card--archive .artwork-catalog-card__actions) {
+    padding-block-start: var(--space-1);
+  }
+
+  .archive-register__item:nth-child(even)
+    :global(.artwork-catalog-card--archive) {
+    grid-template-columns: minmax(17rem, 0.85fr) minmax(0, 1.15fr);
+  }
+
+  .archive-register__item:nth-child(even)
+    :global(.artwork-catalog-card--archive .artwork-catalog-card__media-link) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .archive-register__item:nth-child(even)
+    :global(.artwork-catalog-card--archive .artwork-catalog-card__body) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .archive-register__number {
+    position: absolute;
+    top: 0;
+    right: clamp(var(--space-3), 3vw, var(--space-6));
+    z-index: 2;
+    color: color-mix(in srgb, var(--color-text-muted) 62%, transparent);
+    font-size: clamp(2.5rem, 6vw, 5.5rem);
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: -0.06em;
+    line-height: 0.8;
+    pointer-events: none;
+  }
+
+  .archive-register__item:nth-child(even) .archive-register__number {
+    right: auto;
+    left: clamp(var(--space-3), 3vw, var(--space-6));
+  }
+
+  .archive-register__empty {
+    padding: clamp(var(--space-5), 5vw, var(--space-10));
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    background: color-mix(in srgb, var(--color-surface) 72%, transparent);
+  }
+
+  .archive-interest {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-6);
+    align-items: center;
+    padding: clamp(var(--space-6), 4vw, var(--space-10));
+    border-block: 1px solid var(--color-border);
+  }
+
+  .archive-interest::before {
+    position: absolute;
+    top: -0.25rem;
+    left: clamp(var(--space-5), 10vw, 9rem);
+    width: clamp(4rem, 12vw, 8rem);
+    height: 0.45rem;
+    background: var(--color-wood-strong);
+    content: "";
   }
 
   .archive-interest > div {
     display: grid;
     max-width: 42rem;
     gap: var(--space-2);
+  }
+
+  @media (min-width: 44rem) {
+    :global(.artwork-catalog-card--archive .artwork-catalog-card__facts) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+  }
+
+  @media (max-width: 55.99rem) {
+    .archive-page {
+      gap: var(--space-12);
+    }
+
+    .archive-hero {
+      grid-template-columns: minmax(0, 1fr);
+      min-height: auto;
+      gap: var(--space-8);
+    }
+
+    .archive-hero__copy,
+    .archive-hero__folio,
+    .archive-hero__note {
+      grid-column: 1;
+      grid-row: auto;
+    }
+
+    .archive-hero__folio {
+      min-height: 22rem;
+    }
+
+    .archive-hero__note {
+      max-width: none;
+      transform: none;
+    }
+
+    .archive-hero::after {
+      right: 8%;
+      bottom: 28%;
+      left: 8%;
+    }
+
+    :global(.artwork-catalog-card--archive) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-4);
+    }
+
+    :global(.artwork-catalog-card--archive .artwork-catalog-card__body) {
+      padding: var(--space-2) var(--space-3) var(--space-5);
+    }
+
+    .archive-register__item:nth-child(even)
+      :global(.artwork-catalog-card--archive) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .archive-register__item:nth-child(even)
+      :global(.artwork-catalog-card--archive .artwork-catalog-card__media-link),
+    .archive-register__item:nth-child(even)
+      :global(.artwork-catalog-card--archive .artwork-catalog-card__body) {
+      grid-column: 1;
+      grid-row: auto;
+    }
+
+    .archive-register__number,
+    .archive-register__item:nth-child(even) .archive-register__number {
+      top: var(--space-2);
+      right: var(--space-3);
+      left: auto;
+    }
+  }
+
+  @media (max-width: 45rem) {
+    .archive-hero {
+      padding: var(--space-5);
+      border-radius: var(--radius-lg);
+    }
+
+    .archive-hero__copy :global(.section-header__title) {
+      max-width: none;
+      font-size: clamp(2.35rem, 12vw, 3.25rem);
+    }
+
+    .archive-hero__folio {
+      min-height: 17rem;
+    }
+
+    .archive-hero__actions,
+    .archive-hero__actions :global(.action),
+    .archive-interest,
+    .archive-interest :global(.action) {
+      width: 100%;
+    }
+
+    .archive-interest {
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+      padding-inline: 0;
+    }
+
+    .archive-register__list {
+      gap: var(--space-10);
+    }
+
+    :global(.artwork-catalog-card--archive) {
+      padding-inline: 0;
+    }
+
+    :global(.artwork-catalog-card--archive .artwork-catalog-card__actions),
+    :global(
+      .artwork-catalog-card--archive
+        .artwork-catalog-card__actions
+        .action
+    ) {
+      width: 100%;
+    }
   }
 </style>

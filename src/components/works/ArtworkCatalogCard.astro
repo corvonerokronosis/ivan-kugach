@@ -9,7 +9,7 @@ interface Props {
   artwork: ArtworkSummary;
   statusLabel: string;
   priceLabel: string;
-  presentation?: "card" | "wall";
+  presentation?: "archive" | "card" | "wall";
 }
 
 const { artwork, statusLabel, priceLabel, presentation = "card" } = Astro.props;
